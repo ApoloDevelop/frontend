@@ -11,6 +11,7 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const API = process.env.NEXT_PUBLIC_BACKEND_URL;
   const OAUTH_GOOGLE = process.env.NEXT_PUBLIC_OAUTH_GOOGLE_URL;
+  const OAUTH_SPOTIFY = process.env.NEXT_PUBLIC_OAUTH_SPOTIFY_URL;
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -58,20 +59,36 @@ export default function LoginPage() {
           <Button type="submit">Entrar</Button>
         </form>
         <div className="my-4 text-center">— o —</div>
-        <Button onClick={() => (window.location.href = OAUTH_GOOGLE!)}>
-          <img
-            src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/120px-Google_%22G%22_logo.svg.png"
-            alt="Google"
-            style={{
-              width: "21px",
-              height: "22px",
-              marginRight: "8px",
-              marginTop: "3px",
-              marginBottom: "3px",
-            }}
-          />
-          Entrar con Google
-        </Button>
+        <div className="flex flex-col items-center">
+          <Button onClick={() => (window.location.href = OAUTH_GOOGLE!)}>
+            <img
+              src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/120px-Google_%22G%22_logo.svg.png"
+              alt="Google"
+              style={{
+                width: "21px",
+                height: "22px",
+                marginRight: "8px",
+                marginTop: "3px",
+                marginBottom: "3px",
+              }}
+            />
+            Entrar con Google
+          </Button>
+          <Button onClick={() => (window.location.href = OAUTH_SPOTIFY!)}>
+            <img
+              src="https://upload.wikimedia.org/wikipedia/commons/1/19/Spotify_logo_without_text.svg"
+              alt="Spotify"
+              style={{
+                width: "21px",
+                height: "21px",
+                marginRight: "8px",
+                marginTop: "3px",
+                marginBottom: "3px",
+              }}
+            />
+            Entrar con Spotify
+          </Button>
+        </div>
         <p className="mt-4 text-center">
           ¿No tienes cuenta?{" "}
           <a href="/register" className="text-blue-600">
