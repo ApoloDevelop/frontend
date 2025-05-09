@@ -28,7 +28,7 @@ export default function RegisterPage() {
     <div
       className="min-h-screen flex items-center justify-center bg-gray-200 relative"
       style={{
-        backgroundImage: "url('/register.jpg')",
+        backgroundImage: "url('/register.webp')",
         backgroundSize: "cover",
         backgroundPosition: "center",
         position: "absolute",
@@ -45,7 +45,7 @@ export default function RegisterPage() {
         }}
       ></div>
       <div
-        className="p-8 rounded-xl w-1/3 max-w-md min-h-[500px] transform transition flex flex-col gap-y-px duration-300 hover:scale-103 hover:shadow-3xl"
+        className="p-8 rounded-xl w-1/3 max-w-md min-h-[500px] transform transition flex flex-col gap-y-px duration-300 hover:scale-103 hover:shadow-3xl opacity-95 animate-fade-in"
         style={{
           backgroundColor: "var(--container-background);",
           boxShadow: "0 4px 50px 20px rgba(0, 0, 0, 0.5)",

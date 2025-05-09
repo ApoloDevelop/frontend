@@ -32,7 +32,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 absolute left-0 top-0 w-full -z-10">
       <div className="bg-white p-8 rounded shadow w-full max-w-md text-center">
         <h2 className="text-2xl mb-4">Iniciar sesión</h2>
         {error && <div className="text-red-600 mb-4">{error}</div>}
@@ -46,7 +46,7 @@ export default function LoginPage() {
             value={cred.credential}
             onChange={(e) => setCred({ ...cred, credential: e.target.value })}
             required
-            className="w-1/3 px-3 py-2 border rounded"
+            className="w-2/3 px-3 py-2 border rounded"
           />
           <input
             type="password"
@@ -54,13 +54,18 @@ export default function LoginPage() {
             value={cred.password}
             onChange={(e) => setCred({ ...cred, password: e.target.value })}
             required
-            className="w-1/3 px-3 py-2 border rounded"
+            className="w-2/3 px-3 py-2 border rounded"
           />
-          <Button type="submit">Entrar</Button>
+          <Button type="submit" className="-mb-0.5">
+            Entrar
+          </Button>
         </form>
-        <div className="my-4 text-center">— o —</div>
+        <div className="my-2 text-center">— o —</div>
         <div className="flex flex-col items-center">
-          <Button onClick={() => (window.location.href = OAUTH_GOOGLE!)}>
+          <Button
+            onClick={() => (window.location.href = OAUTH_GOOGLE!)}
+            className="mb-2"
+          >
             <img
               src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/120px-Google_%22G%22_logo.svg.png"
               alt="Google"

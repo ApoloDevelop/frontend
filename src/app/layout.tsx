@@ -1,5 +1,6 @@
 // src/app/layout.tsx
 import "./globals.css";
+import Header from "@/components/ui/Header";
 
 export const metadata = {
   title: "Apolo",
@@ -14,9 +15,7 @@ export default function RootLayout({
   return (
     <html lang="es">
       <body>
-        <header className="p-4 text-white">
-          <h1 className="text-2xl font-bold">Apolo</h1>
-        </header>
+        <Header />
         <main>{children}</main>
       </body>
     </html>
