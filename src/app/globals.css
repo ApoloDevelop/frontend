@@ -1,5 +1,6 @@
-@import "tw-animate-css";
 @import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap");
+@import "tw-animate-css";
+@import "tailwindcss";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -47,6 +48,7 @@
 :root {
   --radius: 0.625rem;
   --background: oklch(1 0 0);
+  --container-background: oklch(1 0 0);
   --foreground: oklch(0.129 0.042 264.695);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.129 0.042 264.695);
@@ -118,7 +120,8 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    background-color: var(--background);
+    color: var(--foreground);
     font-family: "Montserrat", sans-serif; /* Aplica la fuente Montserrat */
   }
 }

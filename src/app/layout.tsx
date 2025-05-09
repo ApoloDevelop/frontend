@@ -14,8 +14,8 @@ export default function RootLayout({
   return (
     <html lang="es">
       <body>
-        <header className="p-4 bg-blue-600 text-white">
-          <h1 className="text-xl">Apolo</h1>
+        <header className="p-4 text-white">
+          <h1 className="text-2xl font-bold">Apolo</h1>
         </header>
         <main>{children}</main>
       </body>
