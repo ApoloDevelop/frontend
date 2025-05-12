@@ -1719,8 +1719,8 @@ export const countries = [
     unRegionalGroup: "",
     currencies: {},
     idd: {
-      root: "",
-      suffixes: [],
+      root: "+6",
+      suffixes: [72],
     },
     capital: [],
     altSpellings: ["AQ"],

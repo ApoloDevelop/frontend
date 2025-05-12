@@ -1,11 +1,10 @@
 "use client";
 
-import { FC, use, useState } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { countries } from "@/data/countries";
 import Flag from "react-world-flags";
 import Select from "react-select";
-import { SortAsc } from "lucide-react";
 
 export default function RegisterPage() {
   const [step, setStep] = useState(1); // Controla el paso actual del slide
@@ -14,11 +13,13 @@ export default function RegisterPage() {
     username: "",
     email: "",
     password: "",
+    confirmPassword: "",
     birthdate: "",
     country: "",
     city: "",
     postalCode: "",
     phone: "",
+    phonePrefix: "",
   });
 
   const handleNext = () => {
@@ -44,20 +45,12 @@ export default function RegisterPage() {
     });
   };
 
-  const handleDialCodeChange = (selectedOption: any) => {
-    setFormData({
-      ...formData,
-      phone: selectedOption?.value || "",
-    });
-  };
-
   const countryOptions = countries
     .sort((a, b) =>
       a.translations.spa.common.localeCompare(b.translations.spa.common, "es")
     ) // Ordena los países por su traducción al español
     .map((country) => ({
       value: country.translations.spa.common,
-      SortAsc: country.translations.spa.common,
       label: (
         <div className="flex items-center">
           <Flag code={country.cca2} className="w-5 h-5 mr-2" />
@@ -66,6 +59,28 @@ export default function RegisterPage() {
       ),
       dialCode: country.idd.root + (country.idd.suffixes?.[0] || ""),
     }));
+
+  const dialCodeOptions = countries.map((country) => ({
+    value: country.idd.root + (country.idd.suffixes?.[0] || ""),
+    label: country.translations.spa.common,
+    flagCode: country.cca2,
+  }));
+
+  const formatDialCodeLabel = (
+    { label, flagCode }: any,
+    { context }: { context: "menu" | "value" }
+  ) => {
+    if (context === "menu") {
+      return (
+        <div className="flex items-center">
+          <Flag code={flagCode} className="w-5 h-5 mr-2" />
+          {label}
+        </div>
+      );
+    }
+
+    return <Flag code={flagCode} className="w-5 h-5" />;
+  };
 
   return (
     <div
@@ -88,7 +103,7 @@ export default function RegisterPage() {
         }}
       ></div>
       <div
-        className="p-3 rounded-xl w-1/3 max-w-md min-h-[500px] transform transition flex flex-col gap-y-px duration-300 hover:scale-103 hover:shadow-3xl opacity-95 animate-fade-in"
+        className="p-3 rounded-xl w-1/3 max-w-md min-h-[500px] transform transition flex flex-col gap-y-px duration-300 opacity-95 animate-fade-in"
         style={{
           backgroundColor: "var(--container-background)",
           boxShadow: "0 4px 50px 20px rgba(0, 0, 0, 0.5)",
@@ -107,7 +122,7 @@ export default function RegisterPage() {
             {/* Página 1 */}
             <div className="w-full flex-shrink-0 ">
               <h3 className="text-lg mb-4 text-center">Háblanos de ti</h3>
-              <form className="space-y-4 flex flex-col items-center">
+              <form className="space-y-4 flex flex-col items-center" action="">
                 <input
                   type="text"
                   name="fullname"
@@ -143,7 +158,25 @@ export default function RegisterPage() {
                   onChange={handleChange}
                   required
                   className="w-9/10 px-3 py-2 border rounded mb-8 border-black"
+                  autoComplete="new-password"
                 />
+                <input
+                  type="password"
+                  name="confirmPassword"
+                  placeholder="Repetir contraseña"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  required
+                  className="w-9/10 px-3 py-2 border rounded mb-8 border-black"
+                  autoComplete="new-password"
+                />
+                {formData.password &&
+                  formData.confirmPassword &&
+                  formData.password !== formData.confirmPassword && (
+                    <p className="text-red-500 text-sm">
+                      Las contraseñas no coinciden
+                    </p>
+                  )}
               </form>
             </div>
 
@@ -172,6 +205,8 @@ export default function RegisterPage() {
                   onChange={handleCountryChange}
                   placeholder={"Selecciona tu país"}
                   className={"w-9/10 mb-8"}
+                  menuPlacement="bottom"
+                  menuPortalTarget={document.body}
                   styles={{
                     control: (base, state) => ({
                       ...base,
@@ -180,6 +215,10 @@ export default function RegisterPage() {
                       "&:hover": {
                         borderColor: "black", // Color del borde al pasar el mouse
                       },
+                    }),
+                    menuPortal: (base) => ({
+                      ...base,
+                      zIndex: 9999, // Asegúrate de que el menú esté por encima de otros elementos
                     }),
                   }}
                 />
@@ -201,45 +240,54 @@ export default function RegisterPage() {
                   required
                   className="w-9/10 px-3 py-2 border rounded mb-8 border-black"
                 />
-                <div className="flex flex-row">
+                <div className="flex items-center gap-2 mb-8">
                   <Select
-                    options={countryOptions.map((country) => ({
-                      value: country.dialCode,
-                      label: country.label,
-                    }))}
+                    options={dialCodeOptions}
+                    formatOptionLabel={formatDialCodeLabel}
+                    // Si quieres que el valor almacenado sea solo el prefijo numérico
+                    getOptionValue={(opt) => opt.value}
                     isClearable
-                    onChange={(selectedOption: any) => {
+                    onChange={(opt: any) => {
                       setFormData({
                         ...formData,
-                        phone: selectedOption?.value || "", // Actualiza el campo de teléfono con el prefijo
+                        phonePrefix: opt?.value || "", // Actualiza solo el prefijo
+                        phone: "", // Limpia el número si se cambia el prefijo
                       });
                     }}
-                    placeholder={"Prefijo"}
-                    className={"w-1/4 mb-8 px-2"}
-                    menuPlacement="auto"
+                    placeholder="Prefijo"
+                    className="w-1/2 mb-8"
+                    menuPlacement="top"
                     styles={{
                       control: (base, state) => ({
                         ...base,
-                        borderColor: state.isFocused ? "black" : "black", // Color del borde
-                        boxShadow: state.isFocused ? "0 0 0 0px black" : "none", // Sombra al enfocar
-                        "&:hover": {
-                          borderColor: "black", // Color del borde al pasar el mouse
-                        },
+                        borderColor: state.isFocused ? "black" : "black",
+                        boxShadow: state.isFocused ? "0 0 0 0px black" : "none",
+                        "&:hover": { borderColor: "black" },
                       }),
-                      menu: (base) => ({
-                        ...base,
-                        width: "200px", // Ajusta el ancho del menú desplegable
-                      }),
+                      menu: (base) => ({ ...base, width: "200px" }),
                     }}
                   />
+
                   <input
                     type="tel"
                     name="phone"
                     placeholder="Teléfono"
-                    value={formData.phone || ""}
-                    onChange={handleChange}
+                    value={`${formData.phonePrefix} ${formData.phone}`.trim()} // Concatena el prefijo y el número
+                    onChange={(e) => {
+                      const prefix = formData.phonePrefix;
+                      const inputValue = e.target.value;
+
+                      // Asegúrate de que el prefijo no sea editable
+                      if (inputValue.startsWith(prefix)) {
+                        setFormData({
+                          ...formData,
+                          phone: inputValue.slice(prefix.length).trim(),
+                        });
+                      }
+                    }}
                     required
-                    className="w-9/10 px-3 py-2 border rounded mb-8 border-black"
+                    disabled={!formData.phonePrefix} // Deshabilita el campo si no hay prefijo seleccionado
+                    className="w-full px-8 py-1.5 border rounded mb-8 border-black"
                   />
                 </div>
               </form>
