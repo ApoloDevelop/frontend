@@ -103,7 +103,7 @@ export default function RegisterPage() {
         }}
       ></div>
       <div
-        className="p-3 rounded-xl w-full sm:w-1/2 max-w-md min-h-[500px] transform transition flex flex-col gap-y-px duration-300 opacity-95 animate-fade-in"
+        className="p-3 rounded-xl w-9/10 lg:w-full max-w-md min-h-[500px] transform transition flex flex-col gap-y-px duration-300 opacity-95 animate-fade-in"
         style={{
           backgroundColor: "var(--container-background)",
           boxShadow: "0 4px 50px 20px rgba(0, 0, 0, 0.5)",
