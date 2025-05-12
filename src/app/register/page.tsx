@@ -99,22 +99,22 @@ export default function RegisterPage() {
       <div
         className="w-full h-full absolute top-0 left-0"
         style={{
-          backdropFilter: "blur(5px)",
+          backdropFilter: "blur(12px)",
         }}
       ></div>
       <div
-        className="p-3 rounded-xl w-1/3 max-w-md min-h-[500px] transform transition flex flex-col gap-y-px duration-300 opacity-95 animate-fade-in"
+        className="p-3 rounded-xl w-full sm:w-1/2 max-w-md min-h-[500px] transform transition flex flex-col gap-y-px duration-300 opacity-95 animate-fade-in"
         style={{
           backgroundColor: "var(--container-background)",
           boxShadow: "0 4px 50px 20px rgba(0, 0, 0, 0.5)",
         }}
       >
-        <h2 className="text-2xl mb-4 text-center font-bold">
+        <h2 className="text-2xl sm:text-xl mb-4 text-center font-bold">
           ¡Bienvenido a Apolo!
         </h2>
 
         {/* Contenedor del slide */}
-        <div className="overflow-hidden ">
+        <div className="overflow-x-hidden ">
           <div
             className="flex transition-transform duration-500"
             style={{ transform: `translateX(-${(step - 1) * 100}%)` }}
@@ -130,7 +130,7 @@ export default function RegisterPage() {
                   value={formData.fullname}
                   onChange={handleChange}
                   required
-                  className="w-9/10 px-3 py-2 border rounded mb-8 border-black"
+                  className="w-full lg:w-9/10 px-3 py-2 border rounded mb-8 border-black"
                 />
                 <input
                   type="text"
@@ -139,7 +139,7 @@ export default function RegisterPage() {
                   value={formData.username}
                   onChange={handleChange}
                   required
-                  className="w-9/10 px-3 py-2 border rounded mb-8 border-black"
+                  className="w-full lg:w-9/10 px-3 py-2 border rounded mb-8 border-black"
                 />
                 <input
                   type="email"
@@ -148,7 +148,7 @@ export default function RegisterPage() {
                   value={formData.email}
                   onChange={handleChange}
                   required
-                  className="w-9/10 px-3 py-2 border rounded mb-8 border-black"
+                  className="w-full lg:w-9/10 px-3 py-2 border rounded mb-8 border-black"
                 />
                 <input
                   type="password"
@@ -157,7 +157,7 @@ export default function RegisterPage() {
                   value={formData.password}
                   onChange={handleChange}
                   required
-                  className="w-9/10 px-3 py-2 border rounded mb-8 border-black"
+                  className="w-full lg:w-9/10 px-3 py-2 border rounded mb-8 border-black"
                   autoComplete="new-password"
                 />
                 <input
@@ -167,7 +167,7 @@ export default function RegisterPage() {
                   value={formData.confirmPassword}
                   onChange={handleChange}
                   required
-                  className="w-9/10 px-3 py-2 border rounded mb-8 border-black"
+                  className="w-full lg:w-9/10 px-3 py-2 border rounded mb-8 border-black"
                   autoComplete="new-password"
                 />
                 {formData.password &&
@@ -192,7 +192,7 @@ export default function RegisterPage() {
                   value={formData.birthdate || ""}
                   onChange={handleChange}
                   required
-                  className="w-9/10 px-3 py-2 border rounded mb-8 border-black"
+                  className="w-full lg:w-9/10 px-3 py-2 border rounded mb-8 border-black"
                 />
                 <Select
                   options={countryOptions}
@@ -204,7 +204,7 @@ export default function RegisterPage() {
                   isClearable
                   onChange={handleCountryChange}
                   placeholder={"Selecciona tu país"}
-                  className={"w-9/10 mb-8"}
+                  className={"w-full lg:w-9/10 mb-8"}
                   menuPlacement="bottom"
                   menuPortalTarget={document.body}
                   styles={{
@@ -229,7 +229,7 @@ export default function RegisterPage() {
                   value={formData.city || ""}
                   onChange={handleChange}
                   required
-                  className="w-9/10 px-3 py-2 border rounded mb-8 border-black"
+                  className="w-full lg:w-9/10 px-3 py-2 border rounded mb-8 border-black"
                 />
                 <input
                   type="text"
@@ -238,7 +238,7 @@ export default function RegisterPage() {
                   value={formData.postalCode || ""}
                   onChange={handleChange}
                   required
-                  className="w-9/10 px-3 py-2 border rounded mb-8 border-black"
+                  className="w-full lg:w-9/10 px-3 py-2 border rounded mb-8 border-black"
                 />
                 <div className="flex items-center gap-2 mb-8">
                   <Select
@@ -255,7 +255,7 @@ export default function RegisterPage() {
                       });
                     }}
                     placeholder="Prefijo"
-                    className="w-1/2 mb-8"
+                    className="w-full lg:w-1/2 mb-8"
                     menuPlacement="top"
                     styles={{
                       control: (base, state) => ({
