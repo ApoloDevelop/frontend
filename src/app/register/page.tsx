@@ -17,7 +17,7 @@ export default function RegisterPage() {
     birthdate: "",
     country: "",
     city: "",
-    postalCode: "",
+    genre: "",
     phone: "",
     phonePrefix: "",
   });
@@ -82,6 +82,23 @@ export default function RegisterPage() {
     return <Flag code={flagCode} className="w-5 h-5" />;
   };
 
+  const getGenreLabel = (value: string) => {
+    switch (value) {
+      case "male":
+        return "Masculino";
+      case "female":
+        return "Femenino";
+      case "non_binary":
+        return "No binario";
+      case "other":
+        return "Otro";
+      case "prefer_not_to_say":
+        return "Prefiero no decirlo";
+      default:
+        return "";
+    }
+  };
+
   return (
     <div
       className="min-h-screen flex items-center justify-center bg-gray-200 relative"
@@ -123,53 +140,139 @@ export default function RegisterPage() {
             <div className="w-full flex-shrink-0 ">
               <h3 className="text-lg mb-4 text-center">Háblanos de ti</h3>
               <form className="space-y-4 flex flex-col items-center" action="">
-                <input
-                  type="text"
-                  name="fullname"
-                  placeholder="Nombre completo"
-                  value={formData.fullname}
-                  onChange={handleChange}
-                  required
-                  className="w-full lg:w-9/10 px-3 py-2 border rounded mb-8 border-black"
-                />
-                <input
-                  type="text"
-                  name="username"
-                  placeholder="Nombre de usuario"
-                  value={formData.username}
-                  onChange={handleChange}
-                  required
-                  className="w-full lg:w-9/10 px-3 py-2 border rounded mb-8 border-black"
-                />
-                <input
-                  type="email"
-                  name="email"
-                  placeholder="Correo electrónico"
-                  value={formData.email}
-                  onChange={handleChange}
-                  required
-                  className="w-full lg:w-9/10 px-3 py-2 border rounded mb-8 border-black"
-                />
-                <input
-                  type="password"
-                  name="password"
-                  placeholder="Contraseña"
-                  value={formData.password}
-                  onChange={handleChange}
-                  required
-                  className="w-full lg:w-9/10 px-3 py-2 border rounded mb-8 border-black"
-                  autoComplete="new-password"
-                />
-                <input
-                  type="password"
-                  name="confirmPassword"
-                  placeholder="Repetir contraseña"
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
-                  required
-                  className="w-full lg:w-9/10 px-3 py-2 border rounded mb-8 border-black"
-                  autoComplete="new-password"
-                />
+                {/* Input para nombre completo */}
+                <div className="relative w-full lg:w-9/10 mb-6">
+                  <style>
+                    {`.relative {
+                      position: relative;
+                    }
+
+                    input {
+                      padding: 12px 8px;
+                      border: 1px solid #000;
+                      border-radius: 4px;
+                      outline: none;
+                    }
+
+                    label {
+                      position: absolute;
+                      left: 12px;
+                      top: 70%;
+                      transform: translateY(-90%);
+                      color: #aaa;
+                      font-size: 16px;
+                      transition: all 0.2s ease-in-out;
+                      pointer-events: none;
+                    }
+
+                    input:focus + label,
+                    input:not(:placeholder-shown) + label {
+                      top: 8px;
+                      font-size: 12px;
+                      color: #000;
+                    }
+                  `}
+                  </style>
+                  <input
+                    type="text"
+                    name="fullname"
+                    id="fullname"
+                    placeholder=" "
+                    value={formData.fullname}
+                    onChange={handleChange}
+                    required
+                    className="peer w-full px-3 py-2 border rounded border-black focus:outline-none focus:ring-2 focus:ring-black"
+                  />
+                  <label
+                    htmlFor="fullname"
+                    className="absolute left-3 top-2 text-gray-500 text-sm transition-all bg-white px-1 peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-focus:top-2 peer-focus:text-sm peer-focus:text-black"
+                    style={{ zIndex: 1 }}
+                  >
+                    Nombre completo
+                  </label>
+                </div>
+                {/* Input para nombre de usuario */}
+                <div className="relative w-full lg:w-9/10 mb-6">
+                  <input
+                    type="text"
+                    name="username"
+                    id="username"
+                    placeholder=" "
+                    value={formData.username}
+                    onChange={handleChange}
+                    required
+                    className="peer w-full px-3 py-2 border rounded border-black focus:outline-none focus:ring-2 focus:ring-black"
+                  />
+                  <label
+                    htmlFor="username"
+                    className="absolute left-3 top-2 text-gray-500 text-sm transition-all bg-white px-1 peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-focus:top-2 peer-focus:text-sm peer-focus:text-black"
+                    style={{ zIndex: 1 }}
+                  >
+                    Nombre de usuario
+                  </label>
+                </div>
+                {/* Input para el correo electrónico */}
+                <div className="relative w-full lg:w-9/10 mb-6">
+                  <input
+                    type="email"
+                    name="email"
+                    id="email"
+                    placeholder=" "
+                    value={formData.email}
+                    onChange={handleChange}
+                    required
+                    className="peer w-full px-3 py-2 border rounded border-black focus:outline-none focus:ring-2 focus:ring-black"
+                  />
+                  <label
+                    htmlFor="email"
+                    className="absolute left-3 top-2 text-gray-500 text-sm transition-all bg-white px-1 peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-focus:top-2 peer-focus:text-sm peer-focus:text-black"
+                    style={{ zIndex: 1 }}
+                  >
+                    Correo electrónico
+                  </label>
+                </div>
+                {/* Input para contraseña */}
+                <div className="relative w-full lg:w-9/10 mb-6">
+                  <input
+                    type="password"
+                    name="password"
+                    id="password"
+                    placeholder=" "
+                    value={formData.password}
+                    onChange={handleChange}
+                    required
+                    className="peer w-full px-3 py-2 border rounded border-black focus:outline-none focus:ring-2 focus:ring-black"
+                    autoComplete="new-password"
+                  />
+                  <label
+                    htmlFor="password"
+                    className="absolute left-3 top-2 text-gray-500 text-sm transition-all bg-white px-1 peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-focus:top-2 peer-focus:text-sm peer-focus:text-black"
+                    style={{ zIndex: 1 }}
+                  >
+                    Contraseña
+                  </label>
+                </div>
+                {/* Input para confirmar contraseña */}
+                <div className="relative w-full lg:w-9/10 mb-6">
+                  <input
+                    type="password"
+                    name="confirmPassword"
+                    id="confirmPassword"
+                    placeholder=" "
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                    required
+                    className="peer w-full px-3 py-2 border rounded border-black focus:outline-none focus:ring-2 focus:ring-black"
+                    autoComplete="new-password"
+                  />
+                  <label
+                    htmlFor="confirmPassword"
+                    className="absolute left-3 top-2 text-gray-500 text-sm transition-all bg-white px-1 peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-focus:top-2 peer-focus:text-sm peer-focus:text-black"
+                    style={{ zIndex: 1 }}
+                  >
+                    Repetir contraseña
+                  </label>
+                </div>
                 {formData.password &&
                   formData.confirmPassword &&
                   formData.password !== formData.confirmPassword && (
@@ -180,20 +283,44 @@ export default function RegisterPage() {
               </form>
             </div>
 
-            {/* Placeholder para futuras páginas */}
+            {/* Página 2*/}
             <div className="w-full flex-shrink-0">
               <h3 className="text-lg mb-4 text-center">¡Cuéntanos más!</h3>
               <form className="space-y-4 flex flex-col items-center">
-                <input
-                  type="date"
-                  max={new Date().toISOString().split("T")[0]} // Limita la fecha a hoy
-                  name="birthdate"
-                  placeholder="Fecha de nacimiento"
-                  value={formData.birthdate || ""}
-                  onChange={handleChange}
-                  required
-                  className="w-full lg:w-9/10 px-3 py-2 border rounded mb-8 border-black"
-                />
+                {/* Selector de fecha */}
+                <div className="relative w-full lg:w-9/10 mb-6">
+                  <input
+                    type="date"
+                    name="birthdate"
+                    id="birthdate"
+                    placeholder=" "
+                    max={new Date().toISOString().split("T")[0]} // Limita la fecha a hoy
+                    value={formData.birthdate || ""}
+                    onChange={handleChange}
+                    required
+                    className="peer w-full px-3 py-2 border rounded border-black focus:outline-none focus:ring-2 focus:ring-black"
+                  />
+                  <label
+                    htmlFor="birthdate"
+                    className="absolute left-3 top-2 text-gray-500 text-sm transition-all bg-white px-1 peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-focus:top-2 peer-focus:text-sm peer-focus:text-black"
+                    style={{ zIndex: 1 }}
+                  >
+                    Fecha de nacimiento
+                  </label>
+                </div>
+                {/* Selector de país */}
+                <p
+                  id="country-label"
+                  className="relative z-10 -left-30 p-1 bg-white -mb-7 inline-block"
+                  style={{
+                    display: "none",
+                    top: "-15px",
+                    fontSize: "0.8rem",
+                    zIndex: 1,
+                  }}
+                >
+                  Selecciona tu país
+                </p>
                 <Select
                   options={countryOptions}
                   value={
@@ -202,11 +329,25 @@ export default function RegisterPage() {
                     ) || null
                   }
                   isClearable
-                  onChange={handleCountryChange}
+                  onChange={(e) => {
+                    handleCountryChange(e);
+                    const selectedOption = countryOptions.find(
+                      (option) => option.value === formData.country
+                    );
+                    if (selectedOption) {
+                      document.getElementById("country-label")!.style.display =
+                        "none";
+                    } else {
+                      document.getElementById("country-label")!.style.display =
+                        "block";
+                    }
+                  }}
                   placeholder={"Selecciona tu país"}
-                  className={"w-full lg:w-9/10 mb-8"}
+                  className={"w-full lg:w-9/10 mb-6"}
                   menuPlacement="bottom"
-                  menuPortalTarget={document.body}
+                  menuPortalTarget={
+                    typeof window !== "undefined" ? document.body : null
+                  }
                   styles={{
                     control: (base, state) => ({
                       ...base,
@@ -215,80 +356,188 @@ export default function RegisterPage() {
                       "&:hover": {
                         borderColor: "black", // Color del borde al pasar el mouse
                       },
+                      height: "50px", // Altura del control
                     }),
                     menuPortal: (base) => ({
                       ...base,
                       zIndex: 9999, // Asegúrate de que el menú esté por encima de otros elementos
                     }),
+                    option: (base, state) => ({
+                      ...base,
+                      backgroundColor: state.isSelected
+                        ? "#000000"
+                        : state.isFocused
+                        ? "#E6E6E6"
+                        : "white", // Cambia el color de fondo
+                      color: state.isSelected ? "white" : "black", // Cambia el color del texto
+                      "&:hover": {
+                        backgroundColor: "#E6E6E6", // Color al pasar el mouse
+                        color: "black",
+                      },
+                    }),
                   }}
                 />
-                <input
-                  type="text"
-                  name="city"
-                  placeholder="Ciudad"
-                  value={formData.city || ""}
-                  onChange={handleChange}
-                  required
-                  className="w-full lg:w-9/10 px-3 py-2 border rounded mb-8 border-black"
-                />
-                <input
-                  type="text"
-                  name="postalCode"
-                  placeholder="Código postal"
-                  value={formData.postalCode || ""}
-                  onChange={handleChange}
-                  required
-                  className="w-full lg:w-9/10 px-3 py-2 border rounded mb-8 border-black"
-                />
-                <div className="flex items-center gap-2 mb-8">
-                  <Select
-                    options={dialCodeOptions}
-                    formatOptionLabel={formatDialCodeLabel}
-                    // Si quieres que el valor almacenado sea solo el prefijo numérico
-                    getOptionValue={(opt) => opt.value}
-                    isClearable
-                    onChange={(opt: any) => {
-                      setFormData({
-                        ...formData,
-                        phonePrefix: opt?.value || "", // Actualiza solo el prefijo
-                        phone: "", // Limpia el número si se cambia el prefijo
-                      });
-                    }}
-                    placeholder="Prefijo"
-                    className="w-full lg:w-1/2 mb-8"
-                    menuPlacement="top"
-                    styles={{
-                      control: (base, state) => ({
-                        ...base,
-                        borderColor: state.isFocused ? "black" : "black",
-                        boxShadow: state.isFocused ? "0 0 0 0px black" : "none",
-                        "&:hover": { borderColor: "black" },
-                      }),
-                      menu: (base) => ({ ...base, width: "200px" }),
-                    }}
-                  />
-
+                {/* Input para Ciudad */}
+                <div className="relative w-full lg:w-9/10 mb-6">
                   <input
-                    type="tel"
-                    name="phone"
-                    placeholder="Teléfono"
-                    value={`${formData.phonePrefix} ${formData.phone}`.trim()} // Concatena el prefijo y el número
-                    onChange={(e) => {
-                      const prefix = formData.phonePrefix;
-                      const inputValue = e.target.value;
+                    type="text"
+                    name="city"
+                    id="city"
+                    placeholder=" "
+                    value={formData.city || ""}
+                    onChange={handleChange}
+                    required
+                    className="peer w-full px-3 py-2 border rounded border-black focus:outline-none focus:ring-2 focus:ring-black"
+                  />
+                  <label
+                    htmlFor="city"
+                    className="absolute left-3 top-2 text-gray-500 text-sm transition-all bg-white px-1 peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-focus:top-2 peer-focus:text-sm peer-focus:text-black"
+                    style={{ zIndex: 1 }}
+                  >
+                    Ciudad
+                  </label>
+                </div>
+                {/* Input para género */}
 
-                      // Asegúrate de que el prefijo no sea editable
-                      if (inputValue.startsWith(prefix)) {
+                <p
+                  id="genre-label"
+                  className="relative z-10 -left-27 p-1 bg-white -mb-7"
+                  style={{
+                    display: "none",
+                    top: "-15px",
+                    fontSize: "0.8rem",
+                  }}
+                >
+                  Selecciona tu género
+                </p>
+                <Select
+                  options={[
+                    { value: "male", label: "Masculino" },
+                    { value: "female", label: "Femenino" },
+                    { value: "non_binary", label: "No binario" },
+                    { value: "other", label: "Otro" },
+                    {
+                      value: "prefer_not_to_say",
+                      label: "Prefiero no decirlo",
+                    },
+                  ]}
+                  value={
+                    formData.genre
+                      ? {
+                          value: formData.genre,
+                          label: getGenreLabel(formData.genre),
+                        }
+                      : null
+                  }
+                  onChange={(selectedOption: any) => {
+                    setFormData({
+                      ...formData,
+                      genre: selectedOption?.value || "",
+                    });
+                    if (selectedOption) {
+                      document.getElementById("genre-label")!.style.display =
+                        "block";
+                    } else {
+                      document.getElementById("genre-label")!.style.display =
+                        "none";
+                    }
+                  }}
+                  placeholder="Selecciona tu género"
+                  className="w-full lg:w-9/10 mb-6"
+                  menuPlacement="top"
+                  isClearable
+                  styles={{
+                    control: (base, state) => ({
+                      ...base,
+                      borderColor: state.isFocused ? "black" : "black",
+                      boxShadow: state.isFocused ? "0 0 0 0px black" : "none",
+                      "&:hover": { borderColor: "black" },
+                      height: "50px",
+                    }),
+                    menuPortal: (base) => ({
+                      ...base,
+                      zIndex: 9999,
+                    }),
+                    option: (base, state) => ({
+                      ...base,
+                      backgroundColor: state.isSelected
+                        ? "#000000"
+                        : state.isFocused
+                        ? "#E6E6E6"
+                        : "white", // Cambia el color de fondo
+                      color: state.isSelected ? "white" : "black", // Cambia el color del texto
+                      "&:hover": {
+                        backgroundColor: "#E6E6E6", // Color al pasar el mouse
+                        color: "black",
+                      },
+                    }),
+                  }}
+                />
+
+                <div className="flex w-full lg:w-9/10 mb-6 gap-2">
+                  {/* Selector de Prefijo */}
+                  <div className="w-3/9">
+                    <Select
+                      options={dialCodeOptions}
+                      formatOptionLabel={formatDialCodeLabel}
+                      getOptionValue={(opt) => opt.value}
+                      isClearable
+                      onChange={(opt: any) => {
                         setFormData({
                           ...formData,
-                          phone: inputValue.slice(prefix.length).trim(),
+                          phonePrefix: opt?.value || "", // Actualiza solo el prefijo
+                          phone: "", // Limpia el número si se cambia el prefijo
                         });
-                      }
-                    }}
-                    required
-                    disabled={!formData.phonePrefix} // Deshabilita el campo si no hay prefijo seleccionado
-                    className="w-full px-8 py-1.5 border rounded mb-8 border-black"
-                  />
+                      }}
+                      placeholder="Prefijo"
+                      className="peer"
+                      menuPlacement="top"
+                      styles={{
+                        control: (base, state) => ({
+                          ...base,
+                          borderColor: state.isFocused ? "black" : "black",
+                          boxShadow: state.isFocused
+                            ? "0 0 0 0px black"
+                            : "none",
+                          "&:hover": { borderColor: "black" },
+                          height: "50px",
+                        }),
+                        menu: (base) => ({ ...base, width: "200px" }),
+                      }}
+                    />
+                  </div>
+
+                  {/* Input para Número de Teléfono */}
+                  <div className="w-6/9 relative mb-6">
+                    <input
+                      type="tel"
+                      name="phone"
+                      id="phone"
+                      placeholder=" "
+                      value={`${formData.phonePrefix} ${formData.phone}`.trim()}
+                      onChange={(e) => {
+                        const prefix = formData.phonePrefix;
+                        const inputValue = e.target.value;
+
+                        if (inputValue.startsWith(prefix)) {
+                          setFormData({
+                            ...formData,
+                            phone: inputValue.slice(prefix.length).trim(),
+                          });
+                        }
+                      }}
+                      required
+                      disabled={!formData.phonePrefix} // Deshabilita el campo si no hay prefijo seleccionado
+                      className="peer w-full px-3 py-2 border rounded border-black focus:outline-none focus:ring-2 focus:ring-black"
+                    />
+                    <label
+                      htmlFor="phone"
+                      className="absolute left-3 top-2 text-gray-500 text-sm transition-all bg-white px-1 peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-focus:top-2 peer-focus:text-sm peer-focus:text-black"
+                      style={{ zIndex: 1 }}
+                    >
+                      Teléfono
+                    </label>
+                  </div>
                 </div>
               </form>
             </div>
@@ -301,7 +550,7 @@ export default function RegisterPage() {
         </div>
 
         {/* Indicadores de página */}
-        <div className="flex justify-center mt-4 space-x-2">
+        <div className="flex justify-center -mt-8 space-x-2">
           {[1, 2, 3].map((page) => (
             <div
               key={page}
