@@ -331,15 +331,12 @@ export default function RegisterPage() {
                   isClearable
                   onChange={(e) => {
                     handleCountryChange(e);
-                    const selectedOption = countryOptions.find(
-                      (option) => option.value === formData.country
-                    );
-                    if (selectedOption) {
-                      document.getElementById("country-label")!.style.display =
-                        "none";
-                    } else {
+                    if (e) {
                       document.getElementById("country-label")!.style.display =
                         "block";
+                    } else {
+                      document.getElementById("country-label")!.style.display =
+                        "none";
                     }
                   }}
                   placeholder={"Selecciona tu país"}
@@ -488,6 +485,7 @@ export default function RegisterPage() {
                           phonePrefix: opt?.value || "", // Actualiza solo el prefijo
                           phone: "", // Limpia el número si se cambia el prefijo
                         });
+                        console.log(opt);
                       }}
                       placeholder="Prefijo"
                       className="peer"
@@ -502,7 +500,11 @@ export default function RegisterPage() {
                           "&:hover": { borderColor: "black" },
                           height: "50px",
                         }),
-                        menu: (base) => ({ ...base, width: "200px" }),
+                        menu: (base) => ({
+                          ...base,
+                          width: "200px",
+                          zIndex: 9999,
+                        }),
                       }}
                     />
                   </div>
