@@ -126,7 +126,7 @@ export default function RegisterPage() {
           boxShadow: "0 4px 50px 20px rgba(0, 0, 0, 0.5)",
         }}
       >
-        <h2 className="text-2xl sm:text-xl mb-4 text-center font-bold">
+        <h2 className="text-xl mb-4 text-center font-bold">
           ¡Bienvenido a Apolo!
         </h2>
 
@@ -141,7 +141,7 @@ export default function RegisterPage() {
               <h3 className="text-lg mb-4 text-center">Háblanos de ti</h3>
               <form className="space-y-4 flex flex-col items-center" action="">
                 {/* Input para nombre completo */}
-                <div className="relative w-full lg:w-9/10 mb-6">
+                <div className="relative w-9/10 mb-6">
                   <style>
                     {`.relative {
                       position: relative;
@@ -192,7 +192,7 @@ export default function RegisterPage() {
                   </label>
                 </div>
                 {/* Input para nombre de usuario */}
-                <div className="relative w-full lg:w-9/10 mb-6">
+                <div className="relative w-9/10 mb-6">
                   <input
                     type="text"
                     name="username"
@@ -212,7 +212,7 @@ export default function RegisterPage() {
                   </label>
                 </div>
                 {/* Input para el correo electrónico */}
-                <div className="relative w-full lg:w-9/10 mb-6">
+                <div className="relative w-9/10 mb-6">
                   <input
                     type="email"
                     name="email"
@@ -232,7 +232,7 @@ export default function RegisterPage() {
                   </label>
                 </div>
                 {/* Input para contraseña */}
-                <div className="relative w-full lg:w-9/10 mb-6">
+                <div className="relative w-9/10 mb-6">
                   <input
                     type="password"
                     name="password"
@@ -253,7 +253,7 @@ export default function RegisterPage() {
                   </label>
                 </div>
                 {/* Input para confirmar contraseña */}
-                <div className="relative w-full lg:w-9/10 mb-6">
+                <div className="relative w-9/10 mb-6">
                   <input
                     type="password"
                     name="confirmPassword"
@@ -288,7 +288,7 @@ export default function RegisterPage() {
               <h3 className="text-lg mb-4 text-center">¡Cuéntanos más!</h3>
               <form className="space-y-4 flex flex-col items-center">
                 {/* Selector de fecha */}
-                <div className="relative w-full lg:w-9/10 mb-6">
+                <div className="relative w-9/10 mb-6">
                   <input
                     type="date"
                     name="birthdate"
@@ -309,73 +309,76 @@ export default function RegisterPage() {
                   </label>
                 </div>
                 {/* Selector de país */}
-                <p
-                  id="country-label"
-                  className="relative z-10 -left-30 p-1 bg-white -mb-7 inline-block"
-                  style={{
-                    display: "none",
-                    top: "-15px",
-                    fontSize: "0.8rem",
-                    zIndex: 1,
-                  }}
-                >
-                  Selecciona tu país
-                </p>
-                <Select
-                  options={countryOptions}
-                  value={
-                    countryOptions.find(
-                      (option) => option.value === formData.country
-                    ) || null
-                  }
-                  isClearable
-                  onChange={(e) => {
-                    handleCountryChange(e);
-                    if (e) {
-                      document.getElementById("country-label")!.style.display =
-                        "block";
-                    } else {
-                      document.getElementById("country-label")!.style.display =
-                        "none";
+                <div className="relative w-9/10 mb-6">
+                  <p
+                    id="country-label"
+                    className="absolute z-10 translate-x-3 p-1 bg-white -mb-7"
+                    style={{
+                      display: "none",
+                      top: "-15px",
+                      fontSize: "0.8rem",
+                      zIndex: 1,
+                    }}
+                  >
+                    Selecciona tu país (opcional)
+                  </p>
+                  <Select
+                    options={countryOptions}
+                    value={
+                      countryOptions.find(
+                        (option) => option.value === formData.country
+                      ) || null
                     }
-                  }}
-                  placeholder={"Selecciona tu país"}
-                  className={"w-full lg:w-9/10 mb-6"}
-                  menuPlacement="bottom"
-                  menuPortalTarget={
-                    typeof window !== "undefined" ? document.body : null
-                  }
-                  styles={{
-                    control: (base, state) => ({
-                      ...base,
-                      borderColor: state.isFocused ? "black" : "black", // Color del borde
-                      boxShadow: state.isFocused ? "0 0 0 0px black" : "none", // Sombra al enfocar
-                      "&:hover": {
-                        borderColor: "black", // Color del borde al pasar el mouse
-                      },
-                      height: "50px", // Altura del control
-                    }),
-                    menuPortal: (base) => ({
-                      ...base,
-                      zIndex: 9999, // Asegúrate de que el menú esté por encima de otros elementos
-                    }),
-                    option: (base, state) => ({
-                      ...base,
-                      backgroundColor: state.isSelected
-                        ? "#000000"
-                        : state.isFocused
-                        ? "#E6E6E6"
-                        : "white", // Cambia el color de fondo
-                      color: state.isSelected ? "white" : "black", // Cambia el color del texto
-                      "&:hover": {
-                        backgroundColor: "#E6E6E6", // Color al pasar el mouse
-                        color: "black",
-                      },
-                    }),
-                  }}
-                />
+                    isClearable
+                    onChange={(e) => {
+                      handleCountryChange(e);
+                      if (e) {
+                        document.getElementById(
+                          "country-label"
+                        )!.style.display = "block";
+                      } else {
+                        document.getElementById(
+                          "country-label"
+                        )!.style.display = "none";
+                      }
+                    }}
+                    placeholder={"Selecciona tu país (opcional)"}
+                    menuPlacement="bottom"
+                    menuPortalTarget={
+                      typeof window !== "undefined" ? document.body : null
+                    }
+                    styles={{
+                      control: (base, state) => ({
+                        ...base,
+                        borderColor: state.isFocused ? "black" : "black", // Color del borde
+                        boxShadow: state.isFocused ? "0 0 0 0px black" : "none", // Sombra al enfocar
+                        "&:hover": {
+                          borderColor: "black", // Color del borde al pasar el mouse
+                        },
+                        height: "50px", // Altura del control
+                      }),
+                      menuPortal: (base) => ({
+                        ...base,
+                        zIndex: 9999, // Asegúrate de que el menú esté por encima de otros elementos
+                      }),
+                      option: (base, state) => ({
+                        ...base,
+                        backgroundColor: state.isSelected
+                          ? "#000000"
+                          : state.isFocused
+                          ? "#E6E6E6"
+                          : "white", // Cambia el color de fondo
+                        color: state.isSelected ? "white" : "black", // Cambia el color del texto
+                        "&:hover": {
+                          backgroundColor: "#E6E6E6", // Color al pasar el mouse
+                          color: "black",
+                        },
+                      }),
+                    }}
+                  />
+                </div>
                 {/* Input para Ciudad */}
-                <div className="relative w-full lg:w-9/10 mb-6">
+                <div className="relative w-9/10 mb-6">
                   <input
                     type="text"
                     name="city"
@@ -388,90 +391,90 @@ export default function RegisterPage() {
                   />
                   <label
                     htmlFor="city"
-                    className="absolute left-3 top-2 text-gray-500 text-sm transition-all bg-white px-1 peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-focus:top-2 peer-focus:text-sm peer-focus:text-black"
+                    className="absolute left-3 top-2 text-gray-500 text-sm transition-all bg-white px-1 peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500 peer-focus:top-2 peer-focus:text-sm peer-focus:text-black"
                     style={{ zIndex: 1 }}
                   >
-                    Ciudad
+                    Ciudad (opcional)
                   </label>
                 </div>
                 {/* Input para género */}
-
-                <p
-                  id="genre-label"
-                  className="relative z-10 -left-27 p-1 bg-white -mb-7"
-                  style={{
-                    display: "none",
-                    top: "-15px",
-                    fontSize: "0.8rem",
-                  }}
-                >
-                  Selecciona tu género
-                </p>
-                <Select
-                  options={[
-                    { value: "male", label: "Masculino" },
-                    { value: "female", label: "Femenino" },
-                    { value: "non_binary", label: "No binario" },
-                    { value: "other", label: "Otro" },
-                    {
-                      value: "prefer_not_to_say",
-                      label: "Prefiero no decirlo",
-                    },
-                  ]}
-                  value={
-                    formData.genre
-                      ? {
-                          value: formData.genre,
-                          label: getGenreLabel(formData.genre),
-                        }
-                      : null
-                  }
-                  onChange={(selectedOption: any) => {
-                    setFormData({
-                      ...formData,
-                      genre: selectedOption?.value || "",
-                    });
-                    if (selectedOption) {
-                      document.getElementById("genre-label")!.style.display =
-                        "block";
-                    } else {
-                      document.getElementById("genre-label")!.style.display =
-                        "none";
-                    }
-                  }}
-                  placeholder="Selecciona tu género"
-                  className="w-full lg:w-9/10 mb-6"
-                  menuPlacement="top"
-                  isClearable
-                  styles={{
-                    control: (base, state) => ({
-                      ...base,
-                      borderColor: state.isFocused ? "black" : "black",
-                      boxShadow: state.isFocused ? "0 0 0 0px black" : "none",
-                      "&:hover": { borderColor: "black" },
-                      height: "50px",
-                    }),
-                    menuPortal: (base) => ({
-                      ...base,
-                      zIndex: 9999,
-                    }),
-                    option: (base, state) => ({
-                      ...base,
-                      backgroundColor: state.isSelected
-                        ? "#000000"
-                        : state.isFocused
-                        ? "#E6E6E6"
-                        : "white", // Cambia el color de fondo
-                      color: state.isSelected ? "white" : "black", // Cambia el color del texto
-                      "&:hover": {
-                        backgroundColor: "#E6E6E6", // Color al pasar el mouse
-                        color: "black",
+                <div className="relative w-9/10 mb-6">
+                  <p
+                    id="genre-label"
+                    className="absolute z-10 translate-x-3 p-1 bg-white -mb-7"
+                    style={{
+                      display: "none",
+                      top: "-15px",
+                      fontSize: "0.8rem",
+                    }}
+                  >
+                    Selecciona tu género
+                  </p>
+                  <Select
+                    options={[
+                      { value: "male", label: "Masculino" },
+                      { value: "female", label: "Femenino" },
+                      { value: "non_binary", label: "No binario" },
+                      { value: "other", label: "Otro" },
+                      {
+                        value: "prefer_not_to_say",
+                        label: "Prefiero no decirlo",
                       },
-                    }),
-                  }}
-                />
+                    ]}
+                    value={
+                      formData.genre
+                        ? {
+                            value: formData.genre,
+                            label: getGenreLabel(formData.genre),
+                          }
+                        : null
+                    }
+                    onChange={(selectedOption: any) => {
+                      setFormData({
+                        ...formData,
+                        genre: selectedOption?.value || "",
+                      });
+                      if (selectedOption) {
+                        document.getElementById("genre-label")!.style.display =
+                          "block";
+                      } else {
+                        document.getElementById("genre-label")!.style.display =
+                          "none";
+                      }
+                    }}
+                    placeholder="Selecciona tu género"
+                    menuPlacement="top"
+                    isClearable
+                    styles={{
+                      control: (base, state) => ({
+                        ...base,
+                        borderColor: state.isFocused ? "black" : "black",
+                        boxShadow: state.isFocused ? "0 0 0 0px black" : "none",
+                        "&:hover": { borderColor: "black" },
+                        height: "50px",
+                      }),
+                      menuPortal: (base) => ({
+                        ...base,
+                        zIndex: 9999,
+                      }),
+                      option: (base, state) => ({
+                        ...base,
+                        backgroundColor: state.isSelected
+                          ? "#000000"
+                          : state.isFocused
+                          ? "#E6E6E6"
+                          : "white", // Cambia el color de fondo
+                        color: state.isSelected ? "white" : "black", // Cambia el color del texto
+                        "&:hover": {
+                          backgroundColor: "#E6E6E6", // Color al pasar el mouse
+                          color: "black",
+                        },
+                      }),
+                    }}
+                  />
+                </div>
 
-                <div className="flex w-full lg:w-9/10 mb-6 gap-2">
+                <div className="flex w-9/10 mb-6 gap-2">
                   {/* Selector de Prefijo */}
                   <div className="w-3/9">
                     <Select
@@ -505,6 +508,10 @@ export default function RegisterPage() {
                           width: "200px",
                           zIndex: 9999,
                         }),
+                        placeholder: (base) => ({
+                          ...base,
+                          fontSize: "13px",
+                        }),
                       }}
                     />
                   </div>
@@ -537,7 +544,7 @@ export default function RegisterPage() {
                       className="absolute left-3 top-2 text-gray-500 text-sm transition-all bg-white px-1 peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-focus:top-2 peer-focus:text-sm peer-focus:text-black"
                       style={{ zIndex: 1 }}
                     >
-                      Teléfono
+                      Teléfono (opcional)
                     </label>
                   </div>
                 </div>
