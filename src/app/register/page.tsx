@@ -181,7 +181,7 @@ export default function RegisterPage() {
                     value={formData.fullname}
                     onChange={handleChange}
                     required
-                    className="peer w-full px-3 py-2 border rounded border-black focus:outline-none focus:ring-2 focus:ring-black"
+                    className="peer w-full px-3 py-2 border rounded border-black focus:outline-none"
                   />
                   <label
                     htmlFor="fullname"
@@ -201,7 +201,7 @@ export default function RegisterPage() {
                     value={formData.username}
                     onChange={handleChange}
                     required
-                    className="peer w-full px-3 py-2 border rounded border-black focus:outline-none focus:ring-2 focus:ring-black"
+                    className="peer w-full px-3 py-2 border rounded border-black focus:outline-none"
                   />
                   <label
                     htmlFor="username"
@@ -221,7 +221,7 @@ export default function RegisterPage() {
                     value={formData.email}
                     onChange={handleChange}
                     required
-                    className="peer w-full px-3 py-2 border rounded border-black focus:outline-none focus:ring-2 focus:ring-black"
+                    className="peer w-full px-3 py-2 border rounded border-black focus:outline-none"
                   />
                   <label
                     htmlFor="email"
@@ -241,7 +241,7 @@ export default function RegisterPage() {
                     value={formData.password}
                     onChange={handleChange}
                     required
-                    className="peer w-full px-3 py-2 border rounded border-black focus:outline-none focus:ring-2 focus:ring-black"
+                    className="peer w-full px-3 py-2 border rounded border-black focus:outline-none"
                     autoComplete="new-password"
                   />
                   <label
@@ -262,7 +262,7 @@ export default function RegisterPage() {
                     value={formData.confirmPassword}
                     onChange={handleChange}
                     required
-                    className="peer w-full px-3 py-2 border rounded border-black focus:outline-none focus:ring-2 focus:ring-black"
+                    className="peer w-full px-3 py-2 border rounded border-black focus:outline-none"
                     autoComplete="new-password"
                   />
                   <label
@@ -298,7 +298,7 @@ export default function RegisterPage() {
                     value={formData.birthdate || ""}
                     onChange={handleChange}
                     required
-                    className="peer w-full px-3 py-2 border rounded border-black focus:outline-none focus:ring-2 focus:ring-black"
+                    className="peer w-full px-3 py-2 border rounded border-black focus:outline-none"
                   />
                   <label
                     htmlFor="birthdate"
@@ -351,6 +351,7 @@ export default function RegisterPage() {
                       control: (base, state) => ({
                         ...base,
                         borderColor: state.isFocused ? "black" : "black", // Color del borde
+                        fontSize: "15px", // Tamaño de la fuente
                         boxShadow: state.isFocused ? "0 0 0 0px black" : "none", // Sombra al enfocar
                         "&:hover": {
                           borderColor: "black", // Color del borde al pasar el mouse
@@ -374,6 +375,10 @@ export default function RegisterPage() {
                           color: "black",
                         },
                       }),
+                      placeholder: (base) => ({
+                        ...base,
+                        color: "#aaa",
+                      }),
                     }}
                   />
                 </div>
@@ -387,7 +392,7 @@ export default function RegisterPage() {
                     value={formData.city || ""}
                     onChange={handleChange}
                     required
-                    className="peer w-full px-3 py-2 border rounded border-black focus:outline-none focus:ring-2 focus:ring-black"
+                    className="peer w-full px-3 py-2 border rounded border-black focus:outline-none"
                   />
                   <label
                     htmlFor="city"
@@ -470,6 +475,10 @@ export default function RegisterPage() {
                           color: "black",
                         },
                       }),
+                      placeholder: (base) => ({
+                        ...base,
+                        color: "#aaa",
+                      }),
                     }}
                   />
                 </div>
@@ -537,7 +546,7 @@ export default function RegisterPage() {
                       }}
                       required
                       disabled={!formData.phonePrefix} // Deshabilita el campo si no hay prefijo seleccionado
-                      className="peer w-full px-3 py-2 border rounded border-black focus:outline-none focus:ring-2 focus:ring-black"
+                      className="peer w-full px-3 py-2 border rounded border-black focus:outline-none"
                     />
                     <label
                       htmlFor="phone"
