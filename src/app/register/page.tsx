@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { countries } from "@/data/countries";
 import Flag from "react-world-flags";
 import Select from "react-select";
+import Image from "next/image";
 
 export default function RegisterPage() {
   const [step, setStep] = useState(1); // Controla el paso actual del slide
@@ -21,6 +22,12 @@ export default function RegisterPage() {
     phone: "",
     phonePrefix: "",
   });
+  const DEFAULT_AVATAR_URL =
+    "https://res.cloudinary.com/drolilqxl/image/upload/v1747395444/blank-profile-picture-973460_1280_x0gfs4.png";
+  const [profileImage, setProfileImage] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(
+    DEFAULT_AVATAR_URL
+  );
 
   const handleNext = () => {
     if (step < 3) setStep(step + 1);
@@ -97,6 +104,29 @@ export default function RegisterPage() {
       default:
         return "";
     }
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setProfileImage(file);
+      setImagePreview(URL.createObjectURL(file));
+    }
+  };
+
+  const handleUpload = async () => {
+    if (!profileImage) return;
+
+    const formData = new FormData();
+    formData.append("file", profileImage);
+
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/upload`, {
+      method: "POST",
+      body: formData,
+    });
+
+    const data = await res.json();
+    console.log("Uploaded image URL:", data.url);
   };
 
   return (
@@ -561,8 +591,37 @@ export default function RegisterPage() {
             </div>
 
             <div className="w-full flex-shrink-0">
-              <h3 className="text-lg mb-4">Página 3 (Placeholder)</h3>
-              <p>Contenido de la tercera página.</p>
+              <h3 className="text-lg mb-4 text-center">¡Estamos terminando!</h3>
+              <div className="flex flex-col items-center">
+                <h3 className="text-lg">Sube tu foto de perfil</h3>
+                <p className="text-sm mb-4">(¡Aunque no es obligatorio!)</p>
+                {imagePreview && (
+                  <Image
+                    width={120}
+                    height={120}
+                    src={imagePreview}
+                    alt="Preview"
+                    className="mb-8 rounded-full object-cover border-2 border-gray-300"
+                    style={{
+                      width: "120px",
+                      height: "120px",
+                    }}
+                  />
+                )}
+                <input
+                  type="file"
+                  className="border border-gray-300 rounded p-2 relative w-9/10"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                />
+
+                <Button
+                  onClick={handleUpload}
+                  className="mt-4 text-white px-4 py-2 rounded"
+                >
+                  Subir imagen
+                </Button>
+              </div>
             </div>
           </div>
         </div>
