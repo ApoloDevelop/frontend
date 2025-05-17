@@ -1,13 +1,21 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { countries } from "@/data/countries";
 import Flag from "react-world-flags";
 import Select from "react-select";
 import Image from "next/image";
+import Cropper from "react-easy-crop";
+import getCroppedImg from "@/utils/cropImage";
+import Modal from "react-modal";
 
 export default function RegisterPage() {
+  // Constants definition
+  const DEFAULT_AVATAR_URL =
+    "https://res.cloudinary.com/drolilqxl/image/upload/v1747395444/blank-profile-picture-973460_1280_x0gfs4.png";
+
+  // State variables
   const [step, setStep] = useState(1); // Controla el paso actual del slide
   const [formData, setFormData] = useState({
     fullname: "",
@@ -22,36 +30,20 @@ export default function RegisterPage() {
     phone: "",
     phonePrefix: "",
   });
-  const DEFAULT_AVATAR_URL =
-    "https://res.cloudinary.com/drolilqxl/image/upload/v1747395444/blank-profile-picture-973460_1280_x0gfs4.png";
   const [profileImage, setProfileImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(
     DEFAULT_AVATAR_URL
   );
+  const [originalImagePreview, setOriginalImagePreview] = useState<
+    string | null
+  >(null);
+  const [showCropper, setShowCropper] = useState(false);
+  const [crop, setCrop] = useState({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState(1);
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleNext = () => {
-    if (step < 3) setStep(step + 1);
-  };
-
-  const handlePrev = () => {
-    if (step > 1) setStep(step - 1);
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  // const handleCountryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-  //   setFormData({ ...formData, country: e.target.value });
-  // };
-
-  const handleCountryChange = (selectedOption: any) => {
-    setFormData({
-      ...formData,
-      country: selectedOption?.value || "",
-    });
-  };
-
+  //Options for select
   const countryOptions = countries
     .sort((a, b) =>
       a.translations.spa.common.localeCompare(b.translations.spa.common, "es")
@@ -73,6 +65,7 @@ export default function RegisterPage() {
     flagCode: country.cca2,
   }));
 
+  //Labels
   const formatDialCodeLabel = (
     { label, flagCode }: any,
     { context }: { context: "menu" | "value" }
@@ -106,17 +99,39 @@ export default function RegisterPage() {
     }
   };
 
+  // Handlers for navigation and form data
+  const handleNext = () => {
+    if (step < 3) setStep(step + 1);
+  };
+
+  const handlePrev = () => {
+    if (step > 1) setStep(step - 1);
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleCountryChange = (selectedOption: any) => {
+    setFormData({
+      ...formData,
+      country: selectedOption?.value || "",
+    });
+  };
+
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      const url = URL.createObjectURL(file);
       setProfileImage(file);
-      setImagePreview(URL.createObjectURL(file));
+      setOriginalImagePreview(url);
+      setImagePreview(url);
+      setShowCropper(true);
     }
   };
 
   const handleUpload = async () => {
     if (!profileImage) return;
-
     const formData = new FormData();
     formData.append("file", profileImage);
 
@@ -127,6 +142,20 @@ export default function RegisterPage() {
 
     const data = await res.json();
     console.log("Uploaded image URL:", data.url);
+  };
+
+  const onCropComplete = (croppedArea: any, croppedAreaPixels: any) => {
+    setCroppedAreaPixels(croppedAreaPixels);
+  };
+
+  const handleCropSave = async () => {
+    if (!originalImagePreview || !croppedAreaPixels) return;
+    const croppedImage = await getCroppedImg(
+      originalImagePreview,
+      croppedAreaPixels
+    );
+    setImagePreview(croppedImage);
+    setShowCropper(false);
   };
 
   return (
@@ -171,37 +200,37 @@ export default function RegisterPage() {
               <h3 className="text-lg mb-4 text-center">Háblanos de ti</h3>
               <form className="space-y-4 flex flex-col items-center" action="">
                 {/* Input para nombre completo */}
-                <div className="relative w-9/10 mb-6">
+                <div className="floating-label relative w-9/10 mb-6">
                   <style>
-                    {`.relative {
-                      position: relative;
-                    }
+                    {`.floating-label {
+                        position: relative;
+                      }
 
-                    input {
-                      padding: 12px 8px;
-                      border: 1px solid #000;
-                      border-radius: 4px;
-                      outline: none;
-                    }
+                      .floating-label input {
+                        padding: 12px 8px;
+                        border: 1px solid #000;
+                        border-radius: 4px;
+                        outline: none;
+                      }
 
-                    label {
-                      position: absolute;
-                      left: 12px;
-                      top: 70%;
-                      transform: translateY(-90%);
-                      color: #aaa;
-                      font-size: 16px;
-                      transition: all 0.2s ease-in-out;
-                      pointer-events: none;
-                    }
+                      .floating-label label {
+                        position: absolute;
+                        left: 12px;
+                        top: 70%;
+                        transform: translateY(-90%);
+                        color: #aaa;
+                        font-size: 16px;
+                        transition: all 0.2s ease-in-out;
+                        pointer-events: none;
+                      }
 
-                    input:focus + label,
-                    input:not(:placeholder-shown) + label {
-                      top: 8px;
-                      font-size: 12px;
-                      color: #000;
-                    }
-                  `}
+                      .floating-label input:focus + label,
+                      .floating-label input:not(:placeholder-shown) + label {
+                        top: 8px;
+                        font-size: 12px;
+                        color: #000;
+                      }
+                    `}
                   </style>
                   <input
                     type="text"
@@ -222,7 +251,7 @@ export default function RegisterPage() {
                   </label>
                 </div>
                 {/* Input para nombre de usuario */}
-                <div className="relative w-9/10 mb-6">
+                <div className="floating-label relative w-9/10 mb-6">
                   <input
                     type="text"
                     name="username"
@@ -242,7 +271,7 @@ export default function RegisterPage() {
                   </label>
                 </div>
                 {/* Input para el correo electrónico */}
-                <div className="relative w-9/10 mb-6">
+                <div className="floating-label relative w-9/10 mb-6">
                   <input
                     type="email"
                     name="email"
@@ -262,7 +291,7 @@ export default function RegisterPage() {
                   </label>
                 </div>
                 {/* Input para contraseña */}
-                <div className="relative w-9/10 mb-6">
+                <div className="floating-label relative w-9/10 mb-6">
                   <input
                     type="password"
                     name="password"
@@ -273,6 +302,7 @@ export default function RegisterPage() {
                     required
                     className="peer w-full px-3 py-2 border rounded border-black focus:outline-none"
                     autoComplete="new-password"
+                    title="La contraseña debe tener al menos 8 caracteres, una mayúscula y un número."
                   />
                   <label
                     htmlFor="password"
@@ -283,7 +313,7 @@ export default function RegisterPage() {
                   </label>
                 </div>
                 {/* Input para confirmar contraseña */}
-                <div className="relative w-9/10 mb-6">
+                <div className="floating-label relative w-9/10 mb-14">
                   <input
                     type="password"
                     name="confirmPassword"
@@ -318,7 +348,7 @@ export default function RegisterPage() {
               <h3 className="text-lg mb-4 text-center">¡Cuéntanos más!</h3>
               <form className="space-y-4 flex flex-col items-center">
                 {/* Selector de fecha */}
-                <div className="relative w-9/10 mb-6">
+                <div className="floating-label relative w-9/10 mb-6">
                   <input
                     type="date"
                     name="birthdate"
@@ -413,7 +443,7 @@ export default function RegisterPage() {
                   />
                 </div>
                 {/* Input para Ciudad */}
-                <div className="relative w-9/10 mb-6">
+                <div className="floating-label relative w-9/10 mb-6">
                   <input
                     type="text"
                     name="city"
@@ -556,7 +586,7 @@ export default function RegisterPage() {
                   </div>
 
                   {/* Input para Número de Teléfono */}
-                  <div className="w-6/9 relative mb-6">
+                  <div className="floating-label w-6/9 relative mb-6">
                     <input
                       type="tel"
                       name="phone"
@@ -593,31 +623,83 @@ export default function RegisterPage() {
             <div className="w-full flex-shrink-0">
               <h3 className="text-lg mb-4 text-center">¡Estamos terminando!</h3>
               <div className="flex flex-col items-center">
-                <h3 className="text-lg">Sube tu foto de perfil</h3>
+                <h3 className="text-xl font-bold">Sube tu foto de perfil</h3>
                 <p className="text-sm mb-4">(¡Aunque no es obligatorio!)</p>
                 {imagePreview && (
-                  <Image
-                    width={120}
-                    height={120}
-                    src={imagePreview}
-                    alt="Preview"
-                    className="mb-8 rounded-full object-cover border-2 border-gray-300"
-                    style={{
-                      width: "120px",
-                      height: "120px",
-                    }}
-                  />
+                  <div
+                    className="relative group mb-4"
+                    style={{ width: "120px", height: "120px" }}
+                  >
+                    <Image
+                      width={120}
+                      height={120}
+                      src={imagePreview}
+                      alt="Preview"
+                      className={
+                        `rounded-full object-cover w-[120px] h-[120px] transition-all duration-200` +
+                        (profileImage
+                          ? " border-2 border-gray-300 group hover:border-gray-400 hover:brightness-90 cursor-pointer"
+                          : "")
+                      }
+                      style={{
+                        width: "120px",
+                        height: "120px",
+                      }}
+                      onClick={() => {
+                        if (profileImage) setShowCropper(true);
+                      }}
+                      title={
+                        profileImage ? "Haz click para recortar la imagen" : ""
+                      }
+                    />
+                    {/* Overlay opcional para indicar acción */}
+                    {profileImage && (
+                      <div className="absolute inset-0 rounded-full bg-black/10 opacity-0 group-hover:opacity-100 flex items-center justify-center pointer-events-none transition-opacity duration-200 select-none">
+                        <span className="text-xs text-white font-semibold select-none">
+                          Recortar
+                        </span>
+                      </div>
+                    )}
+                  </div>
                 )}
-                <input
-                  type="file"
-                  className="border border-gray-300 rounded p-2 relative w-9/10"
-                  accept="image/*"
-                  onChange={handleImageChange}
-                />
+
+                <div className="relative w-1/2 mb-6 flex flex-col items-center">
+                  <label
+                    htmlFor="profile-image-input"
+                    className="block w-full cursor-pointer border border-gray-300 rounded px-4 py-2 text-center bg-white hover:bg-gray-100 transition mb-4 text-gray-400 text-sm"
+                  >
+                    {profileImage
+                      ? "¿No te convence? Selecciona otra"
+                      : "Seleccionar imagen"}
+                    <input
+                      id="profile-image-input"
+                      ref={fileInputRef}
+                      type="file"
+                      className="hidden"
+                      accept="image/*"
+                      onChange={handleImageChange}
+                    />
+                  </label>
+                  {profileImage && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => {
+                        setProfileImage(null);
+                        setImagePreview(DEFAULT_AVATAR_URL);
+                        if (fileInputRef.current)
+                          fileInputRef.current.value = "";
+                      }}
+                    >
+                      Quitar
+                    </Button>
+                  )}
+                </div>
 
                 <Button
                   onClick={handleUpload}
-                  className="mt-4 text-white px-4 py-2 rounded"
+                  className=" text-white px-4 py-2"
+                  disabled={!profileImage}
                 >
                   Subir imagen
                 </Button>
@@ -649,6 +731,35 @@ export default function RegisterPage() {
             Siguiente
           </Button>
         </div>
+        <Modal
+          isOpen={showCropper}
+          onRequestClose={() => setShowCropper(false)}
+          ariaHideApp={false}
+          style={{
+            content: {
+              maxWidth: 400,
+              margin: "auto",
+              borderRadius: 12,
+              padding: 24,
+            },
+          }}
+        >
+          <div style={{ position: "relative", width: "100%", height: 300 }}>
+            <Cropper
+              image={originalImagePreview!}
+              crop={crop}
+              zoom={zoom}
+              aspect={1}
+              onCropChange={setCrop}
+              onZoomChange={setZoom}
+              onCropComplete={onCropComplete}
+            />
+          </div>
+          <div className="flex flex-row gap-2 mt-4 justify-center">
+            <Button onClick={() => setShowCropper(false)}>Cancelar</Button>
+            <Button onClick={handleCropSave}>Recortar</Button>
+          </div>
+        </Modal>
       </div>
     </div>
   );
