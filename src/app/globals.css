@@ -114,6 +114,14 @@
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.551 0.027 264.364);
 }
+
+.modal-blur-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.15); /* opcional, para oscurecer un poco */
+  backdrop-filter: blur(15px);
+  z-index: 9998;
+}
 @keyframes fade-in {
   from {
     opacity: 0;
