@@ -315,6 +315,7 @@ export default function RegisterPage() {
       // Crear el cuerpo del formulario
       const body = {
         ...filteredFormData,
+        phone: formData.phonePrefix + formData.phone,
         profile_pic: profilePicUrl, // URL de la imagen subida
       };
 
