@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { countries } from "@/data/countries";
 import Flag from "react-world-flags";
@@ -9,11 +9,21 @@ import Image from "next/image";
 import Cropper from "react-easy-crop";
 import getCroppedImg from "@/utils/cropImage";
 import Modal from "react-modal";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Slider } from "@/components/ui/slider";
 
 export default function RegisterPage() {
   // Constants definition
   const DEFAULT_AVATAR_URL =
     "https://res.cloudinary.com/drolilqxl/image/upload/v1747395444/blank-profile-picture-973460_1280_x0gfs4.png";
+  const acceptedTypes = [
+    "image/jpeg",
+    "image/jpg",
+    "image/jfif",
+    "image/png",
+    "image/gif",
+    "image/webp",
+  ];
 
   // State variables
   const [step, setStep] = useState(1); // Controla el paso actual del slide
@@ -42,6 +52,8 @@ export default function RegisterPage() {
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [alertMsg, setAlertMsg] = useState<string | null>(null);
+  const [showAlert, setShowAlert] = useState(false);
 
   //Options for select
   const countryOptions = countries
@@ -122,6 +134,13 @@ export default function RegisterPage() {
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      if (!acceptedTypes.includes(file.type)) {
+        setAlertMsg(
+          ` Esta página acepta los siguientes tipos de archivo: JPEG, PNG, GIF, WEBP.  "${file.name}" no se registra como un tipo de archivo aceptado.`
+        );
+        if (fileInputRef.current) fileInputRef.current.value = "";
+        return;
+      }
       const url = URL.createObjectURL(file);
       setProfileImage(file);
       setOriginalImagePreview(url);
@@ -158,6 +177,18 @@ export default function RegisterPage() {
     setShowCropper(false);
   };
 
+  useEffect(() => {
+    if (alertMsg) {
+      setShowAlert(true);
+      const hideTimeout = setTimeout(() => setShowAlert(false), 4700); // Empieza fade out antes de desmontar
+      const removeTimeout = setTimeout(() => setAlertMsg(null), 5000); // Desmonta tras el fade
+      return () => {
+        clearTimeout(hideTimeout);
+        clearTimeout(removeTimeout);
+      };
+    }
+  }, [alertMsg]);
+
   return (
     <div
       className="min-h-screen flex items-center justify-center bg-gray-200 relative"
@@ -178,6 +209,22 @@ export default function RegisterPage() {
           backdropFilter: "blur(12px)",
         }}
       ></div>
+      {(alertMsg || showAlert) && (
+        <div
+          className={`fixed top-4 left-1/2 -translate-x-1/2 w-full max-w-md transition-opacity duration-300 ${
+            showAlert ? "opacity-100" : "opacity-0"
+          }`}
+          style={{ zIndex: 9999 }}
+        >
+          <Alert
+            variant="destructive"
+            className="bg-black text-red-500 relative"
+          >
+            <AlertTitle>Error de formato</AlertTitle>
+            <AlertDescription>{alertMsg}</AlertDescription>
+          </Alert>
+        </div>
+      )}
       <div
         className="p-3 rounded-xl w-9/10 lg:w-full max-w-md min-h-[500px] transform transition flex flex-col gap-y-px duration-300 opacity-95 animate-fade-in"
         style={{
@@ -186,7 +233,7 @@ export default function RegisterPage() {
         }}
       >
         <h2 className="text-xl mb-4 text-center font-bold">
-          ¡Bienvenido a Apolo!
+          ¡Bienvenid@ a Apolo!
         </h2>
 
         {/* Contenedor del slide */}
@@ -624,7 +671,7 @@ export default function RegisterPage() {
               <h3 className="text-lg mb-4 text-center">¡Estamos terminando!</h3>
               <div className="flex flex-col items-center">
                 <h3 className="text-xl font-bold">Sube tu foto de perfil</h3>
-                <p className="text-sm mb-4">(¡Aunque no es obligatorio!)</p>
+                <p className="text-sm mb-4">(Si quieres)</p>
                 {imagePreview && (
                   <div
                     className="relative group mb-4"
@@ -663,7 +710,7 @@ export default function RegisterPage() {
                   </div>
                 )}
 
-                <div className="relative w-1/2 mb-6 flex flex-col items-center">
+                <div className="relative w-3/4 mb-4 flex flex-row items-center">
                   <label
                     htmlFor="profile-image-input"
                     className="block w-full cursor-pointer border border-gray-300 rounded px-4 py-2 text-center bg-white hover:bg-gray-100 transition mb-4 text-gray-400 text-sm"
@@ -676,14 +723,18 @@ export default function RegisterPage() {
                       ref={fileInputRef}
                       type="file"
                       className="hidden"
-                      accept="image/*"
+                      accept={acceptedTypes.join(",")}
                       onChange={handleImageChange}
                     />
                   </label>
                   {profileImage && (
                     <Button
                       type="button"
-                      variant="outline"
+                      variant="hover"
+                      title="Eliminar imagen"
+                      aria-label="Remove image"
+                      className="mb-4 text-xl text-gray-400 hover:text-red-500 px-2 py-0 h-auto"
+                      style={{ marginBottom: "1rem" }}
                       onClick={() => {
                         setProfileImage(null);
                         setImagePreview(DEFAULT_AVATAR_URL);
@@ -691,7 +742,7 @@ export default function RegisterPage() {
                           fileInputRef.current.value = "";
                       }}
                     >
-                      Quitar
+                      x
                     </Button>
                   )}
                 </div>
@@ -737,10 +788,18 @@ export default function RegisterPage() {
           ariaHideApp={false}
           style={{
             content: {
+              width: "auto",
+              minWidth: 250,
               maxWidth: 400,
+              height: "auto",
+              minHeight: 0,
               margin: "auto",
               borderRadius: 12,
-              padding: 24,
+              padding: 16,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
             },
           }}
         >
@@ -753,6 +812,21 @@ export default function RegisterPage() {
               onCropChange={setCrop}
               onZoomChange={setZoom}
               onCropComplete={onCropComplete}
+            />
+          </div>
+          {/* Controlador de zoom */}
+          <div className="w-full flex flex-col items-center mt-4">
+            <label htmlFor="zoom-range" className="text-xs text-gray-600 mb-1">
+              Zoom
+            </label>
+            <Slider
+              id="zoom-range"
+              min={1}
+              max={3}
+              step={0.01}
+              value={[zoom]}
+              onValueChange={([val]) => setZoom(val)}
+              className="w-3/4"
             />
           </div>
           <div className="flex flex-row gap-2 mt-4 justify-center">
