@@ -13,6 +13,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Slider } from "@/components/ui/slider";
 import { PasswordStrengthIndicator } from "@/components/ui/PasswordStrengthIndicator";
 import { LoadingScreen } from "@/components/ui/LoadingScreen";
+import { isValidPhoneNumber } from "libphonenumber-js";
 
 export default function RegisterPage() {
   // Constants definition
@@ -130,6 +131,11 @@ export default function RegisterPage() {
     (step === 2 && formData.birthdate);
   step === 3;
 
+  const validatePhoneNumber = (phone: string, phonePrefix: string): boolean => {
+    const fullPhoneNumber = `${phonePrefix}${phone}`.trim();
+    return isValidPhoneNumber(fullPhoneNumber);
+  };
+
   function isValidEmail(email: string) {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   }
@@ -208,19 +214,27 @@ export default function RegisterPage() {
       }
 
       if (formData.phonePrefix && formData.phone) {
-        const phone = `${formData.phonePrefix.trim()}${formData.phone.trim()}`;
-        const { phoneExists } = await checkIfExists(
-          "", // No necesitamos email aquí
-          "", // No necesitamos username aquí
-          phone // Teléfono completo
+        const isPhoneValid = validatePhoneNumber(
+          formData.phone,
+          formData.phonePrefix
         );
-
-        if (phoneExists) {
-          setAlertMsg("El número de teléfono ya está registrado.");
+        if (!isPhoneValid) {
+          setAlertMsg("Por favor, introduce un número de teléfono válido.");
           errors.phone = true;
+        } else {
+          const phone = `${formData.phonePrefix.trim()}${formData.phone.trim()}`;
+          const { phoneExists } = await checkIfExists(
+            "", // No necesitamos email aquí
+            "", // No necesitamos username aquí
+            phone // Teléfono completo
+          );
+
+          if (phoneExists) {
+            setAlertMsg("El número de teléfono ya está registrado.");
+            errors.phone = true;
+          }
         }
       }
-
       setFieldErrors(errors);
       setIsLoading(false); // Desactiva la pantalla de carga
 
@@ -317,6 +331,7 @@ export default function RegisterPage() {
         ...filteredFormData,
         phone: formData.phonePrefix + formData.phone,
         profile_pic: profilePicUrl, // URL de la imagen subida
+        social_genre: formData.social_genre || null, // Asigna null si no se selecciona género
       };
 
       console.log("Cuerpo del formulario:", body);
@@ -416,7 +431,7 @@ export default function RegisterPage() {
           </div>
         )}
         <div
-          className="p-3 rounded-xl w-9/10 lg:w-full max-w-md min-h-[500px] transform transition flex flex-col gap-y-px duration-300 opacity-95 animate-fade-in"
+          className="p-6 rounded-xl w-9/10 lg:w-full max-w-md min-h-[500px] transform transition flex flex-col gap-y-px duration-300 opacity-95 animate-fade-in"
           style={{
             backgroundColor: "var(--container-background)",
             boxShadow: "0 4px 50px 20px rgba(0, 0, 0, 0.5)",
@@ -427,7 +442,7 @@ export default function RegisterPage() {
           </h2>
 
           {/* Contenedor del slide */}
-          <div className="overflow-x-hidden ">
+          <div className="overflow-x-hidden flex">
             <div
               className="flex transition-transform duration-500"
               style={{ transform: `translateX(-${(step - 1) * 100}%)` }}
@@ -728,7 +743,7 @@ export default function RegisterPage() {
               </div>
 
               {/* Página 2*/}
-              <div className="w-full flex-shrink-0">
+              <div className="w-full flex-shrink-0 h-auto">
                 <h3 className="text-lg mb-4 text-center">¡Cuéntanos más!</h3>
                 <form className="space-y-4 flex flex-col items-center">
                   {/* Selector de fecha */}
@@ -1000,7 +1015,11 @@ export default function RegisterPage() {
                         }}
                         required
                         disabled={!formData.phonePrefix} // Deshabilita el campo si no hay prefijo seleccionado
-                        className="peer w-full px-3 py-2 border rounded border-black focus:outline-none"
+                        className={`peer w-full px-3 py-2 border rounded border-black focus:outline-none ${
+                          fieldErrors.phone
+                            ? "border-red-500 border-2"
+                            : "border-black"
+                        }`}
                       />
                       <label
                         htmlFor="phone"
@@ -1117,7 +1136,7 @@ export default function RegisterPage() {
           </div>
 
           {/* Controles de navegación */}
-          <div className="flex justify-between mt-6">
+          <div className="flex justify-between mt-2">
             {step > 1 ? (
               <Button onClick={handlePrev}>Anterior</Button>
             ) : (
