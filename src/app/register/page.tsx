@@ -14,6 +14,7 @@ import { Slider } from "@/components/ui/slider";
 import { PasswordStrengthIndicator } from "@/components/ui/PasswordStrengthIndicator";
 import { LoadingScreen } from "@/components/ui/LoadingScreen";
 import { isValidPhoneNumber } from "libphonenumber-js";
+import { RegisterService } from "@/services/register.service";
 
 export default function RegisterPage() {
   // Constants definition
@@ -131,68 +132,33 @@ export default function RegisterPage() {
     (step === 2 && formData.birthdate);
   step === 3;
 
-  const validatePhoneNumber = (phone: string, phonePrefix: string): boolean => {
-    const fullPhoneNumber = `${phonePrefix}${phone}`.trim();
-    return isValidPhoneNumber(fullPhoneNumber);
-  };
-
-  function isValidEmail(email: string) {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  }
-
-  function isStrongPassword(password: string) {
-    // Al menos 8 caracteres, una mayúscula, una minúscula, un número
-    return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/.test(password);
-  }
-
-  async function checkIfExists(email: string, username: string, phone: string) {
-    try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/users/exists?email=${email}&username=${username}&phone=${phone}`
-      );
-      if (!res.ok) throw new Error("Error al verificar los datos");
-      return await res.json();
-    } catch (error) {
-      console.error(error);
-      return { emailExists: false, usernameExists: false, phoneExists: false };
-    }
-  }
-
   // Handlers
   const handleNext = async () => {
     const errors: { [key: string]: boolean } = {};
     if (step === 1) {
       setIsLoading(true); // Activa la pantalla de carga
 
-      if (!isValidEmail(formData.email)) {
-        setAlertMsg("Por favor, introduce un correo electrónico válido.");
-        errors.email = true;
-      }
-      if (!isStrongPassword(formData.password)) {
-        setAlertMsg(
-          "La contraseña no es suficientemente fuerte. Debe tener al menos 8 caracteres, una mayúscula, una minúscula, un carácter especial y un número."
-        );
-        errors.password = true;
-      }
-      if (formData.password !== formData.confirmPassword) {
-        setAlertMsg("Las contraseñas no coinciden.");
-        errors.password = true;
-        errors.confirmPassword = true;
-      }
+      try {
+        const { emailExists, usernameExists } =
+          await RegisterService.validateAndCheckIfExists(
+            formData.email,
+            formData.username,
+            ""
+          );
 
-      // Verificar si el correo o el nombre de usuario ya existen
-      const { emailExists, usernameExists } = await checkIfExists(
-        formData.email,
-        formData.username,
-        "" // No necesitamos teléfono aquí
-      );
-      if (emailExists) {
-        setAlertMsg("El correo electrónico ya está registrado.");
-        errors.email = true;
-      }
-      if (usernameExists) {
-        setAlertMsg("El nombre de usuario ya está registrado.");
-        errors.username = true;
+        if (emailExists) {
+          setAlertMsg("El correo electrónico ya está registrado.");
+          errors.email = true;
+        }
+        if (usernameExists) {
+          setAlertMsg("El nombre de usuario ya está registrado.");
+          errors.username = true;
+        }
+      } catch (error: any) {
+        console.error(error);
+        setAlertMsg(error.message);
+      } finally {
+        setIsLoading(false);
       }
 
       setFieldErrors(errors);
@@ -214,20 +180,16 @@ export default function RegisterPage() {
       }
 
       if (formData.phonePrefix && formData.phone) {
-        const isPhoneValid = validatePhoneNumber(
-          formData.phone,
-          formData.phonePrefix
+        const isPhoneValid = isValidPhoneNumber(
+          `${formData.phonePrefix}${formData.phone}`
         );
         if (!isPhoneValid) {
           setAlertMsg("Por favor, introduce un número de teléfono válido.");
           errors.phone = true;
         } else {
           const phone = `${formData.phonePrefix.trim()}${formData.phone.trim()}`;
-          const { phoneExists } = await checkIfExists(
-            "", // No necesitamos email aquí
-            "", // No necesitamos username aquí
-            phone // Teléfono completo
-          );
+          const { phoneExists } =
+            await RegisterService.validateAndCheckIfExists("", "", phone);
 
           if (phoneExists) {
             setAlertMsg("El número de teléfono ya está registrado.");
@@ -309,69 +271,20 @@ export default function RegisterPage() {
 
       // Subir la imagen a Cloudinary si existe
       if (profileImage) {
-        const formData = new FormData();
-        formData.append("file", profileImage);
-
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}/upload`,
-          {
-            method: "POST",
-            body: formData,
-          }
-        );
-
-        if (!res.ok) throw new Error("Error al subir la imagen");
-        const data = await res.json();
-        profilePicUrl = data.url; // URL de la imagen subida
+        profilePicUrl = await RegisterService.uploadProfileImage(profileImage);
       }
 
-      const { confirmPassword, phonePrefix, ...filteredFormData } = formData;
-      // Crear el cuerpo del formulario
-      const body = {
-        ...filteredFormData,
-        phone: formData.phonePrefix + formData.phone,
-        profile_pic: profilePicUrl, // URL de la imagen subida
-        social_genre: formData.social_genre || null, // Asigna null si no se selecciona género
-      };
+      // Crear la cuenta
+      const data = await RegisterService.createAccount(formData, profilePicUrl);
 
-      console.log("Cuerpo del formulario:", body);
-
-      // Enviar el formulario al backend
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/register`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(body),
-        }
-      );
-
-      if (!res.ok) throw new Error("Error al crear la cuenta");
-      const data = await res.json();
-
-      // Mostrar mensaje de éxito o redirigir
       setAlertMsg("¡Cuenta creada con éxito!");
       console.log("Usuario creado:", data);
     } catch (error: any) {
       console.error(error);
       setAlertMsg(error.message || "Error al crear la cuenta");
     } finally {
-      setIsLoading(false); // Desactiva la pantalla de carga
+      setIsLoading(false);
     }
-  };
-
-  const handleUpload = async () => {
-    if (!profileImage) return;
-    const formData = new FormData();
-    formData.append("file", profileImage);
-
-    const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/upload`, {
-      method: "POST",
-      body: formData,
-    });
-
-    const data = await res.json();
-    console.log("Uploaded image URL:", data.url);
   };
 
   const onCropComplete = (croppedArea: any, croppedAreaPixels: any) => {
@@ -902,7 +815,10 @@ export default function RegisterPage() {
                       onChange={(selectedOption: any) => {
                         setFormData({
                           ...formData,
-                          social_genre: selectedOption?.value || "",
+                          social_genre:
+                            selectedOption?.value === "prefer_not_to_say"
+                              ? null // Asigna null si el usuario selecciona "Prefiero no decirlo"
+                              : selectedOption?.value || "",
                         });
                         if (selectedOption) {
                           document.getElementById(
@@ -929,7 +845,7 @@ export default function RegisterPage() {
                         }),
                         menuPortal: (base) => ({
                           ...base,
-                          zIndex: 9999,
+                          zIndex: 99999,
                         }),
                         option: (base, state) => ({
                           ...base,
