@@ -419,6 +419,7 @@ export default function RegisterPage() {
                       Nombre completo
                     </label>
                   </div>
+
                   {/* Input para nombre de usuario */}
                   <div className="floating-label relative w-9/10 mb-6">
                     <input
@@ -443,6 +444,7 @@ export default function RegisterPage() {
                       Nombre de usuario
                     </label>
                   </div>
+
                   {/* Input para el correo electrónico */}
                   <div className="floating-label relative w-9/10 mb-6">
                     <input
@@ -467,6 +469,7 @@ export default function RegisterPage() {
                       Correo electrónico
                     </label>
                   </div>
+
                   {/* Input para contraseña */}
                   <div className="floating-label relative w-9/10 mb-6">
                     <input
@@ -558,6 +561,7 @@ export default function RegisterPage() {
                       <PasswordStrengthIndicator password={formData.password} />
                     )}
                   </div>
+
                   {/* Input para confirmar contraseña */}
                   <div className="floating-label relative w-9/10 mb-10">
                     <input
@@ -684,6 +688,7 @@ export default function RegisterPage() {
                       Fecha de nacimiento
                     </label>
                   </div>
+
                   {/* Selector de país */}
                   <div className="relative w-9/10 mb-6">
                     <p
@@ -760,6 +765,7 @@ export default function RegisterPage() {
                       }}
                     />
                   </div>
+
                   {/* Input para Ciudad */}
                   <div className="floating-label relative w-9/10 mb-6">
                     <input
