@@ -15,55 +15,62 @@ import { PasswordStrengthIndicator } from "@/components/ui/PasswordStrengthIndic
 import { LoadingScreen } from "@/components/ui/LoadingScreen";
 import { isValidPhoneNumber } from "libphonenumber-js";
 import { RegisterService } from "@/services/register.service";
+import {
+  DEFAULT_AVATAR_URL,
+  acceptedTypes,
+} from "@/constants/registerConstants";
+import { useRegisterForm } from "@/hooks/register/useRegisterForm";
+import { useImageCropper } from "@/hooks/register/useImageCropper";
+import { useAlert } from "@/hooks/register/useAlert";
+import { usePasswordToggle } from "@/hooks/register/usePasswordToggle";
+import { useStepValidation } from "@/hooks/register/useStepValidation";
 
 export default function RegisterPage() {
   // Constants definition
-  const DEFAULT_AVATAR_URL =
-    "https://res.cloudinary.com/drolilqxl/image/upload/v1747395444/blank-profile-picture-973460_1280_x0gfs4.png";
-  const acceptedTypes = [
-    "image/jpeg",
-    "image/jpg",
-    "image/jfif",
-    "image/png",
-    "image/gif",
-    "image/webp",
-  ];
+  const {
+    step,
+    setStep,
+    formData,
+    setFormData,
+    fieldErrors,
+    setFieldErrors,
+    profileImage,
+    setProfileImage,
+    imagePreview,
+    setImagePreview,
+    originalImagePreview,
+    setOriginalImagePreview,
+    isLoading,
+    setIsLoading,
+    fileInputRef,
+  } = useRegisterForm();
 
-  // States
-  const [step, setStep] = useState(1); // Controla el paso actual del slide
-  const [formData, setFormData] = useState({
-    fullname: "",
-    username: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-    birthdate: "",
-    country: "",
-    city: "",
-    social_genre: "",
-    phone: "",
-    phonePrefix: "",
-  });
-  const [profileImage, setProfileImage] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(
-    DEFAULT_AVATAR_URL
+  const {
+    showCropper,
+    setShowCropper,
+    crop,
+    setCrop,
+    zoom,
+    setZoom,
+    onCropComplete,
+    handleCropSave,
+  } = useImageCropper(setProfileImage, setImagePreview);
+
+  const { alertMsg, setAlertMsg, showAlert } = useAlert();
+
+  const {
+    showPassword,
+    togglePassword,
+    showConfirmPassword,
+    toggleConfirmPassword,
+  } = usePasswordToggle();
+
+  const { validateStep } = useStepValidation(
+    formData,
+    setFieldErrors,
+    setAlertMsg,
+    setIsLoading
   );
-  const [originalImagePreview, setOriginalImagePreview] = useState<
-    string | null
-  >(null);
-  const [showCropper, setShowCropper] = useState(false);
-  const [crop, setCrop] = useState({ x: 0, y: 0 });
-  const [zoom, setZoom] = useState(1);
-  const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const [alertMsg, setAlertMsg] = useState<string | null>(null);
-  const [showAlert, setShowAlert] = useState(false);
-  const [fieldErrors, setFieldErrors] = useState<{ [key: string]: boolean }>(
-    {}
-  );
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
 
   //Options for select
   const countryOptions = countries
@@ -134,75 +141,9 @@ export default function RegisterPage() {
 
   // Handlers
   const handleNext = async () => {
-    const errors: { [key: string]: boolean } = {};
-    if (step === 1) {
-      setIsLoading(true); // Activa la pantalla de carga
-
-      try {
-        const { emailExists, usernameExists } =
-          await RegisterService.validateAndCheckIfExists(
-            formData.email,
-            formData.username,
-            ""
-          );
-
-        if (emailExists) {
-          setAlertMsg("El correo electrónico ya está registrado.");
-          errors.email = true;
-        }
-        if (usernameExists) {
-          setAlertMsg("El nombre de usuario ya está registrado.");
-          errors.username = true;
-        }
-      } catch (error: any) {
-        console.error(error);
-        setAlertMsg(error.message);
-      } finally {
-        setIsLoading(false);
-      }
-
-      setFieldErrors(errors);
-      setIsLoading(false); // Desactiva la pantalla de carga
-
-      if (Object.keys(errors).length > 0) return;
-
-      setStep(2);
-      return;
-    }
-
-    if (step === 2) {
-      setIsLoading(true); // Activa la pantalla de carga
-      // Validar fecha de nacimiento
-      const today = new Date().toISOString().split("T")[0];
-      if (!formData.birthdate || formData.birthdate > today) {
-        setAlertMsg("Por favor, introduce una fecha de nacimiento válida.");
-        errors.birthdate = true;
-      }
-
-      if (formData.phonePrefix && formData.phone) {
-        const isPhoneValid = isValidPhoneNumber(
-          `${formData.phonePrefix}${formData.phone}`
-        );
-        if (!isPhoneValid) {
-          setAlertMsg("Por favor, introduce un número de teléfono válido.");
-          errors.phone = true;
-        } else {
-          const phone = `${formData.phonePrefix.trim()}${formData.phone.trim()}`;
-          const { phoneExists } =
-            await RegisterService.validateAndCheckIfExists("", "", phone);
-
-          if (phoneExists) {
-            setAlertMsg("El número de teléfono ya está registrado.");
-            errors.phone = true;
-          }
-        }
-      }
-      setFieldErrors(errors);
-      setIsLoading(false); // Desactiva la pantalla de carga
-
-      if (Object.keys(errors).length > 0) return;
-      setStep(3);
-      return;
+    const isValid = await validateStep(step);
+    if (isValid) {
+      setStep(step + 1);
     }
   };
 
@@ -242,27 +183,6 @@ export default function RegisterPage() {
     }
   };
 
-  const handleCropSave = async () => {
-    if (!originalImagePreview || !croppedAreaPixels) return;
-
-    // Obtén la imagen recortada como un Data URL
-    const croppedImage = await getCroppedImg(
-      originalImagePreview,
-      croppedAreaPixels
-    );
-
-    // Convierte el Data URL en un archivo
-    const croppedImageFile = await fetch(croppedImage)
-      .then((res) => res.blob())
-      .then(
-        (blob) => new File([blob], "cropped-image.jpg", { type: "image/jpeg" })
-      );
-
-    setImagePreview(croppedImage); // Actualiza la vista previa con la imagen recortada
-    setProfileImage(croppedImageFile); // Actualiza el archivo de imagen a subir
-    setShowCropper(false); // Cierra el cropper
-  };
-
   const handleCreateAccount = async () => {
     setIsLoading(true); // Activa la pantalla de carga
 
@@ -286,22 +206,6 @@ export default function RegisterPage() {
       setIsLoading(false);
     }
   };
-
-  const onCropComplete = (croppedArea: any, croppedAreaPixels: any) => {
-    setCroppedAreaPixels(croppedAreaPixels);
-  };
-
-  useEffect(() => {
-    if (alertMsg) {
-      setShowAlert(true);
-      const hideTimeout = setTimeout(() => setShowAlert(false), 4700); // Empieza fade out antes de desmontar
-      const removeTimeout = setTimeout(() => setAlertMsg(null), 5000); // Desmonta tras el fade
-      return () => {
-        clearTimeout(hideTimeout);
-        clearTimeout(removeTimeout);
-      };
-    }
-  }, [alertMsg]);
 
   return (
     <div>
@@ -499,7 +403,7 @@ export default function RegisterPage() {
                       type="button"
                       tabIndex={-1}
                       className="absolute right-3 top-4 text-gray-400 hover:text-black cursor-pointer"
-                      onClick={() => setShowPassword((v) => !v)}
+                      onClick={() => togglePassword()}
                       title={
                         showPassword
                           ? "Ocultar contraseña"
@@ -590,7 +494,7 @@ export default function RegisterPage() {
                       type="button"
                       tabIndex={-1}
                       className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-black cursor-pointer"
-                      onClick={() => setShowConfirmPassword((v) => !v)}
+                      onClick={() => toggleConfirmPassword()}
                       title={
                         showConfirmPassword
                           ? "Ocultar contraseña"
@@ -1127,7 +1031,9 @@ export default function RegisterPage() {
             </div>
             <div className="flex flex-row gap-2 mt-4 justify-center">
               <Button onClick={() => setShowCropper(false)}>Cancelar</Button>
-              <Button onClick={handleCropSave}>Recortar</Button>
+              <Button onClick={() => handleCropSave(originalImagePreview!)}>
+                Recortar
+              </Button>
             </div>
           </Modal>
         </div>

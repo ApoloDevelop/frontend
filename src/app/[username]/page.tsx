@@ -1,10 +1,10 @@
 "use client";
 
 import { notFound } from "next/navigation";
-import { CoverPhoto } from "@/components/Profile/CoverPhoto";
-import { ProfilePhoto } from "@/components/Profile/ProfilePhoto";
+import { CoverPhoto } from "@/components/profile/CoverPhoto";
+import { ProfilePhoto } from "@/components/profile/ProfilePhoto";
 import { useUserProfile } from "@/hooks/useUserProfile";
-import { UserInfo } from "@/components/Profile/UserInfo";
+import { UserInfo } from "@/components/profile/UserInfo";
 
 export default function UserProfilePage({
   params,
