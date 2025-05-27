@@ -1,19 +1,16 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { countries } from "@/data/countries";
 import Flag from "react-world-flags";
 import Select from "react-select";
 import Image from "next/image";
 import Cropper from "react-easy-crop";
-import getCroppedImg from "@/utils/cropImage";
 import Modal from "react-modal";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Slider } from "@/components/ui/slider";
 import { PasswordStrengthIndicator } from "@/components/ui/PasswordStrengthIndicator";
 import { LoadingScreen } from "@/components/ui/LoadingScreen";
-import { isValidPhoneNumber } from "libphonenumber-js";
 import { RegisterService } from "@/services/register.service";
 import {
   DEFAULT_AVATAR_URL,
@@ -24,6 +21,7 @@ import { useImageCropper } from "@/hooks/register/useImageCropper";
 import { useAlert } from "@/hooks/register/useAlert";
 import { usePasswordToggle } from "@/hooks/register/usePasswordToggle";
 import { useStepValidation } from "@/hooks/register/useStepValidation";
+import { getGenreLabel, isCurrentPageValid } from "@/utils/registerFunctions";
 
 export default function RegisterPage() {
   // Constants definition
@@ -94,7 +92,6 @@ export default function RegisterPage() {
     flagCode: country.cca2,
   }));
 
-  //Functions
   const formatDialCodeLabel = (
     { label, flagCode }: any,
     { context }: { context: "menu" | "value" }
@@ -110,34 +107,6 @@ export default function RegisterPage() {
 
     return <Flag code={flagCode} className="w-5 h-5" />;
   };
-
-  const getGenreLabel = (value: string) => {
-    switch (value) {
-      case "male":
-        return "Masculino";
-      case "female":
-        return "Femenino";
-      case "non_binary":
-        return "No binario";
-      case "other":
-        return "Otro";
-      case "prefer_not_to_say":
-        return "Prefiero no decirlo";
-      default:
-        return "";
-    }
-  };
-
-  const isCurrentPageValid =
-    (step === 1 &&
-      formData.fullname.trim() &&
-      formData.username.trim() &&
-      formData.email.trim() &&
-      formData.password &&
-      formData.confirmPassword &&
-      formData.password === formData.confirmPassword) ||
-    (step === 2 && formData.birthdate);
-  step === 3;
 
   // Handlers
   const handleNext = async () => {
