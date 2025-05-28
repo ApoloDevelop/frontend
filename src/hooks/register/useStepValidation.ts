@@ -11,27 +11,57 @@ export function useStepValidation(
     const errors: { [key: string]: boolean } = {};
 
     if (step === 1) {
-      setIsLoading(true);
-      try {
-        const { emailExists, usernameExists } =
-          await RegisterService.validateAndCheckIfExists(
-            formData.email,
-            formData.username,
-            ""
-          );
+      // Validar campos requeridos del primer paso
+      if (!formData.fullname.trim()) {
+        setAlertMsg("El nombre completo es obligatorio.");
+        errors.fullname = true;
+      }
+      if (!formData.username.trim()) {
+        setAlertMsg("El nombre de usuario es obligatorio.");
+        errors.username = true;
+      }
+      if (!formData.email.trim()) {
+        setAlertMsg("El correo electrónico es obligatorio.");
+        errors.email = true;
+      }
+      if (!formData.password) {
+        setAlertMsg("La contraseña es obligatoria.");
+        errors.password = true;
+      }
+      if (!formData.confirmPassword) {
+        setAlertMsg("Debes confirmar la contraseña.");
+        errors.confirmPassword = true;
+      }
+      if (formData.password !== formData.confirmPassword) {
+        setAlertMsg("Las contraseñas no coinciden.");
+        errors.password = true;
+        errors.confirmPassword = true;
+      }
 
-        if (emailExists) {
-          setAlertMsg("El correo electrónico ya está registrado.");
-          errors.email = true;
+      // Verificar si el correo o el nombre de usuario ya existen
+      if (!errors.email && !errors.username) {
+        setIsLoading(true);
+        try {
+          const { emailExists, usernameExists } =
+            await RegisterService.validateAndCheckIfExists(
+              formData.email,
+              formData.username,
+              ""
+            );
+
+          if (emailExists) {
+            setAlertMsg("El correo electrónico ya está registrado.");
+            errors.email = true;
+          }
+          if (usernameExists) {
+            setAlertMsg("El nombre de usuario ya está registrado.");
+            errors.username = true;
+          }
+        } catch (e: any) {
+          setAlertMsg(e.message);
+        } finally {
+          setIsLoading(false);
         }
-        if (usernameExists) {
-          setAlertMsg("El nombre de usuario ya está registrado.");
-          errors.username = true;
-        }
-      } catch (e: any) {
-        setAlertMsg(e.message);
-      } finally {
-        setIsLoading(false);
       }
     }
 
