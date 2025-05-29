@@ -3,13 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { countries } from "@/data/countries";
 import Flag from "react-world-flags";
-import Select from "react-select";
-import Image from "next/image";
-import Cropper from "react-easy-crop";
-import Modal from "react-modal";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Slider } from "@/components/ui/slider";
-import { PasswordStrengthIndicator } from "@/components/ui/PasswordStrengthIndicator";
 import { LoadingScreen } from "@/components/ui/LoadingScreen";
 import { RegisterService } from "@/services/register.service";
 import {
@@ -21,7 +15,7 @@ import { useImageCropper } from "@/hooks/register/useImageCropper";
 import { useAlert } from "@/hooks/register/useAlert";
 import { usePasswordToggle } from "@/hooks/register/usePasswordToggle";
 import { useStepValidation } from "@/hooks/register/useStepValidation";
-import { getGenreLabel, isCurrentPageValid } from "@/utils/registerFunctions";
+import { isCurrentPageValid } from "@/utils/registerFunctions";
 import { StepIndicator } from "@/components/register/StepIndicator";
 import { RegisterFormStep1 } from "@/components/register/steps/RegisterFormStep1";
 import { RegisterFormStep2 } from "@/components/register/steps/RegisterFormStep2";
@@ -95,22 +89,6 @@ export default function RegisterPage() {
     label: country.translations.spa.common,
     flagCode: country.cca2,
   }));
-
-  const formatDialCodeLabel = (
-    { label, flagCode }: any,
-    { context }: { context: "menu" | "value" }
-  ) => {
-    if (context === "menu") {
-      return (
-        <div className="flex items-center">
-          <Flag code={flagCode} className="w-5 h-5 mr-2" />
-          {label}
-        </div>
-      );
-    }
-
-    return <Flag code={flagCode} className="w-5 h-5" />;
-  };
 
   // Handlers
   const handleNext = async () => {
@@ -221,7 +199,7 @@ export default function RegisterPage() {
           </div>
         )}
         <div
-          className="p-6 rounded-xl w-9/10 lg:w-full max-w-md min-h-[500px] transform transition flex flex-col gap-y-px duration-300 opacity-95 animate-fade-in"
+          className="p-6 rounded-xl w-9/10 lg:w-full max-w-3xl min-h-[500px] transform transition flex flex-col gap-y-px duration-300 opacity-95 animate-fade-in"
           style={{
             backgroundColor: "var(--container-background)",
             boxShadow: "0 4px 50px 20px rgba(0, 0, 0, 0.5)",

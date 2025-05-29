@@ -71,6 +71,7 @@ export const PhoneInput: React.FC<PhoneInputProps> = ({
       </div>
 
       {/* Teléfono */}
+
       <div className="floating-label w-6/9 relative mb-6">
         <input
           type="tel"
@@ -88,11 +89,13 @@ export const PhoneInput: React.FC<PhoneInputProps> = ({
           disabled={!prefix}
           className={`peer w-full px-3 py-2 border rounded focus:outline-none ${
             fieldError ? "border-red-500 border-2" : "border-black"
-          }`}
+          } ${!prefix ? "bg-gray-100 text-gray-500 border-gray-400" : ""}`}
         />
         <label
           htmlFor="phone"
-          className="absolute left-3 top-2 text-gray-500 text-sm transition-all bg-white px-1 peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-focus:top-2 peer-focus:text-sm peer-focus:text-black"
+          className={`absolute left-3 top-2 text-sm transition-all px-1 peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-focus:top-2 peer-focus:text-sm peer-focus:text-black ${
+            !prefix ? "bg-gray-100" : "bg-white"
+          }`}
           style={{ zIndex: 1 }}
         >
           Teléfono (opcional)

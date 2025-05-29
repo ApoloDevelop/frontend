@@ -1,6 +1,16 @@
 import { isValidPhoneNumber } from "libphonenumber-js";
 import { RegisterService } from "@/services/register.service";
 
+function isStrongPassword(password: string): boolean {
+  const hasMinLength = password.length >= 8;
+  const hasLowercase = /[a-z]/.test(password);
+  const hasUppercase = /[A-Z]/.test(password);
+  const hasNumber = /\d/.test(password);
+  const hasSymbol = /[^A-Za-z0-9]/.test(password);
+
+  return hasMinLength && hasLowercase && hasUppercase && hasNumber && hasSymbol;
+}
+
 export function useStepValidation(
   formData: any,
   setFieldErrors: any,
@@ -26,6 +36,11 @@ export function useStepValidation(
       }
       if (!formData.password) {
         setAlertMsg("La contraseña es obligatoria.");
+        errors.password = true;
+      } else if (!isStrongPassword(formData.password)) {
+        setAlertMsg(
+          "La contraseña debe tener al menos 8 caracteres, una mayúscula, una minúscula, un número y un símbolo."
+        );
         errors.password = true;
       }
       if (!formData.confirmPassword) {
