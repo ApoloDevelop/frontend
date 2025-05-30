@@ -210,9 +210,9 @@ export default function RegisterPage() {
           </h2>
 
           {/* Contenedor del slide */}
-          <div className="overflow-x-hidden flex">
+          <div className="overflow-x-hidden min-w-0 flex">
             <div
-              className="flex transition-transform duration-500"
+              className="flex transition-transform min-w-0 duration-500"
               style={{ transform: `translateX(-${(step - 1) * 100}%)` }}
             >
               {/* Página 1 */}

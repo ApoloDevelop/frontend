@@ -42,7 +42,7 @@ export const PhoneInput: React.FC<PhoneInputProps> = ({
   return (
     <div className="flex w-9/10 mb-6 gap-2">
       {/* Prefijo */}
-      <div className="w-3/9">
+      <div className="w-4/9 sm:w-3/9">
         <Select
           options={dialCodeOptions}
           formatOptionLabel={formatOptionLabel}
@@ -72,7 +72,7 @@ export const PhoneInput: React.FC<PhoneInputProps> = ({
 
       {/* Teléfono */}
 
-      <div className="floating-label w-6/9 relative mb-6">
+      <div className="floating-label w-5/9 sm:w-6/9 relative mb-6">
         <input
           type="tel"
           name="phone"
@@ -93,7 +93,7 @@ export const PhoneInput: React.FC<PhoneInputProps> = ({
         />
         <label
           htmlFor="phone"
-          className={`absolute left-3 top-2 text-sm transition-all px-1 peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-focus:top-2 peer-focus:text-sm peer-focus:text-black ${
+          className={`absolute left-3 top-2 text-xs transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-focus:top-2 peer-focus:text-sm peer-focus:text-black ${
             !prefix ? "bg-gray-100" : "bg-white"
           }`}
           style={{ zIndex: 1 }}
