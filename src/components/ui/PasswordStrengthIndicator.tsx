@@ -76,9 +76,10 @@ export const PasswordStrengthIndicator = ({
         {requirements.map((req) => (
           <li key={req.label} className="flex items-center gap-1">
             <span
-              className={`w-3 h-3 rounded-full inline-block ${
+              className={`w-3 h-3 rounded-full inline-block flex-shrink-0 ${
                 req.valid ? "bg-green-500" : "bg-gray-300"
               }`}
+              style={{ minWidth: "12px", minHeight: "12px" }}
             ></span>
             <span className={req.valid ? "text-green-600" : ""}>
               {req.label}

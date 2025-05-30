@@ -69,7 +69,14 @@ export const GenreSelect: React.FC<GenreSelectProps> = ({
               : "white",
             color: state.isSelected ? "white" : "black",
           }),
-          placeholder: (base) => ({ ...base, color: "#aaa" }),
+          placeholder: (base) => ({
+            ...base,
+            color: "#aaa",
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            maxWidth: "calc(100% - 24px)",
+          }),
         }}
       />
     </div>

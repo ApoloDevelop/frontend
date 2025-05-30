@@ -89,7 +89,13 @@ export function useStepValidation(
         errors.birthdate = true;
       }
 
-      if (formData.phonePrefix && formData.phone) {
+      if (
+        formData.phonePrefix &&
+        (!formData.phone || formData.phone.trim() === "")
+      ) {
+        setAlertMsg("Por favor, introduce un número de teléfono válido.");
+        errors.phone = true;
+      } else if (formData.phonePrefix && formData.phone) {
         const phoneNumber = `${formData.phonePrefix}${formData.phone}`;
         if (!isValidPhoneNumber(phoneNumber)) {
           setAlertMsg("Por favor, introduce un número de teléfono válido.");

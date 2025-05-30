@@ -65,7 +65,17 @@ export const PhoneInput: React.FC<PhoneInputProps> = ({
               height: "50px",
             }),
             menu: (base) => ({ ...base, width: "200px", zIndex: 9999 }),
-            placeholder: (base) => ({ ...base, fontSize: "13px" }),
+            placeholder: (base) => ({
+              ...base,
+              fontSize: "13px",
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              maxWidth: "calc(100% - 24px)",
+              "@media (max-width: 540px)": {
+                fontSize: "10px",
+              },
+            }),
           }}
         />
       </div>
@@ -96,7 +106,13 @@ export const PhoneInput: React.FC<PhoneInputProps> = ({
           className={`absolute left-3 top-2 text-xs transition-all peer-placeholder-shown:top-1/2 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-focus:top-2 peer-focus:text-sm peer-focus:text-black ${
             !prefix ? "bg-gray-100" : "bg-white"
           }`}
-          style={{ zIndex: 1 }}
+          style={{
+            zIndex: 1,
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            maxWidth: "calc(100% - 24px)", // Adjust for padding and icon
+          }}
         >
           Teléfono (opcional)
         </label>
