@@ -5,34 +5,51 @@ import { CoverPhoto } from "@/components/profile/CoverPhoto";
 import { ProfilePhoto } from "@/components/profile/ProfilePhoto";
 import { useUserProfile } from "@/hooks/useUserProfile";
 import { UserInfo } from "@/components/profile/UserInfo";
+import { use } from "react";
+import { Button } from "@/components/ui/button";
+import { PencilIcon } from "lucide-react";
+import { EditProfileModal } from "@/components/profile/EditProfileModal";
+import { useEditProfileModal } from "@/hooks/profile/useEditProfileModal";
 
 export default function UserProfilePage({
   params,
 }: {
-  params: { username: string };
+  params: Promise<{ username: string }>;
 }) {
-  const { username } = params;
+  const { username } = use(params);
   const { user, loading, error } = useUserProfile(username);
+  const { isModalOpen, openModal, closeModal } = useEditProfileModal();
 
   if (loading) {
     return <div className="text-center">Cargando...</div>;
   }
 
-  if (error) {
-    notFound(); // Redirige a la página 404 si hay un error
+  if (!user) {
+    notFound();
   }
 
   return (
     <div className="min-h-screen bg-gray-100">
       <div className="relative">
         <CoverPhoto src={user.cover_pic} />
-        <ProfilePhoto src={user.profile_pic} />
+        <ProfilePhoto
+          src={user.profile_pic}
+          className="relative left-6 -top-30 -mb-45"
+        />
       </div>
       <UserInfo
         fullname={user.fullname}
         username={user.username}
         biography={user.biography}
+        createdAt={user.register_date}
       />
+      <div className="flex px-6 mt-4">
+        <Button variant="default" onClick={openModal}>
+          <PencilIcon />
+          Editar
+        </Button>
+      </div>
+      <EditProfileModal open={isModalOpen} onClose={closeModal} user={user} />
     </div>
   );
 }
