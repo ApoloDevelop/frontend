@@ -52,7 +52,7 @@ export default function RegisterPage() {
     handleCropSave,
   } = useImageCropper(setProfileImage, setImagePreview);
 
-  const { alertMsg, setAlertMsg, showAlert } = useAlert();
+  const { alertMsgs, setAlertMsgs, showAlert } = useAlert();
 
   const {
     showPassword,
@@ -64,7 +64,7 @@ export default function RegisterPage() {
   const { validateStep } = useStepValidation(
     formData,
     setFieldErrors,
-    setAlertMsg,
+    setAlertMsgs,
     setIsLoading
   );
 
@@ -120,9 +120,9 @@ export default function RegisterPage() {
     const file = e.target.files?.[0];
     if (file) {
       if (!acceptedTypes.includes(file.type)) {
-        setAlertMsg(
-          ` Esta página acepta los siguientes tipos de archivo: JPEG, PNG, GIF, WEBP.  "${file.name}" no se registra como un tipo de archivo aceptado.`
-        );
+        setAlertMsgs([
+          ` Esta página acepta los siguientes tipos de archivo: JPEG, PNG, GIF, WEBP.  "${file.name}" no se registra como un tipo de archivo aceptado.`,
+        ]);
         if (fileInputRef.current) fileInputRef.current.value = "";
         return;
       }
@@ -148,11 +148,11 @@ export default function RegisterPage() {
       // Crear la cuenta
       const data = await RegisterService.createAccount(formData, profilePicUrl);
 
-      setAlertMsg("¡Cuenta creada con éxito!");
+      setAlertMsgs(["¡Cuenta creada con éxito!"]);
       console.log("Usuario creado:", data);
     } catch (error: any) {
       console.error(error);
-      setAlertMsg(error.message || "Error al crear la cuenta");
+      setAlertMsgs([error.message || "Error al crear la cuenta"]);
     } finally {
       setIsLoading(false);
     }
@@ -182,7 +182,7 @@ export default function RegisterPage() {
             backdropFilter: "blur(12px)",
           }}
         ></div>
-        {(alertMsg || showAlert) && (
+        {(alertMsgs.length > 0 || showAlert) && (
           <div
             className={`fixed top-4 left-1/2 -translate-x-1/2 w-full max-w-md transition-opacity duration-300 ${
               showAlert ? "opacity-100" : "opacity-0"
@@ -198,7 +198,11 @@ export default function RegisterPage() {
               className="bg-white to-red-700 text-red-500 relative border border-red-500 shadow-lg"
             >
               <AlertTitle>Error</AlertTitle>
-              <AlertDescription>{alertMsg}</AlertDescription>
+              <AlertDescription>
+                {alertMsgs.map((msg, index) => (
+                  <p key={index}>{msg}</p>
+                ))}
+              </AlertDescription>
             </Alert>
           </div>
         )}

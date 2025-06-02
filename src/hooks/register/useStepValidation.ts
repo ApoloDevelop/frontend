@@ -14,41 +14,42 @@ function isStrongPassword(password: string): boolean {
 export function useStepValidation(
   formData: any,
   setFieldErrors: any,
-  setAlertMsg: any,
+  setAlertMsgs: any, // Cambiado para manejar múltiples mensajes
   setIsLoading: any
 ) {
   const validateStep = async (step: number) => {
     const errors: { [key: string]: boolean } = {};
+    const alertMessages: string[] = []; // Array para recolectar todos los mensajes de error
 
     if (step === 1) {
       // Validar campos requeridos del primer paso
       if (!formData.fullname.trim()) {
-        setAlertMsg("El nombre completo es obligatorio.");
+        alertMessages.push("El nombre completo es obligatorio.");
         errors.fullname = true;
       }
       if (!formData.username.trim()) {
-        setAlertMsg("El nombre de usuario es obligatorio.");
+        alertMessages.push("El nombre de usuario es obligatorio.");
         errors.username = true;
       }
       if (!formData.email.trim()) {
-        setAlertMsg("El correo electrónico es obligatorio.");
+        alertMessages.push("El correo electrónico es obligatorio.");
         errors.email = true;
       }
       if (!formData.password) {
-        setAlertMsg("La contraseña es obligatoria.");
+        alertMessages.push("La contraseña es obligatoria.");
         errors.password = true;
       } else if (!isStrongPassword(formData.password)) {
-        setAlertMsg(
+        alertMessages.push(
           "La contraseña debe tener al menos 8 caracteres, una mayúscula, una minúscula, un número y un símbolo."
         );
         errors.password = true;
       }
       if (!formData.confirmPassword) {
-        setAlertMsg("Debes confirmar la contraseña.");
+        alertMessages.push("Debes confirmar la contraseña.");
         errors.confirmPassword = true;
       }
       if (formData.password !== formData.confirmPassword) {
-        setAlertMsg("Las contraseñas no coinciden.");
+        alertMessages.push("Las contraseñas no coinciden.");
         errors.password = true;
         errors.confirmPassword = true;
       }
@@ -65,15 +66,15 @@ export function useStepValidation(
             );
 
           if (emailExists) {
-            setAlertMsg("El correo electrónico ya está registrado.");
+            alertMessages.push("El correo electrónico ya está registrado.");
             errors.email = true;
           }
           if (usernameExists) {
-            setAlertMsg("El nombre de usuario ya está registrado.");
+            alertMessages.push("El nombre de usuario ya está registrado.");
             errors.username = true;
           }
         } catch (e: any) {
-          setAlertMsg(e.message);
+          alertMessages.push(e.message);
         } finally {
           setIsLoading(false);
         }
@@ -85,7 +86,9 @@ export function useStepValidation(
       const today = new Date().toISOString().split("T")[0];
 
       if (!formData.birthdate || formData.birthdate > today) {
-        setAlertMsg("Por favor, introduce una fecha de nacimiento válida.");
+        alertMessages.push(
+          "Por favor, introduce una fecha de nacimiento válida."
+        );
         errors.birthdate = true;
       }
 
@@ -93,18 +96,22 @@ export function useStepValidation(
         formData.phonePrefix &&
         (!formData.phone || formData.phone.trim() === "")
       ) {
-        setAlertMsg("Por favor, introduce un número de teléfono válido.");
+        alertMessages.push(
+          "Por favor, introduce un número de teléfono válido."
+        );
         errors.phone = true;
       } else if (formData.phonePrefix && formData.phone) {
         const phoneNumber = `${formData.phonePrefix}${formData.phone}`;
         if (!isValidPhoneNumber(phoneNumber)) {
-          setAlertMsg("Por favor, introduce un número de teléfono válido.");
+          alertMessages.push(
+            "Por favor, introduce un número de teléfono válido."
+          );
           errors.phone = true;
         } else {
           const { phoneExists } =
             await RegisterService.validateAndCheckIfExists("", "", phoneNumber);
           if (phoneExists) {
-            setAlertMsg("El número de teléfono ya está registrado.");
+            alertMessages.push("El número de teléfono ya está registrado.");
             errors.phone = true;
           }
         }
@@ -112,7 +119,9 @@ export function useStepValidation(
       setIsLoading(false);
     }
 
+    // Establecer los errores en los campos y los mensajes de alerta
     setFieldErrors(errors);
+    setAlertMsgs(alertMessages); // Pasar todos los mensajes de error al hook
     return Object.keys(errors).length === 0;
   };
 
