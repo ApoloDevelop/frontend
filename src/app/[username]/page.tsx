@@ -30,18 +30,17 @@ export default function UserProfilePage({
 
   return (
     <div className="min-h-screen bg-gray-100">
-      <div className="relative">
-        <CoverPhoto src={user.cover_pic} />
-        <ProfilePhoto
-          src={user.profile_pic}
-          className="relative left-6 -top-30 -mb-45"
-        />
-      </div>
+      <CoverPhoto src={user.cover_pic} />
+      <ProfilePhoto
+        src={user.profile_pic}
+        className="relative left-6 -top-30 -mb-30"
+      />
       <UserInfo
         fullname={user.fullname}
         username={user.username}
         biography={user.biography}
         createdAt={user.register_date}
+        className="flex flex-col items-start px-6 mt-4"
       />
       <div className="flex px-6 mt-4">
         <Button variant="default" onClick={openModal}>
