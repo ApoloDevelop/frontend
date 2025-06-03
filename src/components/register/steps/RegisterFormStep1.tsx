@@ -45,6 +45,27 @@ export const RegisterFormStep1: React.FC<RegisterFormStep1Props> = ({
           required
           error={fieldErrors.username}
         />
+        {formData.username && (
+          <p
+            className={`text-xs w-9/10 -mt-4 ${
+              formData.username.length > 30 ||
+              !/^[a-zA-Z0-9_]+$/.test(formData.username)
+                ? "text-red-500"
+                : "text-gray-500"
+            }`}
+          >
+            {formData.username.length > 30 ? (
+              "El nombre de usuario no puede tener más de 30 caracteres."
+            ) : !/^[a-zA-Z0-9_]+$/.test(formData.username) ? (
+              "El nombre de usuario solo puede contener letras, números y guion bajo (_)."
+            ) : (
+              <>
+                Tu nombre de usuario será:{" "}
+                <span>@{formData.username.toLowerCase()}</span>
+              </>
+            )}
+          </p>
+        )}
 
         <FloatingInput
           label="Correo electrónico"

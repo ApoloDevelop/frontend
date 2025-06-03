@@ -61,7 +61,7 @@ export const ProfileImageUploader: React.FC<ProfileImageUploaderProps> = ({
       <div className="relative w-3/4 mb-4 flex flex-row items-center">
         <label
           htmlFor="profile-image-input"
-          className="block w-full cursor-pointer border border-gray-300 rounded px-4 py-2 text-center bg-white hover:bg-gray-100 transition mb-4 text-gray-400 text-sm"
+          className="block w-full cursor-pointer border border-gray-200 rounded px-4 py-2 text-center bg-white hover:bg-gray-100 transition mb-4 text-gray-400 text-sm"
         >
           {profileImage
             ? "¿No te convence? Selecciona otra"

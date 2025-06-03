@@ -30,9 +30,27 @@ export function useStepValidation(
       if (!formData.username.trim()) {
         alertMessages.push("El nombre de usuario es obligatorio.");
         errors.username = true;
+      } else if (!/^[a-zA-Z0-9_]+$/.test(formData.username.trim())) {
+        alertMessages.push(
+          "El nombre de usuario solo puede contener letras, números y guiones bajos (_)."
+        );
+        errors.username = true;
+      } else if (formData.username.trim().length > 30) {
+        alertMessages.push(
+          "El nombre de usuario no puede tener más de 30 caracteres."
+        );
+        errors.username = true;
       }
+
       if (!formData.email.trim()) {
         alertMessages.push("El correo electrónico es obligatorio.");
+        errors.email = true;
+      } else if (
+        !/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(
+          formData.email.trim()
+        )
+      ) {
+        alertMessages.push("El correo electrónico no tiene un formato válido.");
         errors.email = true;
       }
       if (!formData.password) {

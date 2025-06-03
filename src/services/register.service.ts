@@ -13,6 +13,8 @@ export class RegisterService {
 
     const body = {
       ...filteredFormData,
+      email: formData.email.toLowerCase(),
+      username: formData.username.toLowerCase(),
       phone: `${formData.phonePrefix}${formData.phone}`,
       profile_pic: profilePicUrl,
       social_genre: formData.social_genre || null,

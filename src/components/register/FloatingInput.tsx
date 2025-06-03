@@ -1,3 +1,4 @@
+import { cn } from "@/lib/utils";
 import React from "react";
 
 interface FloatingInputProps {
@@ -11,6 +12,7 @@ interface FloatingInputProps {
   disabled?: boolean;
   autoComplete?: string;
   max?: string; // Optional for date inputs
+  className?: string;
 }
 
 export const FloatingInput: React.FC<FloatingInputProps> = ({
@@ -38,9 +40,11 @@ export const FloatingInput: React.FC<FloatingInputProps> = ({
         disabled={disabled}
         autoComplete={autoComplete}
         max={max}
-        className={`peer w-full px-3 py-2 border rounded focus:outline-none ${
-          error ? "border-red-500 border-2" : "border-black"
-        }`}
+        className={cn(
+          `peer w-full px-3 py-2 border rounded-md focus-visible:border-ring focus-visible:ring-ring/10 ria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive ${
+            error ? "border-red-500 border-2" : "focus-visible:ring-[4px]"
+          }`
+        )}
       />
       <label
         htmlFor={name}
