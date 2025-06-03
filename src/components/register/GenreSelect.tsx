@@ -54,9 +54,10 @@ export const GenreSelect: React.FC<GenreSelectProps> = ({
         styles={{
           control: (base, state) => ({
             ...base,
-            borderColor: "black",
-            boxShadow: state.isFocused ? "0 0 0 0px black" : "none",
-            "&:hover": { borderColor: "black" },
+            borderColor: "var(--border)",
+            boxShadow: state.isFocused ? "0 0 0 1px var(--ring)" : "none",
+            borderRadius: "0.375rem",
+            "&:hover": { borderColor: "var(--border)" },
             height: "50px",
           }),
           menuPortal: (base) => ({ ...base, zIndex: 99999 }),

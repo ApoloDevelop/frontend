@@ -59,9 +59,10 @@ export const PhoneInput: React.FC<PhoneInputProps> = ({
           styles={{
             control: (base, state) => ({
               ...base,
-              borderColor: "black",
-              boxShadow: state.isFocused ? "0 0 0 0px black" : "none",
-              "&:hover": { borderColor: "black" },
+              borderColor: "var(--border)",
+              boxShadow: state.isFocused ? "0 0 0 1px var(--ring)" : "none",
+              borderRadius: "0.375rem",
+              "&:hover": { borderColor: "var(--border)" },
               height: "50px",
             }),
             menu: (base) => ({ ...base, width: "200px", zIndex: 9999 }),
@@ -75,6 +76,8 @@ export const PhoneInput: React.FC<PhoneInputProps> = ({
               "@media (max-width: 540px)": {
                 fontSize: "10px",
               },
+              rounded: "4px",
+              ":focus-visible": {},
             }),
           }}
         />
@@ -97,9 +100,9 @@ export const PhoneInput: React.FC<PhoneInputProps> = ({
           }}
           required
           disabled={!prefix}
-          className={`peer w-full px-3 py-2 border rounded focus:outline-none ${
-            fieldError ? "border-red-500 border-2" : "border-black"
-          } ${!prefix ? "bg-gray-100 text-gray-500 border-gray-400" : ""}`}
+          className={`peer w-full px-3 py-2 border rounded-md focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive ${
+            fieldError ? "border-red-500 border-2" : "focus-visible:ring-[4px]"
+          } ${!prefix ? "bg-gray-100 text-gray-500 border-gray-200" : ""}`}
         />
         <label
           htmlFor="phone"

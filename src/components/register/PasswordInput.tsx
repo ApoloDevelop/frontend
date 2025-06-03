@@ -37,8 +37,8 @@ export const PasswordInput: React.FC<PasswordInputProps> = ({
         onChange={onChange}
         required={required}
         autoComplete="new-password"
-        className={`peer w-full px-3 py-2 border rounded focus:outline-none ${
-          error ? "border-red-500 border-2" : "border-black"
+        className={`peer w-full px-3 py-2 border focus:outline-none rounded-md focus-visible:border-ring focus-visible:ring-ring/10 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive ${
+          error ? "border-red-500 border-2" : "focus-visible:ring-[4px]"
         }`}
       />
       <label
