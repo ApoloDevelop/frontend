@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { PencilIcon } from "lucide-react";
 import { EditProfileModal } from "@/components/profile/EditProfileModal";
 import { useEditProfileModal } from "@/hooks/profile/useEditProfileModal";
+import { useLocalUserProfile } from "@/hooks/profile/useLocalUserProfile";
 
 export default function UserProfilePage({
   params,
@@ -18,28 +19,31 @@ export default function UserProfilePage({
 }) {
   const { username } = use(params);
   const { user, loading, error } = useUserProfile(username);
+  const { localUser, setLocalUser } = useLocalUserProfile(user);
   const { isModalOpen, openModal, closeModal } = useEditProfileModal();
 
   if (loading) {
     return <div className="text-center">Cargando...</div>;
   }
 
-  if (!user) {
+  if (!user && !localUser) {
     notFound();
   }
 
+  const currentUser = localUser || user;
+
   return (
     <div className="min-h-screen bg-gray-100">
-      <CoverPhoto src={user.cover_pic} />
+      <CoverPhoto src={currentUser.cover_pic} />
       <ProfilePhoto
-        src={user.profile_pic}
+        src={currentUser.profile_pic}
         className="relative left-6 -top-30 -mb-30"
       />
       <UserInfo
-        fullname={user.fullname}
-        username={user.username}
-        biography={user.biography}
-        createdAt={user.register_date}
+        fullname={currentUser.fullname}
+        username={currentUser.username}
+        biography={currentUser.biography}
+        createdAt={currentUser.register_date}
         className="flex flex-col items-start px-6 mt-4"
       />
       <div className="flex px-6 mt-4">
@@ -48,7 +52,12 @@ export default function UserProfilePage({
           Editar
         </Button>
       </div>
-      <EditProfileModal open={isModalOpen} onClose={closeModal} user={user} />
+      <EditProfileModal
+        open={isModalOpen}
+        onClose={closeModal}
+        user={currentUser}
+        onUserUpdated={setLocalUser}
+      />
     </div>
   );
 }

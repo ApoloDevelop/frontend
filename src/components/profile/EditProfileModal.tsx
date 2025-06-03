@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { useEditProfileForm } from "@/hooks/profile/useEditProfileForm";
 import clsx from "clsx";
 import { useState } from "react";
+import { UserService } from "@/services/user.service";
 
 type Section = "profile" | "email";
 
@@ -19,10 +20,12 @@ export function EditProfileModal({
   open,
   onClose,
   user,
+  onUserUpdated,
 }: {
   open: boolean;
   onClose: () => void;
   user: any;
+  onUserUpdated?: (updatedUser: any) => void;
 }) {
   const [section, setSection] = useState<Section>("profile");
   const {
@@ -34,7 +37,45 @@ export function EditProfileModal({
     setPassword,
     confirmPassword,
     setConfirmPassword,
+    username,
+    setUsername,
+    canEditUsername,
+    daysSinceUpdate,
   } = useEditProfileForm(user);
+
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSave = async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const dataToUpdate: any = {
+        email,
+        biography: bio,
+      };
+      if (canEditUsername && username !== user.username) {
+        dataToUpdate.username = username;
+      }
+      if (password) {
+        if (password !== confirmPassword) {
+          setError("Las contraseñas no coinciden.");
+          setLoading(false);
+          return;
+        }
+        dataToUpdate.password = password;
+      }
+
+      const updatedUser = await UserService.updateUser(user.id, dataToUpdate);
+      if (onUserUpdated) onUserUpdated(updatedUser); // Actualiza el usuario en el padre
+      onClose();
+    } catch (e: any) {
+      setError(e.message || "Error al actualizar el usuario");
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="p-0">
@@ -83,7 +124,17 @@ export function EditProfileModal({
                   <label className="text-sm font-semibold">
                     Nombre de usuario
                   </label>
-                  <Input value={user.username} disabled />
+                  <Input
+                    value={user.username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    disabled={!canEditUsername}
+                  />
+                  {!canEditUsername && (
+                    <p className="text-xs text-gray-500 mt-1">
+                      Solo puedes cambiar tu nombre de usuario una vez cada 30
+                      días.
+                    </p>
+                  )}
                 </div>
                 <div>
                   <label className="text-sm font-semibold">Email</label>
@@ -135,7 +186,9 @@ export function EditProfileModal({
               <Button variant="outline" onClick={onClose}>
                 Cancelar
               </Button>
-              <Button>Guardar</Button>
+              <Button onClick={handleSave} disabled={loading}>
+                Guardar
+              </Button>
             </div>
           </div>
         </div>
