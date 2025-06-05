@@ -1,14 +1,14 @@
 "use client";
 
 import { notFound } from "next/navigation";
-import { CoverPhoto } from "@/components/profile/CoverPhoto";
-import { ProfilePhoto } from "@/components/profile/ProfilePhoto";
+import { CoverPhoto } from "@/components/prof/CoverPhoto";
+import { ProfilePhoto } from "@/components/prof/ProfilePhoto";
 import { useUserProfile } from "@/hooks/useUserProfile";
-import { UserInfo } from "@/components/profile/UserInfo";
+import { UserInfo } from "@/components/prof/UserInfo";
 import { use } from "react";
 import { Button } from "@/components/ui/button";
 import { PencilIcon } from "lucide-react";
-import { EditProfileModal } from "@/components/profile/EditProfileModal";
+import { EditProfileModal } from "@/components/prof/EditProfileModal";
 import { useEditProfileModal } from "@/hooks/profile/useEditProfileModal";
 import { useLocalUserProfile } from "@/hooks/profile/useLocalUserProfile";
 
