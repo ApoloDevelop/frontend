@@ -11,13 +11,14 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { useEditProfileForm } from "@/hooks/profile/useEditProfileForm";
 import clsx from "clsx";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { UserService } from "@/services/user.service";
 import { useAlert } from "@/hooks/register/useAlert";
 import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
 import { RegisterRepository } from "@/repositories/register.repository";
 import { LoadingScreen } from "../ui/LoadingScreen";
 import { useRouter } from "next/navigation";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 
 type Section = "profile" | "email";
 
@@ -45,18 +46,49 @@ export function EditProfileModal({
     username,
     setUsername,
     canEditUsername,
-    daysSinceUpdate,
   } = useEditProfileForm(user);
+
+  useEffect(() => {
+    if (!open) {
+      setEmail(user.email);
+      setBio(user.biography || "");
+      setPassword("");
+      setConfirmPassword("");
+      setUsername(user.username);
+      setSection("profile");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
 
   const { alertMsgs, setAlertMsgs, showAlert } = useAlert();
 
   const [loading, setLoading] = useState(false);
+
+  const [usernameError, setUsernameError] = useState(false);
+  const [emailError, setEmailError] = useState(false);
 
   const router = useRouter();
 
   const handleSave = async () => {
     setLoading(true);
     setAlertMsgs([]);
+
+    if (!username || username.trim() === "") {
+      setAlertMsgs(["El nombre de usuario no puede estar vacío."]);
+      setUsernameError(true);
+      setLoading(false);
+      return;
+    } else {
+      setUsernameError(false);
+    }
+    if (!email || email.trim() === "") {
+      setAlertMsgs(["El correo electrónico no puede estar vacío."]);
+      setEmailError(true);
+      setLoading(false);
+      return;
+    } else {
+      setEmailError(false);
+    }
 
     try {
       if (
@@ -188,11 +220,25 @@ export function EditProfileModal({
                     <label className="text-sm font-semibold">
                       Nombre de usuario
                     </label>
-                    <Input
-                      value={username}
-                      onChange={(e) => setUsername(e.target.value)}
-                      disabled={!canEditUsername}
-                    />
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Input
+                          value={username}
+                          onChange={(e) => setUsername(e.target.value)}
+                          disabled={!canEditUsername}
+                          tabIndex={0}
+                          className={
+                            usernameError ? "border-red-500 border-2" : ""
+                          }
+                        />
+                      </TooltipTrigger>
+                      {canEditUsername && (
+                        <TooltipContent side="bottom">
+                          Solo puedes cambiar tu nombre de usuario una vez cada
+                          30 días.
+                        </TooltipContent>
+                      )}
+                    </Tooltip>
                     {!canEditUsername && (
                       <p className="text-xs text-gray-500 mt-1">
                         Solo puedes cambiar tu nombre de usuario una vez cada 30
@@ -205,6 +251,7 @@ export function EditProfileModal({
                     <Input
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
+                      className={emailError ? "border-red-500 border-2" : ""}
                     />
                   </div>
                   <div>

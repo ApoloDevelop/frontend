@@ -28,6 +28,5 @@ export function useEditProfileForm(user: any) {
     confirmPassword,
     setConfirmPassword,
     canEditUsername,
-    daysSinceUpdate,
   };
 }
