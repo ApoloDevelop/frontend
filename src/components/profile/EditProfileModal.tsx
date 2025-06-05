@@ -19,6 +19,9 @@ import { RegisterRepository } from "@/repositories/register.repository";
 import { LoadingScreen } from "../ui/LoadingScreen";
 import { useRouter } from "next/navigation";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
+import { usePasswordToggle } from "@/hooks/register/usePasswordToggle";
+import { EyeToggleIcon } from "../ui/EyeToggleIcon";
+import { PasswordStrengthIndicator } from "../ui/PasswordStrengthIndicator";
 
 type Section = "profile" | "email";
 
@@ -33,6 +36,16 @@ export function EditProfileModal({
   user: any;
   onUserUpdated?: (updatedUser: any) => void;
 }) {
+  function isStrongPassword(password: string) {
+    return (
+      password.length >= 8 &&
+      /[A-Z]/.test(password) &&
+      /[a-z]/.test(password) &&
+      /\d/.test(password) &&
+      /[^A-Za-z0-9]/.test(password)
+    );
+  }
+
   const [section, setSection] = useState<Section>("profile");
   const {
     email,
@@ -48,6 +61,13 @@ export function EditProfileModal({
     canEditUsername,
   } = useEditProfileForm(user);
 
+  const {
+    showPassword,
+    togglePassword,
+    showConfirmPassword,
+    toggleConfirmPassword,
+  } = usePasswordToggle();
+
   useEffect(() => {
     if (!open) {
       setEmail(user.email);
@@ -56,8 +76,11 @@ export function EditProfileModal({
       setConfirmPassword("");
       setUsername(user.username);
       setSection("profile");
+      setUsernameError(false);
+      setEmailError(false);
+      setPasswordError(false);
+      setConfirmPasswordError(false);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
   const { alertMsgs, setAlertMsgs, showAlert } = useAlert();
@@ -66,6 +89,15 @@ export function EditProfileModal({
 
   const [usernameError, setUsernameError] = useState(false);
   const [emailError, setEmailError] = useState(false);
+  const [passwordError, setPasswordError] = useState(false);
+  const [confirmPasswordError, setConfirmPasswordError] = useState(false);
+
+  const isModified =
+    username !== user.username ||
+    email !== user.email ||
+    bio !== (user.biography || "") ||
+    password.length > 0 ||
+    confirmPassword.length > 0;
 
   const router = useRouter();
 
@@ -89,6 +121,29 @@ export function EditProfileModal({
     } else {
       setEmailError(false);
     }
+    if (password) {
+      if (password !== confirmPassword) {
+        setAlertMsgs(["Las contraseñas no coinciden"]);
+        setPasswordError(true);
+        setConfirmPasswordError(true);
+        setLoading(false);
+        return;
+      } else {
+        setPasswordError(false);
+        setConfirmPasswordError(false);
+      }
+      if (!isStrongPassword(password)) {
+        setAlertMsgs([
+          "La contraseña debe tener al menos 8 caracteres, una mayúscula, una minúscula, un número y un símbolo.",
+        ]);
+        setPasswordError(true);
+        setLoading(false);
+        return;
+      }
+    } else {
+      setPasswordError(false);
+      setConfirmPasswordError(false);
+    }
 
     try {
       if (
@@ -100,7 +155,6 @@ export function EditProfileModal({
           username !== user.username ? username : "",
           ""
         );
-        console.log("EXISTS", exists);
         if (exists.emailExists) {
           setAlertMsgs(["El correo electrónico ya está registrado."]);
           setLoading(false);
@@ -116,7 +170,6 @@ export function EditProfileModal({
         email,
         biography: bio,
       };
-      console.log(canEditUsername);
       if (canEditUsername && username !== user.username) {
         dataToUpdate.username = username;
       }
@@ -159,7 +212,7 @@ export function EditProfileModal({
               style={{
                 zIndex: 99999,
                 position: "absolute",
-                top: "-50px",
+                top: "-30px",
               }}
             >
               <Alert
@@ -265,21 +318,67 @@ export function EditProfileModal({
                     <label className="text-sm font-semibold">
                       Nueva contraseña
                     </label>
-                    <Input
-                      type="password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                    />
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div className="relative">
+                          <Input
+                            type={showPassword ? "text" : "password"}
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            className={`pr-10 ${
+                              passwordError ? "border-red-500 border-2" : ""
+                            }`}
+                          />
+                          <button
+                            type="button"
+                            tabIndex={-1}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-black cursor-pointer"
+                            onClick={togglePassword}
+                            aria-label={
+                              showPassword
+                                ? "Ocultar contraseña"
+                                : "Mostrar contraseña"
+                            }
+                          >
+                            <EyeToggleIcon show={showPassword} />
+                          </button>
+                        </div>
+                      </TooltipTrigger>
+
+                      <TooltipContent side="bottom">
+                        La contraseña debe tener al menos 8 caracteres, incluir
+                        una letra mayúscula, una minúscula, un número y un
+                        carácter especial.
+                      </TooltipContent>
+                    </Tooltip>
                   </div>
                   <div>
                     <label className="text-sm font-semibold">
                       Confirmar contraseña
                     </label>
-                    <Input
-                      type="password"
-                      value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
-                    />
+                    <div className="relative">
+                      <Input
+                        type={showConfirmPassword ? "text" : "password"}
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        className={`pr-10 ${
+                          confirmPasswordError ? "border-red-500 border-2" : ""
+                        }`}
+                      />
+                      <button
+                        type="button"
+                        tabIndex={-1}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-black cursor-pointer"
+                        onClick={toggleConfirmPassword}
+                        aria-label={
+                          showConfirmPassword
+                            ? "Ocultar contraseña"
+                            : "Mostrar contraseña"
+                        }
+                      >
+                        <EyeToggleIcon show={showConfirmPassword} />
+                      </button>
+                    </div>
                   </div>
                 </div>
               )}
@@ -298,7 +397,7 @@ export function EditProfileModal({
                 <Button variant="outline" onClick={onClose}>
                   Cancelar
                 </Button>
-                <Button onClick={handleSave} disabled={loading}>
+                <Button onClick={handleSave} disabled={loading || !isModified}>
                   Guardar
                 </Button>
               </div>
