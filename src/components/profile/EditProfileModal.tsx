@@ -113,8 +113,21 @@ export function EditProfileModal({
     } else {
       setUsernameError(false);
     }
+
     if (!email || email.trim() === "") {
       setAlertMsgs(["El correo electrónico no puede estar vacío."]);
+      setEmailError(true);
+      setLoading(false);
+      return;
+    } else if (
+      !/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email.trim())
+    ) {
+      setAlertMsgs(["El correo electrónico no tiene un formato válido."]);
+      setEmailError(true);
+      setLoading(false);
+      return;
+    } else if (email.length > 245) {
+      setAlertMsgs(["El correo electrónico es demasiado largo."]);
       setEmailError(true);
       setLoading(false);
       return;
@@ -292,6 +305,27 @@ export function EditProfileModal({
                         </TooltipContent>
                       )}
                     </Tooltip>
+                    {username && (
+                      <p
+                        className={`text-xs w-9/10 mt-2 ${
+                          username.length > 30 ||
+                          !/^[a-zA-Z0-9_]+$/.test(username)
+                            ? "text-red-500"
+                            : "text-gray-500"
+                        }`}
+                      >
+                        {username.length > 30 ? (
+                          "El nombre de usuario no puede tener más de 30 caracteres."
+                        ) : !/^[a-zA-Z0-9_]+$/.test(username) ? (
+                          "El nombre de usuario solo puede contener letras, números y guion bajo (_)."
+                        ) : (
+                          <>
+                            Tu nombre de usuario será:{" "}
+                            <span>@{username.toLowerCase()}</span>
+                          </>
+                        )}
+                      </p>
+                    )}
                     {!canEditUsername && (
                       <p className="text-xs text-gray-500 mt-1">
                         Solo puedes cambiar tu nombre de usuario una vez cada 30
@@ -309,10 +343,17 @@ export function EditProfileModal({
                   </div>
                   <div>
                     <label className="text-sm font-semibold">Biografía</label>
-                    <Textarea
-                      value={bio}
-                      onChange={(e) => setBio(e.target.value)}
-                    />
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Textarea
+                          value={bio}
+                          onChange={(e) => setBio(e.target.value)}
+                        />
+                      </TooltipTrigger>
+                      <TooltipContent side="bottom">
+                        La biografía no debe exceder los 1500 caracteres.
+                      </TooltipContent>
+                    </Tooltip>
                   </div>
                   <div>
                     <label className="text-sm font-semibold">
@@ -397,7 +438,18 @@ export function EditProfileModal({
                 <Button variant="outline" onClick={onClose}>
                   Cancelar
                 </Button>
-                <Button onClick={handleSave} disabled={loading || !isModified}>
+                <Button
+                  onClick={handleSave}
+                  disabled={Boolean(
+                    loading ||
+                      !isModified ||
+                      username.length > 30 ||
+                      !/^[a-zA-Z0-9_]+$/.test(username) ||
+                      email.length > 245 ||
+                      !email.includes("@") ||
+                      bio.length > 1500
+                  )}
+                >
                   Guardar
                 </Button>
               </div>

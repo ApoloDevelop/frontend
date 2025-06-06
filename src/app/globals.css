@@ -158,6 +158,10 @@
   pointer-events: none;
 }
 
+.field-sizing {
+  field-sizing: content;
+}
+
 .floating-label input:focus + label,
 .floating-label input:not(:placeholder-shown) + label {
   top: 8px;
