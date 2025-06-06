@@ -20,6 +20,7 @@ import { StepIndicator } from "@/components/register/StepIndicator";
 import { RegisterFormStep1 } from "@/components/register/steps/RegisterFormStep1";
 import { RegisterFormStep2 } from "@/components/register/steps/RegisterFormStep2";
 import { RegisterFormStep3 } from "@/components/register/steps/RegisterFormStep3";
+import { AlertMessage } from "@/components/ui/AlertMessage";
 
 export default function RegisterPage() {
   // Constants definition
@@ -182,30 +183,7 @@ export default function RegisterPage() {
             backdropFilter: "blur(12px)",
           }}
         ></div>
-        {(alertMsgs.length > 0 || showAlert) && (
-          <div
-            className={`fixed top-4 left-1/2 -translate-x-1/2 w-full max-w-md transition-opacity duration-300 ${
-              showAlert ? "opacity-100" : "opacity-0"
-            }`}
-            style={{
-              zIndex: 99999,
-              position: "absolute",
-              top: "3rem",
-            }}
-          >
-            <Alert
-              variant="destructive"
-              className="bg-white to-red-700 text-red-500 relative border border-red-500 shadow-lg"
-            >
-              <AlertTitle>Error</AlertTitle>
-              <AlertDescription>
-                {alertMsgs.map((msg, index) => (
-                  <p key={index}>{msg}</p>
-                ))}
-              </AlertDescription>
-            </Alert>
-          </div>
-        )}
+        <AlertMessage alertMsgs={alertMsgs} showAlert={showAlert} />
         <div
           className="p-6 rounded-xl w-9/10 lg:w-full max-w-3xl min-h-[500px] transform transition flex flex-col gap-y-px duration-300 opacity-95 animate-fade-in"
           style={{

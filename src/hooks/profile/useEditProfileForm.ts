@@ -7,6 +7,14 @@ export function useEditProfileForm(user: any) {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
+  const resetForm = () => {
+    setUsername(user.username);
+    setEmail(user.email);
+    setBio(user.biography || "");
+    setPassword("");
+    setConfirmPassword("");
+  };
+
   const lastUpdated = user.username_last_update
     ? new Date(user.username_last_update)
     : null;
@@ -28,5 +36,6 @@ export function useEditProfileForm(user: any) {
     confirmPassword,
     setConfirmPassword,
     canEditUsername,
+    resetForm,
   };
 }
