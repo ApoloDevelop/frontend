@@ -6,6 +6,11 @@ export function useEditProfileForm(user: any) {
   const [bio, setBio] = useState(user.biography || "");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [birthdate, setBirthdate] = useState(user?.birthdate || "");
+  const [country, setCountry] = useState(user?.country || "");
+  const [city, setCity] = useState(user?.city || "");
+  const [phonePrefix, setPhonePrefix] = useState(user?.phonePrefix || "");
+  const [phone, setPhone] = useState(user?.phone || "");
 
   const resetForm = () => {
     setUsername(user.username);
@@ -13,6 +18,11 @@ export function useEditProfileForm(user: any) {
     setBio(user.biography || "");
     setPassword("");
     setConfirmPassword("");
+    setBirthdate(user?.birthdate || "");
+    setCountry(user?.country || "");
+    setCity(user?.city || "");
+    setPhonePrefix(user?.phonePrefix || "");
+    setPhone(user?.phone || "");
   };
 
   const lastUpdated = user.username_last_update
@@ -35,6 +45,16 @@ export function useEditProfileForm(user: any) {
     setPassword,
     confirmPassword,
     setConfirmPassword,
+    birthdate,
+    setBirthdate,
+    country,
+    setCountry,
+    city,
+    setCity,
+    phonePrefix,
+    setPhonePrefix,
+    phone,
+    setPhone,
     canEditUsername,
     resetForm,
   };

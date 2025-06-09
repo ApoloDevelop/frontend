@@ -3,7 +3,6 @@
 import { Button } from "@/components/ui/button";
 import { countries } from "@/data/countries";
 import Flag from "react-world-flags";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { LoadingScreen } from "@/components/ui/LoadingScreen";
 import { RegisterService } from "@/services/register.service";
 import {
@@ -197,11 +196,7 @@ export default function RegisterPage() {
 
           {/* Contenedor del slide */}
           <div className="overflow-x-hidden min-w-0 flex">
-            <div
-              className="flex transition-transform min-w-0 duration-500"
-              style={{ transform: `translateX(-${(step - 1) * 100}%)` }}
-            >
-              {/* Página 1 */}
+            {step === 1 && (
               <RegisterFormStep1
                 formData={formData}
                 fieldErrors={fieldErrors}
@@ -211,8 +206,8 @@ export default function RegisterPage() {
                 showConfirmPassword={showConfirmPassword}
                 toggleConfirmPassword={toggleConfirmPassword}
               />
-
-              {/* Página 2*/}
+            )}
+            {step === 2 && (
               <RegisterFormStep2
                 formData={formData}
                 fieldErrors={fieldErrors}
@@ -231,8 +226,8 @@ export default function RegisterPage() {
                 countryOptions={countryOptions}
                 dialCodeOptions={dialCodeOptions}
               />
-
-              {/* Página 3 */}
+            )}
+            {step === 3 && (
               <RegisterFormStep3
                 profileImage={profileImage}
                 imagePreview={imagePreview ?? ""}
@@ -254,7 +249,7 @@ export default function RegisterPage() {
                 onEditClick={() => setShowCropper(true)}
                 onCloseCropper={() => setShowCropper(false)}
               />
-            </div>
+            )}
           </div>
 
           {/* Indicadores de página */}

@@ -6,28 +6,21 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { useEditProfileForm } from "@/hooks/profile/useEditProfileForm";
-import clsx from "clsx";
 import { useEffect, useState } from "react";
 import { UserService } from "@/services/user.service";
 import { useAlert } from "@/hooks/register/useAlert";
-import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
-import { RegisterRepository } from "@/repositories/register.repository";
 import { LoadingScreen } from "../ui/LoadingScreen";
 import { useRouter } from "next/navigation";
-import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import { usePasswordToggle } from "@/hooks/register/usePasswordToggle";
-import { EyeToggleIcon } from "../ui/EyeToggleIcon";
-import { useEditProfileValidation } from "@/hooks/profile/useEditProfileValidation";
 import { useEditProfileUpdate } from "@/hooks/profile/useEditProfileUpdate";
 import { EditUserDataForm } from "./EditUserDataForm";
 import { EditProfileModalSidebar } from "./EditProfileModalSidebar";
 import { AlertMessage } from "../ui/AlertMessage";
+import { EditPersonalDataForm } from "./EditPersonalDataForm";
 
-type Section = "profile" | "email";
+type Section = "profile" | "personal";
 
 export function EditProfileModal({
   open,
@@ -52,6 +45,16 @@ export function EditProfileModal({
     setConfirmPassword,
     username,
     setUsername,
+    birthdate,
+    setBirthdate,
+    country,
+    setCountry,
+    city,
+    setCity,
+    phonePrefix,
+    setPhonePrefix,
+    phone,
+    setPhone,
     canEditUsername,
     resetForm,
   } = useEditProfileForm(user);
@@ -156,7 +159,7 @@ export function EditProfileModal({
                 <DialogTitle>
                   {section === "profile"
                     ? "Datos del usuario"
-                    : "Preferencias de correo"}
+                    : "Datos personales"}
                 </DialogTitle>
               </DialogHeader>
 
@@ -185,14 +188,20 @@ export function EditProfileModal({
                 />
               )}
 
-              {section === "email" && (
-                <div className="mt-4">
-                  <p className="text-sm text-gray-600">
-                    Aquí puedes configurar tus preferencias de correo
-                    electrónico.
-                  </p>
-                  {/* Aquí puedes añadir más campos en el futuro */}
-                </div>
+              {section === "personal" && (
+                <EditPersonalDataForm
+                  birthdate={birthdate}
+                  setBirthdate={setBirthdate}
+                  country={country}
+                  setCountry={setCountry}
+                  city={city}
+                  setCity={setCity}
+                  phonePrefix={phonePrefix}
+                  setPhonePrefix={setPhonePrefix}
+                  phone={phone}
+                  setPhone={setPhone}
+                  fieldErrors={fieldErrors}
+                />
               )}
 
               <div className="flex justify-end gap-2 mt-6">

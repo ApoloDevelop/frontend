@@ -158,15 +158,17 @@
   pointer-events: none;
 }
 
-.field-sizing {
-  field-sizing: content;
-}
-
 .floating-label input:focus + label,
 .floating-label input:not(:placeholder-shown) + label {
   top: 8px;
   font-size: 12px;
   color: #000;
+}
+
+.textarea-limit {
+  max-height: 150px;
+  resize: vertical;
+  overflow-y: auto;
 }
 
 @layer base {

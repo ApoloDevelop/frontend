@@ -109,7 +109,9 @@ export function EditUserDataForm({
             <Textarea
               value={bio}
               onChange={(e) => setBio(e.target.value)}
-              className={bioError ? "border-red-500 border-2" : ""}
+              className={`border ${
+                bioError ? "border-red-500" : ""
+              } textarea-limit`}
             />
           </TooltipTrigger>
           <TooltipContent side="bottom">
