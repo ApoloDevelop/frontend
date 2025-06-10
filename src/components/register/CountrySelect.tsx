@@ -43,7 +43,6 @@ export const CountrySelect: React.FC<CountrySelectProps> = ({
         onChange={(opt) => onChange(opt)}
         placeholder="Selecciona tu país (opcional)"
         menuPlacement="bottom"
-        menuPortalTarget={typeof window !== "undefined" ? document.body : null}
         styles={{
           control: (base, state) => ({
             ...base,
@@ -53,7 +52,7 @@ export const CountrySelect: React.FC<CountrySelectProps> = ({
             "&:hover": { borderColor: "var(--border)" },
             height: "50px",
           }),
-          menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+          menuPortal: (base) => ({ ...base, zIndex: 9999999 }),
           option: (base, state) => ({
             ...base,
             backgroundColor: state.isSelected

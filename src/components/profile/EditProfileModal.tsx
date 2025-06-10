@@ -55,6 +55,8 @@ export function EditProfileModal({
     setPhonePrefix,
     phone,
     setPhone,
+    genre,
+    setGenre,
     canEditUsername,
     resetForm,
   } = useEditProfileForm(user);
@@ -141,7 +143,7 @@ export function EditProfileModal({
     <>
       {loading && <LoadingScreen />}
       <Dialog open={open} onOpenChange={onClose}>
-        <DialogContent className="p-0">
+        <DialogContent className="p-0 z-50">
           <AlertMessage
             alertMsgs={alertMsgs}
             showAlert={showAlert}
@@ -200,6 +202,8 @@ export function EditProfileModal({
                   setPhonePrefix={setPhonePrefix}
                   phone={phone}
                   setPhone={setPhone}
+                  genre={genre}
+                  setGenre={setGenre}
                   fieldErrors={fieldErrors}
                 />
               )}

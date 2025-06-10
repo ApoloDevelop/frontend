@@ -3,6 +3,7 @@ import { PhoneInput } from "@/components/register/PhoneInput";
 import { Input } from "../ui/input";
 import { countries } from "@/data/countries";
 import Flag from "react-world-flags";
+import { GenreSelect } from "../register/GenreSelect";
 
 interface EditPersonalDataFormProps {
   birthdate: string;
@@ -15,6 +16,8 @@ interface EditPersonalDataFormProps {
   setPhonePrefix: (v: string) => void;
   phone: string;
   setPhone: (v: string) => void;
+  genre: string | null;
+  setGenre: (v: string | null) => void;
   fieldErrors: any;
 }
 
@@ -29,6 +32,8 @@ export function EditPersonalDataForm({
   setPhonePrefix,
   phone,
   setPhone,
+  genre,
+  setGenre,
   fieldErrors,
 }: EditPersonalDataFormProps) {
   const countryOptions = countries
@@ -53,45 +58,68 @@ export function EditPersonalDataForm({
   }));
 
   return (
-    <form className="space-y-4 flex flex-col items-center">
-      <label className="text-sm font-semibold">Fecha de nacimiento</label>
-      <Input
-        name="birthdate"
-        type="date"
-        max={new Date().toISOString().split("T")[0]}
-        value={birthdate}
-        onChange={(e) => setBirthdate(e.target.value)}
-        required
-        // error={fieldErrors.birthdate}
-      />
+    <div className="space-y-4 mt-4">
+      <div>
+        <label className="text-sm font-semibold mb-1 block">
+          Fecha de nacimiento
+        </label>
+        <Input
+          name="birthdate"
+          type="date"
+          max={new Date().toISOString().split("T")[0]}
+          value={birthdate}
+          onChange={(e) => setBirthdate(e.target.value)}
+          required
+          className={fieldErrors.birthdate ? "border-red-500 border-2" : ""}
+        />
+      </div>
 
-      <label className="text-sm font-semibold">País</label>
-      <CountrySelect
-        options={countryOptions}
-        value={country}
-        onChange={(opt) => setCountry(opt?.value || "")}
-      />
+      <div>
+        <label className="text-sm font-semibold mb-1 block">País</label>
+        <CountrySelect
+          options={countryOptions}
+          value={country}
+          onChange={(opt) => setCountry(opt?.value || "")}
+        />
+      </div>
 
-      <label className="text-sm font-semibold">Ciudad</label>
-      <Input
-        name="city"
-        autoComplete="address-level2"
-        value={city}
-        onChange={(e) => setCity(e.target.value)}
-        // error={fieldErrors.city}
-      />
+      <div>
+        <label className="text-sm font-semibold mb-1 block">Ciudad</label>
+        <Input
+          name="city"
+          autoComplete="address-level2"
+          value={city}
+          onChange={(e) => setCity(e.target.value)}
+          className={fieldErrors.city ? "border-red-500 border-2" : ""}
+        />
+      </div>
 
-      <label className="text-sm font-semibold">Teléfono</label>
-      <PhoneInput
-        prefix={phonePrefix}
-        number={phone}
-        onChange={(newPrefix, newNumber) => {
-          setPhonePrefix(newPrefix);
-          setPhone(newNumber);
-        }}
-        dialCodeOptions={dialCodeOptions}
-        fieldError={fieldErrors.phone}
-      />
-    </form>
+      <div>
+        <label className="text-sm font-semibold mb-1 block">Género</label>
+        <GenreSelect
+          value={genre}
+          onChange={setGenre}
+          hideFloatingLabel
+          hidePlaceholder
+          className="w-full mb-0"
+          height={"30px"}
+          borderRadius="0.5rem"
+        />
+      </div>
+
+      <div>
+        <label className="text-sm font-semibold mb-1 block">Teléfono</label>
+        <PhoneInput
+          prefix={phonePrefix}
+          number={phone}
+          onChange={(newPrefix, newNumber) => {
+            setPhonePrefix(newPrefix);
+            setPhone(newNumber);
+          }}
+          dialCodeOptions={dialCodeOptions}
+          fieldError={fieldErrors.phone}
+        />
+      </div>
+    </div>
   );
 }

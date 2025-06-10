@@ -58,7 +58,11 @@ export const RegisterFormStep2: React.FC<RegisterFormStep2Props> = ({
         />
 
         {/* Género */}
-        <GenreSelect value={formData.social_genre} onChange={onGenreChange} />
+        <GenreSelect
+          value={formData.social_genre}
+          onChange={onGenreChange}
+          className="w-9/10 mb-6"
+        />
 
         {/* Teléfono */}
         <PhoneInput

@@ -196,7 +196,10 @@ export default function RegisterPage() {
 
           {/* Contenedor del slide */}
           <div className="overflow-x-hidden min-w-0 flex">
-            {step === 1 && (
+            <div
+              className="flex transition-transform min-w-0 duration-500"
+              style={{ transform: `translateX(-${(step - 1) * 100}%)` }}
+            >
               <RegisterFormStep1
                 formData={formData}
                 fieldErrors={fieldErrors}
@@ -206,8 +209,7 @@ export default function RegisterPage() {
                 showConfirmPassword={showConfirmPassword}
                 toggleConfirmPassword={toggleConfirmPassword}
               />
-            )}
-            {step === 2 && (
+
               <RegisterFormStep2
                 formData={formData}
                 fieldErrors={fieldErrors}
@@ -226,8 +228,7 @@ export default function RegisterPage() {
                 countryOptions={countryOptions}
                 dialCodeOptions={dialCodeOptions}
               />
-            )}
-            {step === 3 && (
+
               <RegisterFormStep3
                 profileImage={profileImage}
                 imagePreview={imagePreview ?? ""}
@@ -249,7 +250,7 @@ export default function RegisterPage() {
                 onEditClick={() => setShowCropper(true)}
                 onCloseCropper={() => setShowCropper(false)}
               />
-            )}
+            </div>
           </div>
 
           {/* Indicadores de página */}

@@ -11,6 +11,7 @@ export function useEditProfileForm(user: any) {
   const [city, setCity] = useState(user?.city || "");
   const [phonePrefix, setPhonePrefix] = useState(user?.phonePrefix || "");
   const [phone, setPhone] = useState(user?.phone || "");
+  const [genre, setGenre] = useState(user?.genre || null);
 
   const resetForm = () => {
     setUsername(user.username);
@@ -23,6 +24,7 @@ export function useEditProfileForm(user: any) {
     setCity(user?.city || "");
     setPhonePrefix(user?.phonePrefix || "");
     setPhone(user?.phone || "");
+    setGenre(user?.genre || null);
   };
 
   const lastUpdated = user.username_last_update
@@ -55,6 +57,8 @@ export function useEditProfileForm(user: any) {
     setPhonePrefix,
     phone,
     setPhone,
+    genre,
+    setGenre,
     canEditUsername,
     resetForm,
   };

@@ -1,8 +1,5 @@
 import { useState, useRef } from "react";
-import {
-  DEFAULT_AVATAR_URL,
-  acceptedTypes,
-} from "@/constants/registerConstants";
+import { DEFAULT_AVATAR_URL } from "@/constants/registerConstants";
 
 export function useRegisterForm() {
   const [step, setStep] = useState(1);
