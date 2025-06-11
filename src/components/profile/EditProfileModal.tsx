@@ -143,7 +143,7 @@ export function EditProfileModal({
     <>
       {loading && <LoadingScreen />}
       <Dialog open={open} onOpenChange={onClose}>
-        <DialogContent className="p-0 z-50">
+        <DialogContent className="p-0" style={{ pointerEvents: "auto" }}>
           <AlertMessage
             alertMsgs={alertMsgs}
             showAlert={showAlert}

@@ -110,7 +110,6 @@ export const PhoneInput: React.FC<PhoneInputProps> = ({
             !prefix ? "bg-gray-100" : "bg-white"
           }`}
           style={{
-            zIndex: 1,
             whiteSpace: "nowrap",
             overflow: "hidden",
             textOverflow: "ellipsis",

@@ -13,45 +13,58 @@ interface CountrySelectProps {
   options: CountryOption[];
   value: string;
   onChange: (selected: CountryOption | null) => void;
+  hideFloatingLabel?: boolean;
+  hidePlaceholder?: boolean;
+  className?: string;
+  height?: string | number;
+  borderRadius?: string;
 }
 
 export const CountrySelect: React.FC<CountrySelectProps> = ({
   options,
   value,
   onChange,
+  hideFloatingLabel = false,
+  hidePlaceholder = false,
+  className = "",
+  height = "50px",
+  borderRadius = "0.375rem",
 }) => {
   const selected = options.find((opt) => opt.value === value) || null;
 
   return (
-    <div className="relative w-9/10 mb-6">
-      <p
-        id="country-label"
-        className="absolute z-10 translate-x-3 p-1 bg-white -mb-7"
-        style={{
-          display: value ? "block" : "none",
-          top: "-15px",
-          fontSize: "0.8rem",
-          zIndex: 1,
-        }}
-      >
-        Selecciona tu país (opcional)
-      </p>
+    <div className={`relative ${className}`}>
+      {!hideFloatingLabel && (
+        <p
+          id="country-label"
+          className="absolute z-10 translate-x-3 p-1 bg-white -mb-7"
+          style={{
+            display: value ? "block" : "none",
+            top: "-15px",
+            fontSize: "0.8rem",
+            zIndex: 1,
+          }}
+        >
+          Selecciona tu país (opcional)
+        </p>
+      )}
       <Select
         options={options}
         value={selected}
         isClearable
         onChange={(opt) => onChange(opt)}
-        placeholder="Selecciona tu país (opcional)"
+        placeholder={hidePlaceholder ? "" : "Selecciona tu país (opcional)"}
         menuPlacement="bottom"
-        menuPortalTarget={typeof window !== "undefined" ? document.body : null}
+        // menuPortalTarget={typeof window !== "undefined" ? document.body : null}
+        maxMenuHeight={200}
         styles={{
           control: (base, state) => ({
             ...base,
             borderColor: "var(--border)",
             boxShadow: state.isFocused ? "0 0 0 1px var(--ring)" : "none",
-            borderRadius: "0.375rem",
+            borderRadius: borderRadius ? borderRadius : "0.375rem",
             "&:hover": { borderColor: "var(--border)" },
-            height: "50px",
+            height: height,
           }),
           menuPortal: (base) => ({ ...base, zIndex: 99999 }),
           option: (base, state) => ({

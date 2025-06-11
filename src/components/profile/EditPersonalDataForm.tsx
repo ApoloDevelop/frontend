@@ -80,6 +80,11 @@ export function EditPersonalDataForm({
           options={countryOptions}
           value={country}
           onChange={(opt) => setCountry(opt?.value || "")}
+          className="w-full mb-0"
+          hideFloatingLabel
+          hidePlaceholder
+          borderRadius="0.5rem"
+          height={"30px"}
         />
       </div>
 
