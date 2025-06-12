@@ -68,22 +68,6 @@ export default function RegisterPage() {
     setIsLoading
   );
 
-  //Options for select
-  const countryOptions = countries
-    .sort((a, b) =>
-      a.translations.spa.common.localeCompare(b.translations.spa.common, "es")
-    ) // Ordena los países por su traducción al español
-    .map((country) => ({
-      value: country.translations.spa.common,
-      label: (
-        <div className="flex items-center">
-          <Flag code={country.cca2} className="w-5 h-5 mr-2" />
-          {country.translations.spa.common}
-        </div>
-      ),
-      dialCode: country.idd.root + (country.idd.suffixes?.[0] || ""),
-    }));
-
   const dialCodeOptions = countries.map((country) => ({
     value: country.idd.root + (country.idd.suffixes?.[0] || ""),
     label: country.translations.spa.common,
@@ -225,8 +209,6 @@ export default function RegisterPage() {
                     phone: number,
                   })
                 }
-                countryOptions={countryOptions}
-                dialCodeOptions={dialCodeOptions}
               />
 
               <RegisterFormStep3

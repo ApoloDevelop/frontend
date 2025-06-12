@@ -1,6 +1,7 @@
 // components/register/CountrySelect.tsx
 import React from "react";
 import Select from "react-select";
+import { countries } from "@/data/countries";
 import Flag from "react-world-flags";
 
 interface CountryOption {
@@ -10,7 +11,6 @@ interface CountryOption {
 }
 
 interface CountrySelectProps {
-  options: CountryOption[];
   value: string;
   onChange: (selected: CountryOption | null) => void;
   hideFloatingLabel?: boolean;
@@ -20,8 +20,22 @@ interface CountrySelectProps {
   borderRadius?: string;
 }
 
+const countryOptions = countries
+  .sort((a, b) =>
+    a.translations.spa.common.localeCompare(b.translations.spa.common, "es")
+  )
+  .map((country) => ({
+    value: country.translations.spa.common,
+    label: (
+      <div className="flex items-center">
+        <Flag code={country.cca2} className="w-5 h-5 mr-2" />
+        {country.translations.spa.common}
+      </div>
+    ),
+    dialCode: country.idd.root + (country.idd.suffixes?.[0] || ""),
+  }));
+
 export const CountrySelect: React.FC<CountrySelectProps> = ({
-  options,
   value,
   onChange,
   hideFloatingLabel = false,
@@ -30,7 +44,7 @@ export const CountrySelect: React.FC<CountrySelectProps> = ({
   height = "50px",
   borderRadius = "0.375rem",
 }) => {
-  const selected = options.find((opt) => opt.value === value) || null;
+  const selected = countryOptions.find((opt) => opt.value === value) || null;
 
   return (
     <div className={`relative ${className}`}>
@@ -49,7 +63,7 @@ export const CountrySelect: React.FC<CountrySelectProps> = ({
         </p>
       )}
       <Select
-        options={options}
+        options={countryOptions}
         value={selected}
         isClearable
         onChange={(opt) => onChange(opt)}
@@ -61,7 +75,10 @@ export const CountrySelect: React.FC<CountrySelectProps> = ({
           control: (base, state) => ({
             ...base,
             borderColor: "var(--border)",
-            boxShadow: state.isFocused ? "0 0 0 1px var(--ring)" : "none",
+            borderWidth: "1.3px",
+            boxShadow: state.isFocused
+              ? "0 0 0 1px var(--ring), 0 1px 2px 0 rgb(0 0 0 / 0.05)" // sombra + ring al enfocar
+              : "0 1px 2px 0 rgb(0 0 0 / 0.05)", // solo sombra cuando no está enfocado
             borderRadius: borderRadius ? borderRadius : "0.375rem",
             "&:hover": { borderColor: "var(--border)" },
             height: height,
@@ -72,8 +89,8 @@ export const CountrySelect: React.FC<CountrySelectProps> = ({
             backgroundColor: state.isSelected
               ? "#000000"
               : state.isFocused
-              ? "#E6E6E6"
-              : "white",
+                ? "#E6E6E6"
+                : "white",
             color: state.isSelected ? "white" : "black",
           }),
           placeholder: (base) => ({

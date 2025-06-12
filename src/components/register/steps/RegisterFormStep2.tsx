@@ -11,8 +11,6 @@ interface RegisterFormStep2Props {
   onCountryChange: (selected: any) => void;
   onGenreChange: (val: string | null) => void;
   onPhoneChange: (prefix: string, number: string) => void;
-  countryOptions: any[];
-  dialCodeOptions: any[];
 }
 
 export const RegisterFormStep2: React.FC<RegisterFormStep2Props> = ({
@@ -22,8 +20,6 @@ export const RegisterFormStep2: React.FC<RegisterFormStep2Props> = ({
   onCountryChange,
   onGenreChange,
   onPhoneChange,
-  countryOptions,
-  dialCodeOptions,
 }) => {
   return (
     <div className="w-full flex-shrink-0 h-auto">
@@ -43,9 +39,9 @@ export const RegisterFormStep2: React.FC<RegisterFormStep2Props> = ({
 
         {/* País */}
         <CountrySelect
-          options={countryOptions}
           value={formData.country}
           onChange={onCountryChange}
+          className="w-9/10 mb-6"
         />
 
         {/* Ciudad */}
@@ -69,7 +65,6 @@ export const RegisterFormStep2: React.FC<RegisterFormStep2Props> = ({
           prefix={formData.phonePrefix}
           number={formData.phone}
           onChange={onPhoneChange}
-          dialCodeOptions={dialCodeOptions}
           fieldError={fieldErrors.phone}
         />
       </form>

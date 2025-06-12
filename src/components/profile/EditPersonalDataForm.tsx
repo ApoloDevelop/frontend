@@ -36,27 +36,6 @@ export function EditPersonalDataForm({
   setGenre,
   fieldErrors,
 }: EditPersonalDataFormProps) {
-  const countryOptions = countries
-    .sort((a, b) =>
-      a.translations.spa.common.localeCompare(b.translations.spa.common, "es")
-    )
-    .map((country) => ({
-      value: country.translations.spa.common,
-      label: (
-        <div className="flex items-center">
-          <Flag code={country.cca2} className="w-5 h-5 mr-2" />
-          {country.translations.spa.common}
-        </div>
-      ),
-      dialCode: country.idd.root + (country.idd.suffixes?.[0] || ""),
-    }));
-
-  const dialCodeOptions = countries.map((country) => ({
-    value: country.idd.root + (country.idd.suffixes?.[0] || ""),
-    label: country.translations.spa.common,
-    flagCode: country.cca2,
-  }));
-
   return (
     <div className="space-y-4 mt-4">
       <div>
@@ -77,7 +56,6 @@ export function EditPersonalDataForm({
       <div>
         <label className="text-sm font-semibold mb-1 block">País</label>
         <CountrySelect
-          options={countryOptions}
           value={country}
           onChange={(opt) => setCountry(opt?.value || "")}
           className="w-full mb-0"
@@ -121,8 +99,12 @@ export function EditPersonalDataForm({
             setPhonePrefix(newPrefix);
             setPhone(newNumber);
           }}
-          dialCodeOptions={dialCodeOptions}
           fieldError={fieldErrors.phone}
+          className="flex w-9/10 mb-6 gap-2"
+          hidePlaceholder
+          hideFloatingLabel
+          height={"30px"}
+          borderRadius="0.5rem"
         />
       </div>
     </div>
