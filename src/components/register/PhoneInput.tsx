@@ -3,6 +3,7 @@ import { countries } from "@/data/countries";
 import React from "react";
 import Select from "react-select";
 import Flag from "react-world-flags";
+import { Input } from "../ui/input";
 
 interface DialCodeOption {
   value: string;
@@ -20,6 +21,7 @@ interface PhoneInputProps {
   className?: string;
   height?: string | number;
   borderRadius?: string;
+  isEdit?: boolean;
 }
 
 const dialCodeOptions = countries.map((country) => ({
@@ -38,6 +40,7 @@ export const PhoneInput: React.FC<PhoneInputProps> = ({
   className = "",
   height = "50px",
   borderRadius = "0.375rem",
+  isEdit = false,
 }) => {
   const formatOptionLabel = (
     { label, flagCode }: DialCodeOption,
@@ -104,24 +107,46 @@ export const PhoneInput: React.FC<PhoneInputProps> = ({
       {/* Teléfono */}
 
       <div className="floating-label w-5/9 sm:w-6/9 relative mb-6">
-        <input
-          type="tel"
-          name="phone"
-          id="phone"
-          placeholder=" "
-          value={`${prefix} ${number}`.trim()}
-          onChange={(e) => {
-            const inputValue = e.target.value;
-            if (inputValue.startsWith(prefix)) {
-              onChange(prefix, inputValue.slice(prefix.length).trim());
-            }
-          }}
-          required
-          disabled={!prefix}
-          className={`peer w-full px-3 py-2 border rounded-md focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive ${
-            fieldError ? "border-red-500 border-2" : "focus-visible:ring-[4px]"
-          } ${!prefix ? "bg-gray-100 text-gray-500 border-gray-200" : ""}`}
-        />
+        {isEdit ? (
+          <Input
+            type="tel"
+            name="phone"
+            id="phone"
+            placeholder=" "
+            value={`${prefix} ${number}`.trim()}
+            onChange={(e) => {
+              const inputValue = e.target.value;
+              if (inputValue.startsWith(prefix)) {
+                onChange(prefix, inputValue.slice(prefix.length).trim());
+              }
+            }}
+            required
+            disabled={!prefix}
+            className={`${fieldError ? "border-red-500 border-2" : ""} ${!prefix ? "bg-gray-100 text-gray-500 border-gray-200" : ""}`}
+            style={{ height: "35px", borderRadius: borderRadius }}
+          />
+        ) : (
+          <input
+            type="tel"
+            name="phone"
+            id="phone"
+            placeholder=" "
+            value={`${prefix} ${number}`.trim()}
+            onChange={(e) => {
+              const inputValue = e.target.value;
+              if (inputValue.startsWith(prefix)) {
+                onChange(prefix, inputValue.slice(prefix.length).trim());
+              }
+            }}
+            required
+            disabled={!prefix}
+            className={`peer w-full px-3 py-2 border rounded-md focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive ${
+              fieldError
+                ? "border-red-500 border-2"
+                : "focus-visible:ring-[4px]"
+            } ${!prefix ? "bg-gray-100 text-gray-500 border-gray-200" : ""}`}
+          />
+        )}
         {!hideFloatingLabel && (
           <label
             htmlFor="phone"

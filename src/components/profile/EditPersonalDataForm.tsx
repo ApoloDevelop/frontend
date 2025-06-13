@@ -1,8 +1,6 @@
 import { CountrySelect } from "@/components/register/CountrySelect";
 import { PhoneInput } from "@/components/register/PhoneInput";
 import { Input } from "../ui/input";
-import { countries } from "@/data/countries";
-import Flag from "react-world-flags";
 import { GenreSelect } from "../register/GenreSelect";
 
 interface EditPersonalDataFormProps {
@@ -100,11 +98,12 @@ export function EditPersonalDataForm({
             setPhone(newNumber);
           }}
           fieldError={fieldErrors.phone}
-          className="flex w-9/10 mb-6 gap-2"
+          className="flex w-full mb-6 gap-2"
           hidePlaceholder
           hideFloatingLabel
           height={"30px"}
           borderRadius="0.5rem"
+          isEdit
         />
       </div>
     </div>

@@ -13,19 +13,23 @@ export function useEditProfileForm(user: any) {
   const [phone, setPhone] = useState(user?.phone || "");
   const [genre, setGenre] = useState(user?.genre || null);
 
+  console.log("useEditProfileForm initialized with user:", user);
+
   const resetForm = () => {
     setUsername(user.username);
     setEmail(user.email);
     setBio(user.biography || "");
     setPassword("");
     setConfirmPassword("");
-    setBirthdate(user?.birthdate || "");
+    setBirthdate(user.birthdate.slice(0, 10) || "");
     setCountry(user?.country || "");
     setCity(user?.city || "");
     setPhonePrefix(user?.phonePrefix || "");
     setPhone(user?.phone || "");
     setGenre(user?.genre || null);
   };
+
+  console.log(user.birthdate, "user.birthdate in useEditProfileForm");
 
   const lastUpdated = user.username_last_update
     ? new Date(user.username_last_update)

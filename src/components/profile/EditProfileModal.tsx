@@ -9,7 +9,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { useEditProfileForm } from "@/hooks/profile/useEditProfileForm";
 import { useEffect, useState } from "react";
-import { UserService } from "@/services/user.service";
 import { useAlert } from "@/hooks/register/useAlert";
 import { LoadingScreen } from "../ui/LoadingScreen";
 import { useRouter } from "next/navigation";
@@ -86,7 +85,13 @@ export function EditProfileModal({
     email !== user.email ||
     bio !== (user.biography || "") ||
     password.length > 0 ||
-    confirmPassword.length > 0;
+    confirmPassword.length > 0 ||
+    birthdate !== user.birthdate ||
+    country !== user.country ||
+    city !== user.city ||
+    phonePrefix !== user.phonePrefix ||
+    phone !== (user.phone || "") ||
+    genre !== user.genre;
 
   useEffect(() => {
     if (!open) {

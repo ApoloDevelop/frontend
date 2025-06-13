@@ -31,6 +31,7 @@ export default function UserProfilePage({
   }
 
   const currentUser = localUser || user;
+  console.log("Current User:", currentUser);
 
   return (
     <div className="min-h-screen bg-gray-100">
