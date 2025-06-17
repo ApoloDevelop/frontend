@@ -68,12 +68,6 @@ export default function RegisterPage() {
     setIsLoading
   );
 
-  const dialCodeOptions = countries.map((country) => ({
-    value: country.idd.root + (country.idd.suffixes?.[0] || ""),
-    label: country.translations.spa.common,
-    flagCode: country.cca2,
-  }));
-
   // Handlers
   const handleNext = async () => {
     const isValid = await validateStep(step);

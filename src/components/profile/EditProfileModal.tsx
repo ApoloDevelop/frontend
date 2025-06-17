@@ -80,20 +80,26 @@ export function EditProfileModal({
 
   const router = useRouter();
 
+  const formatDate = (date: string) => (date ? date.slice(0, 10) : "");
+
+  const normalize = (v: any) =>
+    v === undefined || v === null || v === "" ? null : v;
+
   const isModified =
     username !== user.username ||
     email !== user.email ||
     bio !== (user.biography || "") ||
     password.length > 0 ||
     confirmPassword.length > 0 ||
-    birthdate !== user.birthdate ||
+    formatDate(birthdate) !== formatDate(user.birthdate) ||
     country !== user.country ||
     city !== user.city ||
-    phonePrefix !== user.phonePrefix ||
     phone !== (user.phone || "") ||
-    genre !== user.genre;
+    normalize(genre) !== normalize(user.social_genre);
 
   useEffect(() => {
+    console.log(genre, user.social_genre, "genre check");
+    console.log(normalize(genre) === normalize(user.social_genre));
     if (!open) {
       resetForm();
       setSection("profile");
@@ -127,6 +133,12 @@ export function EditProfileModal({
         password,
         confirmPassword,
         bio,
+        birthdate,
+        country,
+        city,
+        genre,
+        phonePrefix,
+        phone,
       },
       canEditUsername
     );

@@ -17,6 +17,12 @@ export function useEditProfileUpdate() {
       password: string;
       confirmPassword: string;
       bio: string;
+      birthdate: string;
+      country: string;
+      city: string;
+      genre: string | null;
+      phonePrefix: string;
+      phone: string;
     },
     canEditUsername: boolean
   ) => {
@@ -69,6 +75,16 @@ export function useEditProfileUpdate() {
       const updateObj: any = {
         email: dataToUpdate.email,
         biography: dataToUpdate.bio,
+        birthdate: dataToUpdate.birthdate
+          ? new Date(dataToUpdate.birthdate).toISOString()
+          : undefined,
+        country: dataToUpdate.country || null,
+        city: dataToUpdate.city || null,
+        phone:
+          dataToUpdate.phonePrefix && dataToUpdate.phone
+            ? `${dataToUpdate.phonePrefix} ${dataToUpdate.phone}`.trim()
+            : null,
+        social_genre: dataToUpdate.genre || null,
       };
       if (canEditUsername && dataToUpdate.username !== user.username) {
         updateObj.username = dataToUpdate.username;

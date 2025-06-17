@@ -1,3 +1,4 @@
+import { splitPhone } from "@/lib/utils";
 import { useState } from "react";
 
 export function useEditProfileForm(user: any) {
@@ -9,11 +10,12 @@ export function useEditProfileForm(user: any) {
   const [birthdate, setBirthdate] = useState(user?.birthdate || "");
   const [country, setCountry] = useState(user?.country || "");
   const [city, setCity] = useState(user?.city || "");
-  const [phonePrefix, setPhonePrefix] = useState(user?.phonePrefix || "");
-  const [phone, setPhone] = useState(user?.phone || "");
-  const [genre, setGenre] = useState(user?.genre || null);
-
-  console.log("useEditProfileForm initialized with user:", user);
+  const { prefix: initialPrefix, number: initialNumber } = splitPhone(
+    user?.phone || ""
+  );
+  const [phonePrefix, setPhonePrefix] = useState(initialPrefix);
+  const [phone, setPhone] = useState(initialNumber);
+  const [genre, setGenre] = useState<string | null>(user?.social_genre ?? null);
 
   const resetForm = () => {
     setUsername(user.username);
@@ -24,12 +26,11 @@ export function useEditProfileForm(user: any) {
     setBirthdate(user.birthdate.slice(0, 10) || "");
     setCountry(user?.country || "");
     setCity(user?.city || "");
-    setPhonePrefix(user?.phonePrefix || "");
-    setPhone(user?.phone || "");
-    setGenre(user?.genre || null);
+    const { prefix, number } = splitPhone(user?.phone || "");
+    setPhonePrefix(prefix);
+    setPhone(number);
+    setGenre(user?.social_genre || null);
   };
-
-  console.log(user.birthdate, "user.birthdate in useEditProfileForm");
 
   const lastUpdated = user.username_last_update
     ? new Date(user.username_last_update)
