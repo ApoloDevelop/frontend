@@ -16,6 +16,11 @@ export function useEditProfileForm(user: any) {
   const [phonePrefix, setPhonePrefix] = useState(initialPrefix);
   const [phone, setPhone] = useState(initialNumber);
   const [genre, setGenre] = useState<string | null>(user?.social_genre ?? null);
+  const [spLink, setSpLink] = useState(user?.spotify_link || "");
+  const [ytLink, setYtLink] = useState(user?.youtube_link || "");
+  const [twLink, setTwLink] = useState(user?.twitter_link || "");
+  const [igLink, setIgLink] = useState(user?.instagram_link || "");
+  const [extUrl, setExtUrl] = useState(user?.external_url || "");
 
   const resetForm = () => {
     setUsername(user.username);
@@ -30,6 +35,11 @@ export function useEditProfileForm(user: any) {
     setPhonePrefix(prefix);
     setPhone(number);
     setGenre(user?.social_genre || null);
+    setSpLink(user?.spotify_link || "");
+    setYtLink(user?.youtube_link || "");
+    setTwLink(user?.twitter_link || "");
+    setIgLink(user?.instagram_link || "");
+    setExtUrl(user?.external_url || "");
   };
 
   const lastUpdated = user.username_last_update
@@ -64,6 +74,16 @@ export function useEditProfileForm(user: any) {
     setPhone,
     genre,
     setGenre,
+    spLink,
+    setSpLink,
+    ytLink,
+    setYtLink,
+    twLink,
+    setTwLink,
+    igLink,
+    setIgLink,
+    extUrl,
+    setExtUrl,
     canEditUsername,
     resetForm,
   };

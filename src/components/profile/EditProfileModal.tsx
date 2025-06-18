@@ -18,8 +18,10 @@ import { EditUserDataForm } from "./EditUserDataForm";
 import { EditProfileModalSidebar } from "./EditProfileModalSidebar";
 import { AlertMessage } from "../ui/AlertMessage";
 import { EditPersonalDataForm } from "./EditPersonalDataForm";
+import { formatDate, getFullPhone, normalize } from "@/lib/utils";
+import { EditSocialMediaForm } from "./EditSocialMediaForm";
 
-type Section = "profile" | "personal";
+type Section = "profile" | "personal" | "social";
 
 export function EditProfileModal({
   open,
@@ -56,6 +58,16 @@ export function EditProfileModal({
     setPhone,
     genre,
     setGenre,
+    spLink,
+    setSpLink,
+    ytLink,
+    setYtLink,
+    twLink,
+    setTwLink,
+    igLink,
+    setIgLink,
+    extUrl,
+    setExtUrl,
     canEditUsername,
     resetForm,
   } = useEditProfileForm(user);
@@ -80,11 +92,6 @@ export function EditProfileModal({
 
   const router = useRouter();
 
-  const formatDate = (date: string) => (date ? date.slice(0, 10) : "");
-
-  const normalize = (v: any) =>
-    v === undefined || v === null || v === "" ? null : v;
-
   const isModified =
     username !== user.username ||
     email !== user.email ||
@@ -94,12 +101,15 @@ export function EditProfileModal({
     formatDate(birthdate) !== formatDate(user.birthdate) ||
     country !== user.country ||
     city !== user.city ||
-    phone !== (user.phone || "") ||
-    normalize(genre) !== normalize(user.social_genre);
+    getFullPhone(phone, phonePrefix) !== (user.phone || "") ||
+    normalize(genre) !== normalize(user.social_genre) ||
+    spLink !== (user.spotify_link || "") ||
+    ytLink !== (user.youtube_link || "") ||
+    twLink !== (user.twitter_link || "") ||
+    igLink !== (user.instagram_link || "") ||
+    extUrl !== (user.external_url || "");
 
   useEffect(() => {
-    console.log(genre, user.social_genre, "genre check");
-    console.log(normalize(genre) === normalize(user.social_genre));
     if (!open) {
       resetForm();
       setSection("profile");
@@ -139,6 +149,11 @@ export function EditProfileModal({
         genre,
         phonePrefix,
         phone,
+        spLink,
+        ytLink,
+        twLink,
+        igLink,
+        extUrl,
       },
       canEditUsername
     );
@@ -178,7 +193,9 @@ export function EditProfileModal({
                 <DialogTitle>
                   {section === "profile"
                     ? "Datos del usuario"
-                    : "Datos personales"}
+                    : section === "personal"
+                    ? "Datos personales"
+                    : "Redes sociales"}
                 </DialogTitle>
               </DialogHeader>
 
@@ -222,6 +239,21 @@ export function EditProfileModal({
                   genre={genre}
                   setGenre={setGenre}
                   fieldErrors={fieldErrors}
+                />
+              )}
+
+              {section === "social" && (
+                <EditSocialMediaForm
+                  spLink={spLink}
+                  setSpLink={setSpLink}
+                  ytLink={ytLink}
+                  setYtLink={setYtLink}
+                  twLink={twLink}
+                  setTwLink={setTwLink}
+                  igLink={igLink}
+                  setIgLink={setIgLink}
+                  extUrl={extUrl}
+                  setExtUrl={setExtUrl}
                 />
               )}
 

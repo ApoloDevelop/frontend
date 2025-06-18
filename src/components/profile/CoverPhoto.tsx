@@ -6,8 +6,8 @@ export const CoverPhoto = ({ src }: { src: string }) => {
       <Image
         src={src || "/default-cover.png"}
         alt="Foto de portada"
-        layout="fill"
-        objectFit="cover"
+        fill
+        style={{ objectFit: "cover" }}
         className="w-full h-full"
       />
     </div>

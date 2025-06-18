@@ -14,3 +14,16 @@ export function splitPhone(phone: string): { prefix: string; number: string } {
   }
   return { prefix: "", number: phone };
 }
+
+export function normalize(v: any) {
+  v === undefined || v === null || v === "" ? null : v;
+  return v;
+}
+
+export function formatDate(date: string) {
+  return date ? date.slice(0, 10) : "";
+}
+
+export function getFullPhone(number: string, prefix: string) {
+  return prefix && number ? `${prefix} ${number}`.trim() : "";
+}

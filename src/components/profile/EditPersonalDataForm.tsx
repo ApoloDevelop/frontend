@@ -36,7 +36,7 @@ export function EditPersonalDataForm({
 }: EditPersonalDataFormProps) {
   return (
     <div className="space-y-4 mt-4">
-      <div>
+      <div id="birthdate-input">
         <label className="text-sm font-semibold mb-1 block">
           Fecha de nacimiento
         </label>
@@ -51,7 +51,7 @@ export function EditPersonalDataForm({
         />
       </div>
 
-      <div>
+      <div id="country-select">
         <label className="text-sm font-semibold mb-1 block">País</label>
         <CountrySelect
           value={country}
@@ -64,7 +64,7 @@ export function EditPersonalDataForm({
         />
       </div>
 
-      <div>
+      <div id="city-input">
         <label className="text-sm font-semibold mb-1 block">Ciudad</label>
         <Input
           name="city"
@@ -75,7 +75,7 @@ export function EditPersonalDataForm({
         />
       </div>
 
-      <div>
+      <div id="genre-select">
         <label className="text-sm font-semibold mb-1 block">Género</label>
         <GenreSelect
           value={genre}
@@ -87,8 +87,7 @@ export function EditPersonalDataForm({
           borderRadius="0.5rem"
         />
       </div>
-
-      <div>
+      <div id="phone-input">
         <label className="text-sm font-semibold mb-1 block">Teléfono</label>
         <PhoneInput
           prefix={phonePrefix}

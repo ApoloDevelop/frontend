@@ -23,6 +23,11 @@ export function useEditProfileUpdate() {
       genre: string | null;
       phonePrefix: string;
       phone: string;
+      spLink: string;
+      ytLink: string;
+      twLink: string;
+      igLink: string;
+      extUrl: string;
     },
     canEditUsername: boolean
   ) => {
@@ -85,6 +90,11 @@ export function useEditProfileUpdate() {
             ? `${dataToUpdate.phonePrefix} ${dataToUpdate.phone}`.trim()
             : null,
         social_genre: dataToUpdate.genre || null,
+        spotify_link: dataToUpdate.spLink || null,
+        youtube_link: dataToUpdate.ytLink || null,
+        twitter_link: dataToUpdate.twLink || null,
+        instagram_link: dataToUpdate.igLink || null,
+        external_url: dataToUpdate.extUrl || null,
       };
       if (canEditUsername && dataToUpdate.username !== user.username) {
         updateObj.username = dataToUpdate.username;
