@@ -194,8 +194,8 @@ export function EditProfileModal({
                   {section === "profile"
                     ? "Datos del usuario"
                     : section === "personal"
-                    ? "Datos personales"
-                    : "Redes sociales"}
+                      ? "Datos personales"
+                      : "Redes sociales"}
                 </DialogTitle>
               </DialogHeader>
 

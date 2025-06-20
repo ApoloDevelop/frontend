@@ -92,6 +92,7 @@ export const CountrySelect: React.FC<CountrySelectProps> = ({
                 ? "#E6E6E6"
                 : "white",
             color: state.isSelected ? "white" : "black",
+            fontSize: "0.875rem",
           }),
           placeholder: (base) => ({
             ...base,
@@ -100,6 +101,10 @@ export const CountrySelect: React.FC<CountrySelectProps> = ({
             overflow: "hidden",
             textOverflow: "ellipsis",
             maxWidth: "calc(100% - 24px)",
+          }),
+          singleValue: (base) => ({
+            ...base,
+            fontSize: "0.875rem",
           }),
         }}
       />

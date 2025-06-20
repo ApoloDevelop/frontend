@@ -18,7 +18,7 @@ export default function UserProfilePage({
   params: Promise<{ username: string }>;
 }) {
   const { username } = use(params);
-  const { user, loading, error } = useUserProfile(username);
+  const { user, loading } = useUserProfile(username);
   const { localUser, setLocalUser } = useLocalUserProfile(user);
   const { isModalOpen, openModal, closeModal } = useEditProfileModal();
 

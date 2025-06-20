@@ -58,7 +58,7 @@ export const PhoneInput: React.FC<PhoneInputProps> = ({
   };
 
   return (
-    <div className={`relative ${className}`}>
+    <div className={`flex w-9/10 gap-2 ${className}`}>
       {/* Prefijo */}
       <div className="w-4/9 sm:w-3/9">
         <Select

@@ -119,7 +119,9 @@ export function useStepValidation(
         );
         errors.phone = true;
       } else if (formData.phonePrefix && formData.phone) {
-        const phoneNumber = `${formData.phonePrefix}${formData.phone}`;
+        const cleanPrefix = formData.phonePrefix.replace(/\s+/g, "");
+        const cleanNumber = formData.phone.replace(/\s+/g, "");
+        const phoneNumber = `${cleanPrefix} ${cleanNumber}`;
         if (!isValidPhoneNumber(phoneNumber)) {
           alertMessages.push(
             "Por favor, introduce un número de teléfono válido."

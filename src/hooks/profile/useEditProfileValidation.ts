@@ -1,9 +1,12 @@
+import { isValidDate } from "@/lib/utils";
+
 type EditProfileFields = {
   username: string;
   email: string;
   password: string;
   confirmPassword: string;
   bio: string;
+  birthdate: string;
 };
 
 type EditProfileErrors = {
@@ -12,6 +15,7 @@ type EditProfileErrors = {
   password?: boolean;
   confirmPassword?: boolean;
   bio?: boolean;
+  birthdate?: boolean;
 };
 
 export function useEditProfileValidation() {
@@ -31,6 +35,7 @@ export function useEditProfileValidation() {
     password,
     confirmPassword,
     bio,
+    birthdate,
   }: EditProfileFields) {
     const errors: EditProfileErrors = {};
     const messages: string[] = [];
@@ -80,6 +85,11 @@ export function useEditProfileValidation() {
         errors.confirmPassword = true;
         messages.push("Las contraseñas no coinciden.");
       }
+    }
+
+    if (!isValidDate(birthdate)) {
+      errors.birthdate = true;
+      messages.push("La fecha de nacimiento no es válida.");
     }
 
     return { errors, messages };

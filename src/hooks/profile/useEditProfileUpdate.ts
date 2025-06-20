@@ -42,6 +42,7 @@ export function useEditProfileUpdate() {
       password: dataToUpdate.password,
       confirmPassword: dataToUpdate.confirmPassword,
       bio: dataToUpdate.bio,
+      birthdate: dataToUpdate.birthdate,
     });
 
     if (Object.keys(errors).length > 0) {
@@ -55,12 +56,24 @@ export function useEditProfileUpdate() {
     try {
       if (
         (dataToUpdate.email !== user.email && dataToUpdate.email) ||
-        (dataToUpdate.username !== user.username && dataToUpdate.username)
+        (dataToUpdate.username !== user.username && dataToUpdate.username) ||
+        (`${dataToUpdate.phonePrefix} ${dataToUpdate.phone}`.trim() !==
+          (user.phone || "") &&
+          dataToUpdate.phonePrefix &&
+          dataToUpdate.phone)
       ) {
         const exists = await RegisterRepository.checkIfExists(
           dataToUpdate.email !== user.email ? dataToUpdate.email : "",
           dataToUpdate.username !== user.username ? dataToUpdate.username : "",
-          ""
+          dataToUpdate.phonePrefix &&
+            dataToUpdate.phone &&
+            `${dataToUpdate.phonePrefix} ${dataToUpdate.phone}`.trim() !==
+              (user.phone || "")
+            ? `${dataToUpdate.phonePrefix}${dataToUpdate.phone}`.replace(
+                /\s+/g,
+                ""
+              )
+            : ""
         );
         if (exists.emailExists) {
           setFieldErrors({ email: true });
@@ -71,6 +84,12 @@ export function useEditProfileUpdate() {
         if (exists.usernameExists) {
           setFieldErrors({ username: true });
           setMessages(["El nombre de usuario ya está registrado."]);
+          setLoading(false);
+          return null;
+        }
+        if (exists.phoneExists) {
+          setFieldErrors({ phone: true });
+          setMessages(["El número de teléfono ya está registrado."]);
           setLoading(false);
           return null;
         }

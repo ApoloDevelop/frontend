@@ -1,4 +1,11 @@
 import { Input } from "../ui/input";
+import {
+  FaExternalLinkAlt,
+  FaInstagram,
+  FaSpotify,
+  FaYoutube,
+} from "react-icons/fa";
+import { FaXTwitter } from "react-icons/fa6";
 
 interface EditSocialMediaFormProps {
   spLink: string;
@@ -30,6 +37,7 @@ export function EditSocialMediaForm({
       <div id="spotify-input">
         <label className="text-sm font-semibold mb-1 block">
           Enlace a Spotify
+          <FaSpotify className="inline text-green-600 ml-1 mb-0" size={16} />
         </label>
         <Input
           name="spotify"
@@ -41,6 +49,7 @@ export function EditSocialMediaForm({
       <div id="instagram-input">
         <label className="text-sm font-semibold mb-1 block">
           Enlace a Instagram
+          <FaInstagram className="inline text-pink-500 ml-1 mb-0" size={16} />
         </label>
         <Input
           name="instagram"
@@ -52,6 +61,7 @@ export function EditSocialMediaForm({
       <div id="twitter-input">
         <label className="text-sm font-semibold mb-1 block">
           Enlace a X (Twitter)
+          <FaXTwitter className="inline text-black ml-1 mb-0" size={16} />
         </label>
         <Input
           name="twitter"
@@ -63,6 +73,7 @@ export function EditSocialMediaForm({
       <div id="youtube-input">
         <label className="text-sm font-semibold mb-1 block">
           Enlace a Youtube
+          <FaYoutube className="inline text-red-600 ml-1 mb-0" size={16} />
         </label>
         <Input
           name="youtube"
@@ -74,12 +85,16 @@ export function EditSocialMediaForm({
       <div id="url-input">
         <label className="text-sm font-semibold mb-1 block">
           Añadir enlace externo
+          <FaExternalLinkAlt
+            className="inline text-purple-700 ml-1 mb-0"
+            size={16}
+          />
         </label>
         <Input
           name="external-url"
           type="url"
           value={extUrl}
-          onChange={(e) => setYtLink(e.target.value)}
+          onChange={(e) => setExtUrl(e.target.value)}
         />
       </div>
     </div>
