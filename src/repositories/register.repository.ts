@@ -39,9 +39,12 @@ export class RegisterRepository {
     username: string,
     phone: string
   ): Promise<any> {
-    console.log(phone, "phone in checkIfExists");
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_BACKEND_URL}/users/exists?email=${email}&username=${username}&phone=${encodeURIComponent(phone)}`
+      `${
+        process.env.NEXT_PUBLIC_BACKEND_URL
+      }/users/exists?email=${email}&username=${username}&phone=${encodeURIComponent(
+        phone
+      )}`
     );
 
     if (!res.ok) {

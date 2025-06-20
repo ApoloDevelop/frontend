@@ -1,4 +1,6 @@
-import { isValidDate } from "@/lib/utils";
+import { isStrongPassword, isValidDate } from "@/lib/utils";
+import { isValidPhoneNumber } from "libphonenumber-js";
+import { isAbsoluteUrl } from "next/dist/shared/lib/utils";
 
 type EditProfileFields = {
   username: string;
@@ -7,6 +9,11 @@ type EditProfileFields = {
   confirmPassword: string;
   bio: string;
   birthdate: string;
+  phone: string;
+  spLink: string;
+  igLink: string;
+  twLink: string;
+  ytLink: string;
 };
 
 type EditProfileErrors = {
@@ -16,19 +23,14 @@ type EditProfileErrors = {
   confirmPassword?: boolean;
   bio?: boolean;
   birthdate?: boolean;
+  phone?: boolean;
+  spLink?: boolean;
+  igLink?: boolean;
+  twLink?: boolean;
+  ytLink?: boolean;
 };
 
 export function useEditProfileValidation() {
-  function isStrongPassword(password: string) {
-    return (
-      password.length >= 8 &&
-      /[A-Z]/.test(password) &&
-      /[a-z]/.test(password) &&
-      /\d/.test(password) &&
-      /[^A-Za-z0-9]/.test(password)
-    );
-  }
-
   function validate({
     username,
     email,
@@ -36,6 +38,11 @@ export function useEditProfileValidation() {
     confirmPassword,
     bio,
     birthdate,
+    phone,
+    spLink,
+    igLink,
+    twLink,
+    ytLink,
   }: EditProfileFields) {
     const errors: EditProfileErrors = {};
     const messages: string[] = [];
@@ -90,6 +97,39 @@ export function useEditProfileValidation() {
     if (!isValidDate(birthdate)) {
       errors.birthdate = true;
       messages.push("La fecha de nacimiento no es válida.");
+    }
+
+    if (!isValidPhoneNumber(phone)) {
+      errors.phone = true;
+      messages.push("Por favor, introduce un número de teléfono válido.");
+    }
+
+    if (spLink && spLink.trim() !== "") {
+      if (!spLink.includes("open.spotify.com")) {
+        errors.spLink = true;
+        messages.push("El enlace de Spotify no es válido.");
+      }
+    }
+
+    if (igLink && igLink.trim() !== "") {
+      if (!igLink.includes("instagram.com")) {
+        errors.igLink = true;
+        messages.push("El enlace de Instagram no es válido.");
+      }
+    }
+
+    if (twLink && twLink.trim() !== "") {
+      if (!twLink.includes("twitter.com") && !twLink.includes("x.com")) {
+        errors.twLink = true;
+        messages.push("El enlace de X no es válido.");
+      }
+    }
+
+    if (ytLink && ytLink.trim() !== "") {
+      if (!ytLink.includes("youtube.com")) {
+        errors.ytLink = true;
+        messages.push("El enlace de YouTube no es válido.");
+      }
     }
 
     return { errors, messages };

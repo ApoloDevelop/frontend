@@ -171,6 +171,10 @@
   overflow-y: auto;
 }
 
+[data-slot="tooltip-content"] {
+  z-index: 10001 !important;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

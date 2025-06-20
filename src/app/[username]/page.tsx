@@ -46,6 +46,11 @@ export default function UserProfilePage({
         biography={currentUser.biography}
         createdAt={currentUser.register_date}
         className="flex flex-col items-start px-6 mt-4"
+        spLink={currentUser.spotify_link}
+        ytLink={currentUser.youtube_link}
+        twLink={currentUser.twitter_link}
+        igLink={currentUser.instagram_link}
+        extUrl={currentUser.external_url}
       />
       <div className="flex px-6 mt-4">
         <Button variant="default" onClick={openModal}>

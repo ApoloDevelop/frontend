@@ -2,6 +2,7 @@ import { useState } from "react";
 import { UserService } from "@/services/user.service";
 import { RegisterRepository } from "@/repositories/register.repository";
 import { useEditProfileValidation } from "./useEditProfileValidation";
+import { isValidPhoneNumber } from "libphonenumber-js";
 
 export function useEditProfileUpdate() {
   const [loading, setLoading] = useState(false);
@@ -43,6 +44,11 @@ export function useEditProfileUpdate() {
       confirmPassword: dataToUpdate.confirmPassword,
       bio: dataToUpdate.bio,
       birthdate: dataToUpdate.birthdate,
+      phone: `${dataToUpdate.phonePrefix} ${dataToUpdate.phone}`.trim(),
+      spLink: dataToUpdate.spLink,
+      igLink: dataToUpdate.igLink,
+      twLink: dataToUpdate.twLink,
+      ytLink: dataToUpdate.ytLink,
     });
 
     if (Object.keys(errors).length > 0) {
@@ -69,12 +75,10 @@ export function useEditProfileUpdate() {
             dataToUpdate.phone &&
             `${dataToUpdate.phonePrefix} ${dataToUpdate.phone}`.trim() !==
               (user.phone || "")
-            ? `${dataToUpdate.phonePrefix}${dataToUpdate.phone}`.replace(
-                /\s+/g,
-                ""
-              )
+            ? `${dataToUpdate.phonePrefix} ${dataToUpdate.phone}`.trim()
             : ""
         );
+
         if (exists.emailExists) {
           setFieldErrors({ email: true });
           setMessages(["El correo electrónico ya está registrado."]);
@@ -88,6 +92,7 @@ export function useEditProfileUpdate() {
           return null;
         }
         if (exists.phoneExists) {
+          console.log("hola");
           setFieldErrors({ phone: true });
           setMessages(["El número de teléfono ya está registrado."]);
           setLoading(false);
