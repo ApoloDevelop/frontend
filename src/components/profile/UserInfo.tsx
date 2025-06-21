@@ -1,6 +1,7 @@
 import { FaInstagram, FaSpotify, FaYoutube } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
 import { Separator } from "../ui/separator";
+import { useState } from "react";
 
 export const UserInfo = ({
   fullname,
@@ -14,6 +15,7 @@ export const UserInfo = ({
   igLink,
   extUrl,
 }: any) => {
+  const [expanded, setExpanded] = useState(false);
   let joinedText = "";
   if (createdAt) {
     const date = new Date(createdAt);
@@ -23,6 +25,10 @@ export const UserInfo = ({
       mes.charAt(0).toLowerCase() + mes.slice(1) + ` de `
     } ${año}`;
   }
+
+  const plainBio = (biography ?? "").replace(/\r?\n/g, " ");
+  const needsToggle = plainBio.length > 150;
+
   return (
     <div className={className}>
       <div id="social-media" className="flex items-center gap-2">
@@ -104,9 +110,20 @@ export const UserInfo = ({
         @{username}
       </p>
       {joinedText && <p className="text-gray-400 text-sm">{joinedText}</p>}
-      <p id="bio" className="text-gray-500 mt-2">
-        {biography || "Sin biografía"}
-      </p>
+      <div className="mt-2">
+        <p id="bio" className={`text-gray-500 ${!expanded ? "bio-clamp" : ""}`}>
+          {biography || "Sin biografía"}
+        </p>
+
+        {needsToggle && (
+          <button
+            onClick={() => setExpanded((v) => !v)}
+            className="mt-1 text-sm text-violet-600 hover:underline"
+          >
+            {expanded ? "Ver menos" : "Ver más"}
+          </button>
+        )}
+      </div>
     </div>
   );
 };

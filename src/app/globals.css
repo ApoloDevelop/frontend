@@ -175,6 +175,20 @@
   z-index: 10001 !important;
 }
 
+.bio-clamp {
+  /* Trunca a 3 líneas */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  overflow: hidden;
+
+  /* Forzar wrap incluso en tokens largos */
+  white-space: pre-wrap; /* respeta saltos de línea */
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
