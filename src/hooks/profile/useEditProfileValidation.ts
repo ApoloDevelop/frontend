@@ -1,5 +1,5 @@
 import { isValidDate } from "@/utils/date";
-import { isStrongPassword } from "@/lib/utils";
+import { isStrongPassword } from "@/utils/password";
 import { isValidPhoneNumber } from "libphonenumber-js";
 
 type EditProfileFields = {
