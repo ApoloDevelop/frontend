@@ -1,8 +1,6 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { countries } from "@/data/countries";
-import Flag from "react-world-flags";
 import { LoadingScreen } from "@/components/ui/LoadingScreen";
 import { RegisterService } from "@/services/register.service";
 import {
@@ -14,7 +12,7 @@ import { useImageCropper } from "@/hooks/register/useImageCropper";
 import { useAlert } from "@/hooks/register/useAlert";
 import { usePasswordToggle } from "@/hooks/register/usePasswordToggle";
 import { useStepValidation } from "@/hooks/register/useStepValidation";
-import { isCurrentPageValid } from "@/utils/registerFunctions";
+import { isCurrentPageValid } from "@/utils/registerValidation";
 import { StepIndicator } from "@/components/register/StepIndicator";
 import { RegisterFormStep1 } from "@/components/register/steps/RegisterFormStep1";
 import { RegisterFormStep2 } from "@/components/register/steps/RegisterFormStep2";

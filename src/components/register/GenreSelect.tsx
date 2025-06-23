@@ -1,7 +1,7 @@
 // components/register/GenreSelect.tsx
 import React from "react";
 import Select from "react-select";
-import { getGenreLabel } from "@/utils/registerFunctions";
+import { getGenreLabel } from "@/utils/genre";
 
 interface GenreOption {
   value: string;

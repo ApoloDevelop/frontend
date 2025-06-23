@@ -1,4 +1,4 @@
-import { isValidDate } from "@/lib/utils";
+import { isValidDate } from "@/utils/date";
 
 type EditProfileFields = {
   username: string;

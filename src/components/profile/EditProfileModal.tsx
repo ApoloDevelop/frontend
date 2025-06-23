@@ -18,7 +18,9 @@ import { EditUserDataForm } from "./EditUserDataForm";
 import { EditProfileModalSidebar } from "./EditProfileModalSidebar";
 import { AlertMessage } from "../ui/AlertMessage";
 import { EditPersonalDataForm } from "./EditPersonalDataForm";
-import { formatDate, getFullPhone, normalize } from "@/lib/utils";
+import { formatDate } from "@/utils/date";
+import { normalize } from "@/utils/normalize";
+import { getFullPhone } from "@/utils/phone";
 import { EditSocialMediaForm } from "./EditSocialMediaForm";
 
 type Section = "profile" | "personal" | "social";
