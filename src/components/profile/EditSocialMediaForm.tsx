@@ -61,7 +61,7 @@ export function EditSocialMediaForm({
       <div id="twitter-input">
         <label className="text-sm font-semibold mb-1 block">
           Enlace a X (Twitter)
-          <FaXTwitter className="inline text-black ml-1 mb-0" size={16} />
+          <FaXTwitter className="inline text-black ml-1 mb-0" size={14} />
         </label>
         <Input
           name="twitter"
@@ -87,7 +87,7 @@ export function EditSocialMediaForm({
           Añadir enlace externo
           <FaExternalLinkAlt
             className="inline text-purple-700 ml-1 mb-0"
-            size={16}
+            size={13}
           />
         </label>
         <Input
