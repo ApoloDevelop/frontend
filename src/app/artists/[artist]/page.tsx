@@ -33,8 +33,8 @@ export default async function ArtistPage({
         <Image
           src={artist.images[0]?.url || "/default-cover.png"}
           alt={artist.name}
-          width={180}
-          height={180}
+          width={250}
+          height={250}
           className="rounded-lg shadow-lg top-15 mb-4 relative"
         />
         <h1 className="text-5xl font-bold text-gray-900 ml-15">
