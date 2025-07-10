@@ -1,92 +1,110 @@
-import { fetchArtistByName } from "@/utils/spotify";
+// app/artist/[artist]/page.tsx
 import Image from "next/image";
+import dayjs from "dayjs";
+import {
+  fetchArtistByName,
+  fetchArtistAlbums,
+  fetchArtistTopTracks,
+} from "@/utils/spotify";
 
 export default async function ArtistPage({
   params,
 }: {
-  params: { artist: string };
+  params: Promise<{ artist: string }>;
 }) {
-  const artist = await fetchArtistByName(params.artist);
+  const { artist } = await params;
+  const artistData = await fetchArtistByName(artist);
+  if (!artistData)
+    return <div className="text-center py-20">Artista no encontrado.</div>;
 
-  if (!artist) return <div className="text-center">Artista no encontrado.</div>;
+  const [albums, topTracks] = await Promise.all([
+    fetchArtistAlbums(artistData.id),
+    fetchArtistTopTracks(artistData.id),
+  ]);
 
-  // Simulación de datos para el ejemplo
-  // const albums = artist.albums?.slice(0, 5) || [];
-  // const lastRelease = albums[0];
-  // const popularSongs = artist.popularSongs?.slice(0, 5) || [];
+  const lastRelease = albums[0];
 
   return (
-    <div className="container mx-auto p-8">
-      {/* Cover Art de fondo */}
-      <div className="absolute inset-0 h-80 w-full -z-10">
+    <div className="container mx-auto relative">
+      <div
+        id="blurred-bg"
+        className="fixed top-0 mt-16 left-0 right-0 h-80 w-screen -z-10 "
+      >
         <Image
-          src="/default-cover.png"
-          alt="Cover Art"
+          src={artistData.images[0]?.url || "/default-cover.png"}
+          alt={artistData.name}
           fill
-          className="object-cover w-full h-80 blur-xs"
-          priority
+          className="object-cover blur-sm"
         />
       </div>
 
-      {/* Cabecera */}
-      <div className="flex flex-row items-center pt-8 pb-6 space-x-6 border-gray-200 relative z-10">
+      <div id="header" className="flex mt-32 items-center mb-16 relative z-10">
         <Image
-          src={artist.images[0]?.url || "/default-cover.png"}
-          alt={artist.name}
-          width={250}
-          height={250}
-          className="rounded-lg shadow-lg top-15 mb-4 relative"
+          src={artistData.images[0]?.url || "/default-cover.png"}
+          alt={artistData.name}
+          width={200}
+          height={200}
+          className="rounded-lg shadow-lg"
         />
-        <h1 className="text-5xl font-bold text-gray-900 ml-15">
-          {artist.name}
-        </h1>
-        <h2 className="text-xl text-gray-600">
-          {artist.genres?.join(", ") || "Géneros no disponibles"}
-        </h2>
+        <div className="ml-6">
+          <h1 className="text-5xl font-bold text-white drop-shadow-lg">
+            {artistData.name}
+          </h1>
+          <p className="text-lg text-gray-200">
+            {artistData.genres.length
+              ? artistData.genres.join(", ")
+              : "Géneros no disponibles"}
+          </p>
+        </div>
       </div>
 
       {/* Contenido principal */}
-      <div className="flex flex-row mt-8 gap-12">
+      <div className="flex gap-12 relative z-10">
         {/* Columna izquierda */}
-        <div className="w-2/3">
+        <div className="w-2/3 space-y-8">
           {/* Biografía */}
-          <section className="mb-8">
+          <section className="bg-white/80 p-6 rounded-lg shadow">
             <h2 className="text-2xl font-bold mb-2">Biografía</h2>
-            <p className="text-lg text-gray-700">
-              {artist.biography || "No disponible."}
+            <p className="text-gray-700">
+              {artistData.biography || "No disponible."}
             </p>
           </section>
 
           {/* Álbumes recientes */}
-          {/* <section>
+          <section className="bg-white/80 p-6 rounded-lg shadow">
             <h2 className="text-2xl font-bold mb-4">Álbumes recientes</h2>
-            <div className="flex flex-row gap-4">
-              {albums.map((album: any) => (
-                <div key={album.id} className="w-28 text-center">
-                  <Image
-                    src={album.images[0]?.url || "/default-cover.png"}
-                    alt={album.name}
-                    width={112}
-                    height={112}
-                    className="rounded mb-2"
-                  />
-                  <p className="font-medium truncate">{album.name}</p>
-                  <p className="text-xs text-gray-500">
-                    {new Date(album.release_date).getFullYear()}
-                  </p>
-                </div>
-              ))}
+            <div className="flex gap-4">
+              {albums
+                .filter((alb: any) => alb.album_type === "album")
+                .map((alb: any) => (
+                  <div
+                    key={alb.id}
+                    className="w-1/5 flex flex-col items-center text-center "
+                  >
+                    <Image
+                      src={alb.images[0]?.url || "/default-cover.png"}
+                      alt={alb.name}
+                      width={112}
+                      height={112}
+                      className="rounded mb-2"
+                    />
+                    <p className="font-bold truncate w-full">{alb.name}</p>
+                    <p className="text-sm text-gray-500 w-full">
+                      {dayjs(alb.release_date).format("DD-MM-YYYY")}
+                    </p>
+                  </div>
+                ))}
             </div>
           </section>
-        </div> */}
+        </div>
 
-          {/* Columna derecha */}
-          {/* <div className="w-1/3 flex flex-col gap-8"> */}
+        {/* Columna derecha */}
+        <div className="w-1/3 flex flex-col gap-8">
           {/* Último lanzamiento */}
-          {/* <section>
-            <h2 className="text-xl font-bold mb-2">Último lanzamiento</h2>
+          <section className="bg-white/80 p-6 rounded-lg shadow">
+            <h2 className="text-xl font-bold mb-4">Último lanzamiento</h2>
             {lastRelease ? (
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-4">
                 <Image
                   src={lastRelease.images[0]?.url || "/default-cover.png"}
                   alt={lastRelease.name}
@@ -95,32 +113,39 @@ export default async function ArtistPage({
                   className="rounded"
                 />
                 <div>
-                  <p className="font-semibold">{lastRelease.name}</p>
-                  <p className="text-xs text-gray-500">
-                    {lastRelease.release_date}
+                  <p className="font-bold">{lastRelease.name}</p>
+                  <p className="text-sm text-gray-500">
+                    {dayjs(lastRelease.release_date).format("DD-MM-YYYY")}
                   </p>
                 </div>
               </div>
             ) : (
               <p className="text-gray-500">No disponible.</p>
             )}
-          </section> */}
+          </section>
 
           {/* Canciones populares */}
-          {/* <section>
-            <h2 className="text-xl font-bold mb-2">Canciones populares</h2>
-            <ol className="list-decimal list-inside space-y-1">
-              {popularSongs.length > 0 ? (
-                popularSongs.map((song: any, idx: number) => (
-                  <li key={song.id} className="text-gray-700">
-                    {song.name}
+          <section className="bg-white/80 p-6 rounded-lg shadow">
+            <h2 className="text-xl font-bold mb-4">Canciones populares</h2>
+            {topTracks.length ? (
+              <ol className="list-decimal list-inside space-y-2 text-gray-700">
+                {topTracks.map((tr: any) => (
+                  <li key={tr.id} className="flex items-center gap-3">
+                    <Image
+                      src={tr.album?.images[0]?.url || "/default-cover.png"}
+                      alt={tr.name}
+                      width={40}
+                      height={40}
+                      className="rounded"
+                    />
+                    <span>{tr.name}</span>
                   </li>
-                ))
-              ) : (
-                <p className="text-gray-500">No disponible.</p>
-              )}
-            </ol>
-          </section> */}
+                ))}
+              </ol>
+            ) : (
+              <p className="text-gray-500">No disponible.</p>
+            )}
+          </section>
         </div>
       </div>
     </div>

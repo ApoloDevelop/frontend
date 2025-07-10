@@ -23,12 +23,52 @@ export default function Header() {
           <ul className="flex space-x-6">
             <li>
               <Link
-                href="/artistas"
+                href="/"
                 className={`text-lg font-medium ${
                   isRegisterPage ? "text-white" : "text-black"
                 } hover:underline`}
               >
-                ARTISTAS
+                Artistas
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/"
+                className={`text-lg font-medium ${
+                  isRegisterPage ? "text-white" : "text-black"
+                } hover:underline`}
+              >
+                Noticias
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/"
+                className={`text-lg font-medium ${
+                  isRegisterPage ? "text-white" : "text-black"
+                } hover:underline`}
+              >
+                Géneros
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/"
+                className={`text-lg font-medium ${
+                  isRegisterPage ? "text-white" : "text-black"
+                } hover:underline`}
+              >
+                Buscar
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/"
+                className={`text-lg font-medium ${
+                  isRegisterPage ? "text-white" : "text-black"
+                } hover:underline`}
+              >
+                Conciertos
               </Link>
             </li>
           </ul>
