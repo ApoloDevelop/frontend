@@ -5,7 +5,13 @@ import {
   fetchArtistByName,
   fetchArtistAlbums,
   fetchArtistTopTracks,
+  // fetchArtistBio,
 } from "@/utils/spotify";
+import {
+  fetchMusicBrainzMatch,
+  fetchSimilarByTags,
+  MbArtist,
+} from "@/utils/musicbrainz";
 
 export default async function ArtistPage({
   params,
@@ -22,7 +28,25 @@ export default async function ArtistPage({
     fetchArtistTopTracks(artistData.id),
   ]);
 
+  // 3) Intento de emparejado MusicBrainz → MBID
+  let mbid: string | null = null;
+  try {
+    mbid = await fetchMusicBrainzMatch(artistData.id, artistData.name);
+  } catch (err) {
+    console.warn("No se pudo emparejar en MusicBrainz:", err);
+  }
+
+  let similar: MbArtist[] = [];
+  if (mbid) {
+    try {
+      similar = await fetchSimilarByTags(mbid, 4, 8, 6);
+    } catch (e) {
+      console.warn("Error tags-similar:", e);
+    }
+  }
+
   const lastRelease = albums[0];
+  // const bioAI = await fetchArtistBio(artist);
 
   return (
     <div className="container mx-auto relative">
@@ -65,36 +89,48 @@ export default async function ArtistPage({
           {/* Biografía */}
           <section className="bg-white/80 p-6 rounded-lg shadow">
             <h2 className="text-2xl font-bold mb-2">Biografía</h2>
-            <p className="text-gray-700">
-              {artistData.biography || "No disponible."}
-            </p>
+            <p className="text-gray-700">No disponible</p>
           </section>
 
           {/* Álbumes recientes */}
           <section className="bg-white/80 p-6 rounded-lg shadow">
             <h2 className="text-2xl font-bold mb-4">Álbumes recientes</h2>
             <div className="flex gap-4">
-              {albums
-                .filter((alb: any) => alb.album_type === "album")
-                .map((alb: any) => (
-                  <div
-                    key={alb.id}
-                    className="w-1/5 flex flex-col items-center text-center "
-                  >
-                    <Image
-                      src={alb.images[0]?.url || "/default-cover.png"}
-                      alt={alb.name}
-                      width={112}
-                      height={112}
-                      className="rounded mb-2"
-                    />
-                    <p className="font-bold truncate w-full">{alb.name}</p>
-                    <p className="text-sm text-gray-500 w-full">
-                      {dayjs(alb.release_date).format("DD-MM-YYYY")}
-                    </p>
-                  </div>
-                ))}
+              {albums.map((alb: any) => (
+                <div
+                  key={alb.id}
+                  className="w-1/5 flex flex-col items-center text-center "
+                >
+                  <Image
+                    src={alb.images[0]?.url || "/default-cover.png"}
+                    alt={alb.name}
+                    width={112}
+                    height={112}
+                    className="rounded mb-2"
+                  />
+                  <p className="font-bold truncate w-full">{alb.name}</p>
+                  <p className="text-sm text-gray-500 w-full">
+                    {dayjs(alb.release_date).format("DD-MM-YYYY")}
+                  </p>
+                </div>
+              ))}
             </div>
+          </section>
+          {/* NUEVA SECCIÓN: Artistas relacionados */}
+          <section className="bg-white/80 p-6 rounded-lg shadow">
+            <h2 className="text-2xl font-bold mb-4">Artistas relacionados</h2>
+            {similar.length ? (
+              <ul className="flex gap-4 overflow-x-auto">
+                {similar.map((a) => (
+                  <li key={a.id} className="w-1/5 text-center">
+                    {/* Aquí podrías usar fetchArtistByName(a.name) si quieres imagen */}
+                    <p className="font-bold truncate">{a.name}</p>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p>No se encontraron artistas similares por tags.</p>
+            )}
           </section>
         </div>
 

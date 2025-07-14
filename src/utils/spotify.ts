@@ -37,3 +37,13 @@ export async function fetchArtistTopTracks(artistId: string) {
   if (!res.ok) throw new Error("Error al buscar top tracks");
   return res.json();
 }
+
+// export async function fetchArtistBio(name: string) {
+//   const res = await fetch(
+//     `${
+//       process.env.NEXT_PUBLIC_BACKEND_URL
+//     }/spotify/artist/bio?name=${encodeURIComponent(name)}`
+//   );
+//   if (!res.ok) throw new Error("Error obteniendo biografía");
+//   return res.json();
+// }
