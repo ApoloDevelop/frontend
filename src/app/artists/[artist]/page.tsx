@@ -5,6 +5,7 @@ import {
   fetchArtistByName,
   fetchArtistAlbums,
   fetchArtistTopTracks,
+  fetchArtistReleases,
   // fetchArtistBio,
 } from "@/utils/spotify";
 import {
@@ -23,9 +24,10 @@ export default async function ArtistPage({
   if (!artistData)
     return <div className="text-center py-20">Artista no encontrado.</div>;
 
-  const [albums, topTracks] = await Promise.all([
+  const [albums, topTracks, releases] = await Promise.all([
     fetchArtistAlbums(artistData.id),
     fetchArtistTopTracks(artistData.id),
+    fetchArtistReleases(artistData.id), // <-- nuevo
   ]);
 
   // 3) Intento de emparejado MusicBrainz → MBID
@@ -45,7 +47,14 @@ export default async function ArtistPage({
     }
   }
 
-  const lastRelease = albums[0];
+  console.log(releases);
+
+  const lastRelease = releases
+    .slice()
+    .sort(
+      (a: { release_date: string }, b: { release_date: string }) =>
+        new Date(b.release_date).getTime() - new Date(a.release_date).getTime()
+    )[0];
   // const bioAI = await fetchArtistBio(artist);
 
   return (
@@ -110,7 +119,7 @@ export default async function ArtistPage({
                   />
                   <p className="font-bold truncate w-full">{alb.name}</p>
                   <p className="text-sm text-gray-500 w-full">
-                    {dayjs(alb.release_date).format("DD-MM-YYYY")}
+                    {dayjs(alb.release_date).format("DD/MM/YYYY")}
                   </p>
                 </div>
               ))}
@@ -151,7 +160,10 @@ export default async function ArtistPage({
                 <div>
                   <p className="font-bold">{lastRelease.name}</p>
                   <p className="text-sm text-gray-500">
-                    {dayjs(lastRelease.release_date).format("DD-MM-YYYY")}
+                    {dayjs(lastRelease.release_date).format("DD/MM/YYYY")}
+                  </p>
+                  <p className="text-xs text-gray-600 capitalize">
+                    {lastRelease.album_type}
                   </p>
                 </div>
               </div>

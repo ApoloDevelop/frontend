@@ -38,6 +38,12 @@ export async function fetchArtistTopTracks(artistId: string) {
   return res.json();
 }
 
+export async function fetchArtistReleases(artistId: string) {
+  const res = await fetch(`${B}/spotify/artist/releases?artistId=${artistId}`);
+  if (!res.ok) throw new Error("Error al buscar lanzamientos");
+  return res.json();
+}
+
 // export async function fetchArtistBio(name: string) {
 //   const res = await fetch(
 //     `${
