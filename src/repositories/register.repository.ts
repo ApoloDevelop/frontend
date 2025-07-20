@@ -13,7 +13,7 @@ export class RegisterRepository {
     }
 
     const data = await res.json();
-    return data.url; // Devuelve la URL de la imagen subida
+    return data.url;
   }
 
   static async registerUser(body: any): Promise<any> {
@@ -31,7 +31,7 @@ export class RegisterRepository {
       throw new Error(errorData.message || "Error al crear la cuenta");
     }
 
-    return await res.json(); // Devuelve la respuesta del backend
+    return await res.json();
   }
 
   static async checkIfExists(
@@ -51,6 +51,6 @@ export class RegisterRepository {
       throw new Error("Error al verificar los datos");
     }
 
-    return await res.json(); // Devuelve si existen email, username o phone
+    return await res.json();
   }
 }

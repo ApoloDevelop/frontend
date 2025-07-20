@@ -1,4 +1,3 @@
-// components/register/CountrySelect.tsx
 import React from "react";
 import Select from "react-select";
 import { countries } from "@/data/countries";
@@ -89,8 +88,8 @@ export const CountrySelect: React.FC<CountrySelectProps> = ({
             backgroundColor: state.isSelected
               ? "#000000"
               : state.isFocused
-                ? "#E6E6E6"
-                : "white",
+              ? "#E6E6E6"
+              : "white",
             color: state.isSelected ? "white" : "black",
             fontSize: "0.875rem",
           }),

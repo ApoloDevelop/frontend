@@ -1,4 +1,3 @@
-// utils/musicbrainz.ts
 const B = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 export interface MbArtist {
@@ -29,7 +28,6 @@ export async function fetchMusicBrainzMatch(
 
   const res = await fetch(url);
   if (!res.ok) {
-    // Podrías loguear res.status o cuerpo para debug
     throw new Error("No se pudo emparejar artista en MusicBrainz");
   }
   const { mbid } = await res.json();

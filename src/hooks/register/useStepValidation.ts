@@ -14,7 +14,7 @@ function isStrongPassword(password: string): boolean {
 export function useStepValidation(
   formData: any,
   setFieldErrors: any,
-  setAlertMsgs: any, // Cambiado para manejar múltiples mensajes
+  setAlertMsgs: any,
   setIsLoading: any
 ) {
   const validateStep = async (step: number) => {
@@ -22,7 +22,6 @@ export function useStepValidation(
     const alertMessages: string[] = []; // Array para recolectar todos los mensajes de error
 
     if (step === 1) {
-      // Validar campos requeridos del primer paso
       if (!formData.fullname.trim()) {
         alertMessages.push("El nombre completo es obligatorio.");
         errors.fullname = true;
@@ -139,9 +138,8 @@ export function useStepValidation(
       setIsLoading(false);
     }
 
-    // Establecer los errores en los campos y los mensajes de alerta
     setFieldErrors(errors);
-    setAlertMsgs(alertMessages); // Pasar todos los mensajes de error al hook
+    setAlertMsgs(alertMessages);
     return Object.keys(errors).length === 0;
   };
 

@@ -9,7 +9,7 @@ export function ArtistRatingClient({
   artistBirthdate,
 }: {
   artistName: string;
-  artistBirthdate?: Date; // Opcional, si necesitas la fecha de nacimiento del artista
+  artistBirthdate?: Date;
 }) {
   const [open, setOpen] = useState(false);
 
@@ -18,8 +18,8 @@ export function ArtistRatingClient({
       artistName,
       score,
       comment,
-      userId: 1, // Aquí deberías obtener el ID del usuario actual
-      birthdate: artistBirthdate, // Aquí deberías obtener la fecha de nacimiento del usuario actual
+      userId: 1, // Aquí debería obtener el ID del usuario actual
+      birthdate: artistBirthdate,
     });
     setOpen(false);
   };

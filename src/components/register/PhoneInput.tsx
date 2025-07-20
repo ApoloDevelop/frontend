@@ -1,4 +1,3 @@
-// components/register/PhoneInput.tsx
 import { countries } from "@/data/countries";
 import React from "react";
 import Select from "react-select";
@@ -122,7 +121,9 @@ export const PhoneInput: React.FC<PhoneInputProps> = ({
             }}
             required
             disabled={!prefix}
-            className={`${fieldError ? "border-red-500 border-2" : ""} ${!prefix ? "bg-gray-100 text-gray-500 border-gray-200" : ""}`}
+            className={`${fieldError ? "border-red-500 border-2" : ""} ${
+              !prefix ? "bg-gray-100 text-gray-500 border-gray-200" : ""
+            }`}
             style={{ height: "35px", borderRadius: borderRadius }}
           />
         ) : (
@@ -157,7 +158,7 @@ export const PhoneInput: React.FC<PhoneInputProps> = ({
               whiteSpace: "nowrap",
               overflow: "hidden",
               textOverflow: "ellipsis",
-              maxWidth: "calc(100% - 24px)", // Adjust for padding and icon
+              maxWidth: "calc(100% - 24px)",
             }}
           >
             Teléfono (opcional)

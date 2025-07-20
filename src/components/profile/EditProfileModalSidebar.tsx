@@ -1,4 +1,3 @@
-// Sidebar.tsx
 import clsx from "clsx";
 
 export function EditProfileModalSidebar({

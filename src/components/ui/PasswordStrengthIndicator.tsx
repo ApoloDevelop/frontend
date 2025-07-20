@@ -17,7 +17,6 @@ export const PasswordStrengthIndicator = ({
 }) => {
   const strength = getPasswordStrength(password);
 
-  // Define requisitos
   const requirements = [
     {
       label: "Al menos 8 caracteres",
@@ -41,7 +40,6 @@ export const PasswordStrengthIndicator = ({
     },
   ];
 
-  // Define fortaleza
   let strengthLabel = "Muy débil";
   let strengthColor = "bg-red-500";
   if (strength == 4) {

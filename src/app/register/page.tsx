@@ -111,17 +111,15 @@ export default function RegisterPage() {
   };
 
   const handleCreateAccount = async () => {
-    setIsLoading(true); // Activa la pantalla de carga
+    setIsLoading(true);
 
     try {
       let profilePicUrl = DEFAULT_AVATAR_URL;
 
-      // Subir la imagen a Cloudinary si existe
       if (profileImage) {
         profilePicUrl = await RegisterService.uploadProfileImage(profileImage);
       }
 
-      // Crear la cuenta
       const data = await RegisterService.createAccount(formData, profilePicUrl);
 
       setAlertMsgs(["¡Cuenta creada con éxito!"]);
@@ -148,8 +146,8 @@ export default function RegisterPage() {
           top: 0,
           left: 0,
           width: "100%",
-          paddingTop: "4rem", // Añade un padding superior para evitar la superposición
-          paddingBottom: "4rem", // Añade un padding inferior para evitar la superposición
+          paddingTop: "4rem",
+          paddingBottom: "4rem",
         }}
       >
         <div
@@ -235,7 +233,7 @@ export default function RegisterPage() {
             {step > 1 ? (
               <Button onClick={handlePrev}>Anterior</Button>
             ) : (
-              <div /> // Ocupa el espacio para que el botón "Siguiente" no se mueva
+              <div />
             )}
             {step === 3 ? (
               <Button onClick={handleCreateAccount} disabled={isLoading}>

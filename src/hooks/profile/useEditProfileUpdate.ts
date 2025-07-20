@@ -58,7 +58,6 @@ export function useEditProfileUpdate() {
       return null;
     }
 
-    // Comprobación de existencia en backend
     try {
       if (
         (dataToUpdate.email !== user.email && dataToUpdate.email) ||
@@ -100,7 +99,6 @@ export function useEditProfileUpdate() {
         }
       }
 
-      // Construir objeto de actualización
       const updateObj: any = {
         email: dataToUpdate.email,
         biography: dataToUpdate.bio,

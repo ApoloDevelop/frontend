@@ -119,7 +119,6 @@ export function EditProfileModal({
       setMessages([]);
       setAlertMsgs([]);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
   useEffect(() => {
@@ -196,8 +195,8 @@ export function EditProfileModal({
                   {section === "profile"
                     ? "Datos del usuario"
                     : section === "personal"
-                      ? "Datos personales"
-                      : "Redes sociales"}
+                    ? "Datos personales"
+                    : "Redes sociales"}
                 </DialogTitle>
               </DialogHeader>
 

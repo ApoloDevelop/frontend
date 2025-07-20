@@ -1,4 +1,3 @@
-// app/artist/[artist]/page.tsx
 import Image from "next/image";
 import dayjs from "dayjs";
 import {
@@ -31,10 +30,9 @@ export default async function ArtistPage({
   const [albums, topTracks, releases] = await Promise.all([
     fetchArtistAlbums(artistData.id),
     fetchArtistTopTracks(artistData.id),
-    fetchArtistReleases(artistData.id), // <-- nuevo
+    fetchArtistReleases(artistData.id),
   ]);
 
-  // 3) Intento de emparejado MusicBrainz → MBID
   let mbid: string | null = null;
   try {
     mbid = await fetchMusicBrainzMatch(artistData.id, artistData.name);
@@ -101,7 +99,7 @@ export default async function ArtistPage({
             <h1 className="text-5xl font-bold text-black drop-shadow-lg mt-52">
               {artistData.name}
             </h1>
-            {/* Botón de valoración alineado a la derecha del nombre */}
+            {/* Botón de valoración */}
             <div className="mt-54">
               <ArtistRatingClient
                 artistName={artistData.name}
@@ -188,7 +186,7 @@ export default async function ArtistPage({
               ))}
             </div>
           </section>
-          {/* NUEVA SECCIÓN: Artistas relacionados */}
+          {/* Artistas relacionados */}
           <section className="bg-white/80 p-6 rounded-lg shadow">
             <h2 className="text-2xl font-bold mb-4">Artistas relacionados</h2>
             {similar.length ? (

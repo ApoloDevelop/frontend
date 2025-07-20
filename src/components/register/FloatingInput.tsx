@@ -11,7 +11,7 @@ interface FloatingInputProps {
   error?: boolean;
   disabled?: boolean;
   autoComplete?: string;
-  max?: string; // Optional for date inputs
+  max?: string;
   className?: string;
 }
 
@@ -53,7 +53,7 @@ export const FloatingInput: React.FC<FloatingInputProps> = ({
           whiteSpace: "nowrap",
           overflow: "hidden",
           textOverflow: "ellipsis",
-          maxWidth: "calc(100% - 24px)", // Adjust for padding and icon
+          maxWidth: "calc(100% - 24px)",
         }}
       >
         {label}
