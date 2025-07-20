@@ -6,6 +6,16 @@ export interface MbArtist {
   name: string;
 }
 
+export interface ArtistDetails {
+  fullName: string;
+  birthDate: string | null;
+  birthPlace: string | null;
+  birthCountry: string | null;
+  birthCountryCode: string | null;
+  type: string | null;
+  bio: string;
+}
+
 export async function fetchMusicBrainzMatch(
   spotifyId: string,
   name: string
@@ -40,5 +50,15 @@ export async function fetchSimilarByTags(
   });
   const res = await fetch(`${B}/musicbrainz/artist/similar-by-tags?${qs}`);
   if (!res.ok) throw new Error("Error fetching similar-by-tags");
+  return res.json();
+}
+
+export async function fetchArtistDetails(mbid: string): Promise<ArtistDetails> {
+  const res = await fetch(
+    `${B}/musicbrainz/artist/details?mbid=${encodeURIComponent(mbid)}`
+  );
+  if (!res.ok) {
+    throw new Error("Error al obtener detalles del artista desde MusicBrainz");
+  }
   return res.json();
 }

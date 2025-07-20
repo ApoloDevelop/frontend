@@ -9,10 +9,14 @@ import {
   // fetchArtistBio,
 } from "@/utils/spotify";
 import {
+  ArtistDetails,
+  fetchArtistDetails,
   fetchMusicBrainzMatch,
   fetchSimilarByTags,
   MbArtist,
 } from "@/utils/musicbrainz";
+import Flag from "react-world-flags";
+import { ArtistRatingClient } from "@/components/artist/ArtistRatingClient";
 
 export default async function ArtistPage({
   params,
@@ -47,7 +51,14 @@ export default async function ArtistPage({
     }
   }
 
-  console.log(releases);
+  let details: ArtistDetails | null = null;
+  if (mbid) {
+    try {
+      details = await fetchArtistDetails(mbid);
+    } catch (e) {
+      console.warn("No se pudieron obtener detalles:", e);
+    }
+  }
 
   const lastRelease = releases
     .slice()
@@ -61,7 +72,7 @@ export default async function ArtistPage({
     <div className="container mx-auto relative">
       <div
         id="blurred-bg"
-        className="fixed top-0 mt-16 left-0 right-0 h-80 w-screen -z-10 "
+        className="absolute top-0 -mt-30 left-0 right-0 h-80 w-full -z-10 "
       >
         <Image
           src={artistData.images[0]?.url || "/default-cover.png"}
@@ -71,22 +82,41 @@ export default async function ArtistPage({
         />
       </div>
 
-      <div id="header" className="flex mt-32 items-center mb-16 relative z-10">
+      <div id="header" className="flex mt-32 items-center mb-8 relative z-10">
         <Image
           src={artistData.images[0]?.url || "/default-cover.png"}
           alt={artistData.name}
           width={200}
           height={200}
-          className="rounded-lg shadow-lg"
+          className="rounded-lg shadow-lg mt-20 object-cover"
+          style={{
+            minWidth: 200,
+            minHeight: 200,
+            maxWidth: 200,
+            maxHeight: 200,
+          }}
         />
-        <div className="ml-6">
-          <h1 className="text-5xl font-bold text-white drop-shadow-lg">
-            {artistData.name}
-          </h1>
-          <p className="text-lg text-gray-200">
-            {artistData.genres.length
-              ? artistData.genres.join(", ")
-              : "Géneros no disponibles"}
+        <div className="ml-6 flex-1">
+          <div className="flex items-center gap-4">
+            <h1 className="text-5xl font-bold text-black drop-shadow-lg mt-52">
+              {artistData.name}
+            </h1>
+            {/* Botón de valoración alineado a la derecha del nombre */}
+            <div className="mt-54">
+              <ArtistRatingClient
+                artistName={artistData.name}
+                artistBirthdate={
+                  details?.birthDate ? new Date(details.birthDate) : undefined
+                }
+              />
+            </div>
+          </div>
+          <p className="text-lg text-gray-600">
+            {details?.type === "Person"
+              ? "Artista"
+              : details?.type === "Group"
+              ? "Grupo"
+              : ""}
           </p>
         </div>
       </div>
@@ -95,10 +125,43 @@ export default async function ArtistPage({
       <div className="flex gap-12 relative z-10">
         {/* Columna izquierda */}
         <div className="w-2/3 space-y-8">
-          {/* Biografía */}
+          {/* Biografía actualizada */}
           <section className="bg-white/80 p-6 rounded-lg shadow">
             <h2 className="text-2xl font-bold mb-2">Biografía</h2>
-            <p className="text-gray-700">No disponible</p>
+
+            {details ? (
+              <>
+                <p>
+                  <strong>Nombre completo:</strong> {details.fullName}
+                </p>
+                <p>
+                  <strong>Fecha de nacimiento:</strong>{" "}
+                  {details.birthDate
+                    ? dayjs(details.birthDate).format("DD/MM/YYYY")
+                    : "Desconocida"}
+                </p>
+                <p>
+                  <strong>Lugar de nacimiento:</strong>{" "}
+                  {details.birthPlace || "Desconocido"},
+                  {details.birthCountryCode ? (
+                    <Flag
+                      code={details.birthCountryCode}
+                      className="w-5 h-5 ml-2 inline-block"
+                    />
+                  ) : (
+                    "—"
+                  )}
+                </p>
+                <p>
+                  <strong>Género/s:</strong>{" "}
+                  {artistData.genres.length
+                    ? artistData.genres.join(", ")
+                    : "No disponibles"}
+                </p>
+              </>
+            ) : (
+              <p className="text-gray-700">No se pudo cargar la biografía.</p>
+            )}
           </section>
 
           {/* Álbumes recientes */}
