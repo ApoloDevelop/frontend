@@ -16,6 +16,8 @@ import {
 } from "@/utils/musicbrainz";
 import Flag from "react-world-flags";
 import { ArtistRatingClient } from "@/components/artist/ArtistRatingClient";
+import { ScoreCircle } from "@/components/artist/ScoreCircle";
+import { PentagramScores } from "@/components/artist/PentagramScores";
 
 export default async function ArtistPage({
   params,
@@ -32,6 +34,26 @@ export default async function ArtistPage({
     fetchArtistTopTracks(artistData.id),
     fetchArtistReleases(artistData.id),
   ]);
+
+  let averages: { verified: number | null; unverified: number | null } = {
+    verified: null,
+    unverified: null,
+  };
+  try {
+    const res = await fetch(
+      `${
+        process.env.NEXT_PUBLIC_BACKEND_URL
+      }/reviews/artist/average?artistName=${encodeURIComponent(
+        artistData.name
+      )}`,
+      { cache: "no-store" }
+    );
+    if (res.ok) {
+      averages = await res.json();
+    }
+  } catch (e) {
+    // Ignorar error
+  }
 
   let mbid: string | null = null;
   try {
@@ -118,11 +140,17 @@ export default async function ArtistPage({
           </p>
         </div>
       </div>
-
       {/* Contenido principal */}
       <div className="flex gap-12 relative z-10">
         {/* Columna izquierda */}
         <div className="w-2/3 space-y-8">
+          <section className="bg-white/80 p-6 rounded-lg shadow">
+            <h2 className="text-2xl font-bold mb-2">Valoraciones</h2>
+            <PentagramScores
+              verified={averages.verified}
+              unverified={averages.unverified}
+            />
+          </section>
           {/* Biografía actualizada */}
           <section className="bg-white/80 p-6 rounded-lg shadow">
             <h2 className="text-2xl font-bold mb-2">Biografía</h2>
