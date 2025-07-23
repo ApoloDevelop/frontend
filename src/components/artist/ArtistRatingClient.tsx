@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ArtistRatingModal } from "./ArtistRatingModal";
-import { ArtistService } from "@/services/review.service";
+import { ReviewService } from "@/services/review.service";
 
 export function ArtistRatingClient({
   artistName,
@@ -14,7 +14,7 @@ export function ArtistRatingClient({
   const [open, setOpen] = useState(false);
 
   const handleSubmit = async (score: number, comment: string) => {
-    await ArtistService.rateArtist({
+    await ReviewService.rateArtist({
       artistName,
       score,
       comment,

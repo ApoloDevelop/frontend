@@ -15,11 +15,12 @@ export function ArtistRatingModal({
 }: {
   open: boolean;
   onClose: () => void;
-  onSubmit: (score: number, comment: string) => void;
+  onSubmit: (score: number, comment: string, title: string) => void;
   artistName: string;
 }) {
   const [score, setScore] = useState(0);
   const [comment, setComment] = useState("");
+  const [title, setTitle] = useState("");
   const [hovered, setHovered] = useState<number | null>(null);
 
   return (
@@ -48,6 +49,16 @@ export function ArtistRatingModal({
               </button>
             ))}
           </div>
+          {score > 0 && (
+            <p className="text-lg font-semibold">Tu nota: {score}</p>
+          )}
+          <input
+            type="text"
+            placeholder="Título (opcional)"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            className="w-full border rounded p-2"
+          />
           <textarea
             placeholder="Comentario (opcional)"
             value={comment}
@@ -57,7 +68,10 @@ export function ArtistRatingModal({
           />
           <Button
             onClick={() => {
-              if (score > 0) onSubmit(score, comment);
+              if (score > 0) {
+                onSubmit(score, comment, title);
+                window.location.reload(); // Refrescar la página
+              }
             }}
             disabled={score === 0}
           >

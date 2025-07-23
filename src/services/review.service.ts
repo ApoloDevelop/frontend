@@ -1,6 +1,6 @@
 import { ReviewRepository } from "@/repositories/review.repository";
 
-export class ArtistService {
+export class ReviewService {
   static async rateArtist({
     artistName,
     score,
@@ -21,5 +21,13 @@ export class ArtistService {
       userId,
       birthdate,
     });
+  }
+
+  static async getArtistReviewCounts(artistName: string) {
+    return await ReviewRepository.getReviewCounts(artistName);
+  }
+
+  static async getReviewsByItem(itemId: number, verified: boolean) {
+    return await ReviewRepository.getReviewsByItem(itemId, verified);
   }
 }

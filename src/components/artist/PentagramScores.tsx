@@ -1,24 +1,42 @@
+"use client";
+import React, { useState } from "react";
 import { ScoreCircle } from "./ScoreCircle";
+import { ReviewsModal } from "../reviews/ReviewModal";
 
 export function PentagramScores({
   verified,
   unverified,
+  verifiedCount,
+  unverifiedCount,
+  itemId,
+  artistName,
 }: {
   verified: number | null;
   unverified: number | null;
+  verifiedCount: number;
+  unverifiedCount: number;
+  itemId: number;
+  artistName: string;
 }) {
+  console.log(itemId, artistName);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [showingVerified, setShowingVerified] = useState(false);
+
+  const handleClick = (isVerified: boolean) => {
+    setShowingVerified(isVerified);
+    setModalOpen(true);
+  };
+
   return (
     <div className="w-full flex flex-col items-center mb-8">
-      {/* Circulos y pentagrama */}
       <div className="relative w-[700px] h-[100px] flex items-center justify-center">
-        {/* Pentagrama SVG */}
+        {/* Pentagrama */}
         <svg
           className="absolute left-0 top-[-2px]"
           width="700"
           height="160"
           viewBox="0 0 700 160"
         >
-          {/* Líneas del pentagrama */}
           {[0, 1, 2, 3, 4].map((i) => (
             <line
               key={i}
@@ -30,7 +48,6 @@ export function PentagramScores({
               strokeWidth={3}
             />
           ))}
-          {/* Línea vertical central */}
           <line
             x1={350}
             x2={350}
@@ -40,16 +57,38 @@ export function PentagramScores({
             strokeWidth={4}
           />
         </svg>
-        {/* Circulos y textos */}
+
         <div className="absolute left-[100px] top-0 flex flex-col items-center">
-          <span className="font-semibold text-lg mb-2">Verificadas</span>
+          <span className="font-semibold text-lg mb-2">Certificadas</span>
           <ScoreCircle score={verified} label="" />
+          <button
+            className="text-sm text-blue-600 mt-3 hover:underline cursor-pointer"
+            onClick={() => handleClick(true)}
+          >
+            {verifiedCount} valoraciones
+          </button>
         </div>
+
         <div className="absolute right-[100px] top-0 flex flex-col items-center">
           <span className="font-semibold text-lg mb-2">Generales</span>
           <ScoreCircle score={unverified} label="" />
+          <button
+            className="text-sm text-blue-600 mt-3 hover:underline cursor-pointer"
+            onClick={() => handleClick(false)}
+          >
+            {unverifiedCount} valoraciones
+          </button>
         </div>
       </div>
+
+      <ReviewsModal
+        open={modalOpen}
+        onOpenChange={setModalOpen}
+        itemId={itemId}
+        artistName={artistName}
+        averageScore={showingVerified ? verified : unverified}
+        verified={showingVerified}
+      />
     </div>
   );
 }

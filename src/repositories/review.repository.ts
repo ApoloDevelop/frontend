@@ -25,4 +25,29 @@ export class ReviewRepository {
     }
     return await res.json();
   }
+
+  static async getReviewCounts(artistName: string) {
+    const res = await fetch(
+      `${
+        process.env.NEXT_PUBLIC_BACKEND_URL
+      }/reviews/artist/count?artistName=${encodeURIComponent(artistName)}`,
+      { cache: "no-store" }
+    );
+    if (!res.ok) {
+      throw new Error("Error al obtener el número de reseñas");
+    }
+    return await res.json();
+  }
+
+  static async getReviewsByItem(itemId: number, verified: boolean) {
+    const res = await fetch(
+      `${
+        process.env.NEXT_PUBLIC_BACKEND_URL
+      }/reviews/artist/reviews?itemId=${itemId}&verified=${verified ? 1 : 0}`
+    );
+    if (!res.ok) {
+      throw new Error("Error al obtener las reseñas");
+    }
+    return await res.json();
+  }
 }

@@ -16,8 +16,9 @@ import {
 } from "@/utils/musicbrainz";
 import Flag from "react-world-flags";
 import { ArtistRatingClient } from "@/components/artist/ArtistRatingClient";
-import { ScoreCircle } from "@/components/artist/ScoreCircle";
 import { PentagramScores } from "@/components/artist/PentagramScores";
+import { ReviewService } from "@/services/review.service";
+import { ItemService } from "@/services/item.service";
 
 export default async function ArtistPage({
   params,
@@ -28,6 +29,15 @@ export default async function ArtistPage({
   const artistData = await fetchArtistByName(artist);
   if (!artistData)
     return <div className="text-center py-20">Artista no encontrado.</div>;
+
+  const reviewCounts = await ReviewService.getArtistReviewCounts(
+    artistData.name
+  );
+
+  const item = await ItemService.findItemByTypeAndName(
+    "artist",
+    artistData.name
+  );
 
   const [albums, topTracks, releases] = await Promise.all([
     fetchArtistAlbums(artistData.id),
@@ -149,6 +159,10 @@ export default async function ArtistPage({
             <PentagramScores
               verified={averages.verified}
               unverified={averages.unverified}
+              verifiedCount={reviewCounts.verifiedCount}
+              unverifiedCount={reviewCounts.unverifiedCount}
+              itemId={item.itemId}
+              artistName={artistData.name}
             />
           </section>
           {/* Biografía actualizada */}
