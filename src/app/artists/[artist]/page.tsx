@@ -161,7 +161,7 @@ export default async function ArtistPage({
               unverified={averages.unverified}
               verifiedCount={reviewCounts.verifiedCount}
               unverifiedCount={reviewCounts.unverifiedCount}
-              itemId={item.itemId}
+              itemId={item?.itemId ?? null}
               artistName={artistData.name}
             />
           </section>

@@ -15,9 +15,16 @@ export function PentagramScores({
   unverified: number | null;
   verifiedCount: number;
   unverifiedCount: number;
-  itemId: number;
+  itemId: number | null;
   artistName: string;
 }) {
+  if (itemId === null) {
+    return (
+      <div className="text-center text-gray-500">
+        No hay reseñas disponibles para este artista.
+      </div>
+    );
+  }
   console.log(itemId, artistName);
   const [modalOpen, setModalOpen] = useState(false);
   const [showingVerified, setShowingVerified] = useState(false);
