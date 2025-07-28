@@ -19,6 +19,7 @@ import { ArtistRatingClient } from "@/components/artist/ArtistRatingClient";
 import { PentagramScores } from "@/components/artist/PentagramScores";
 import { ReviewService } from "@/services/review.service";
 import { ItemService } from "@/services/item.service";
+import { FavoriteButton } from "@/components/favorites/FavoriteButton";
 
 export default async function ArtistPage({
   params,
@@ -148,6 +149,13 @@ export default async function ArtistPage({
               ? "Grupo"
               : ""}
           </p>
+        </div>
+        {/* Botón de favorito, alineado a la derecha */}
+        <div className="ml-auto mt-48">
+          <FavoriteButton
+            artistName={artistData.name}
+            userId={1} // usuario simulado
+          />
         </div>
       </div>
       {/* Contenido principal */}
