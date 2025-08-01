@@ -6,20 +6,21 @@ import {
   fetchArtistTopTracks,
   fetchArtistReleases,
   // fetchArtistBio,
-} from "@/utils/spotify";
+} from "@/helpers/spotify";
 import {
   ArtistDetails,
   fetchArtistDetails,
   fetchMusicBrainzMatch,
   fetchSimilarByTags,
   MbArtist,
-} from "@/utils/musicbrainz";
+} from "@/helpers/musicbrainz";
 import Flag from "react-world-flags";
 import { ArtistRatingClient } from "@/components/artist/ArtistRatingClient";
 import { PentagramScores } from "@/components/artist/PentagramScores";
 import { ReviewService } from "@/services/review.service";
 import { ItemService } from "@/services/item.service";
 import { FavoriteButton } from "@/components/favorites/FavoriteButton";
+import { AddToListDialog } from "@/components/lists/AddToListDialog";
 
 export default async function ArtistPage({
   params,
@@ -103,7 +104,7 @@ export default async function ArtistPage({
     <div className="container mx-auto relative">
       <div
         id="blurred-bg"
-        className="absolute top-0 -mt-30 left-0 right-0 h-80 w-full -z-10 "
+        className="absolute top-0 -mt-24 left-0 right-0 h-80 w-full -z-10 "
       >
         <Image
           src={artistData.images[0]?.url || "/default-cover.png"}
@@ -119,7 +120,7 @@ export default async function ArtistPage({
           alt={artistData.name}
           width={200}
           height={200}
-          className="rounded-lg shadow-lg mt-20 object-cover"
+          className="rounded-lg shadow-lg mt-35 object-cover"
           style={{
             minWidth: 200,
             minHeight: 200,
@@ -151,12 +152,13 @@ export default async function ArtistPage({
           </p>
         </div>
         {/* Botón de favorito, alineado a la derecha */}
-        <div className="ml-auto mt-48">
-          <FavoriteButton
-            artistName={artistData.name}
-            userId={1} // usuario simulado
-          />
-        </div>
+
+        <FavoriteButton
+          artistName={artistData.name}
+          userId={1} // usuario simulado
+          height={48} // opcional, puedes ajustar el tamaño
+        />
+        <AddToListDialog userId={1} height={48} itemType="artist" />
       </div>
       {/* Contenido principal */}
       <div className="flex gap-12 relative z-10">

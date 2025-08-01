@@ -8,9 +8,14 @@ import { AlertMessage } from "../ui/AlertMessage";
 interface FavoriteButtonProps {
   artistName: string;
   userId: number; //(fake: 1)
+  height?: number; // opcional, para personalizar el tamaño del botón
 }
 
-export function FavoriteButton({ artistName, userId }: FavoriteButtonProps) {
+export function FavoriteButton({
+  artistName,
+  userId,
+  height,
+}: FavoriteButtonProps) {
   const [isFavorite, setIsFavorite] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
   const { alertMsgs, setAlertMsgs, showAlert } = useAlert();
@@ -60,7 +65,9 @@ export function FavoriteButton({ artistName, userId }: FavoriteButtonProps) {
         aria-label={isFavorite ? "Eliminar de favoritos" : "Añadir a favoritos"}
         onClick={toggleFavorite}
         disabled={loading}
-        className="p-2 hover:opacity-60 transition-opacity cursor-pointer"
+        className={`p-2 hover:opacity-60 transition-opacity cursor-pointer ${
+          height ? `mt-${height}` : ""
+        }`}
         title={isFavorite ? "Eliminar de favoritos" : "Añadir a favoritos"}
       >
         <Star

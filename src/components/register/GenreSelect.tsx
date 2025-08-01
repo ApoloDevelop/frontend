@@ -1,6 +1,6 @@
 import React from "react";
 import Select from "react-select";
-import { getGenreLabel } from "@/utils/genre";
+import { getGenreLabel } from "@/helpers/genre";
 
 interface GenreOption {
   value: string;

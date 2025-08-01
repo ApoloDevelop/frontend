@@ -9,7 +9,13 @@ export default function Header() {
 
   return (
     <header className="p-4">
-      <nav className="flex items-center justify-between space-x-8">
+      <nav
+        className={`flex items-center justify-between space-x-8 p-4 absolute top-0 left-0 right-0 z-50 shadow-lg ${
+          isRegisterPage
+            ? "bg-black/40 text-white"
+            : "bg-white/50 backdrop-blur-md"
+        }`}
+      >
         <div className="flex items-center space-x-8">
           <Link href="/" className="flex items-center">
             <h1
@@ -23,7 +29,7 @@ export default function Header() {
           <ul className="flex space-x-6">
             <li>
               <Link
-                href="/"
+                href="/artists/quevedo"
                 className={`text-lg font-medium ${
                   isRegisterPage ? "text-white" : "text-black"
                 } hover:underline`}

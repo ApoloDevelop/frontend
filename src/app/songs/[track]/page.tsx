@@ -1,4 +1,4 @@
-import { fetchSongByName } from "@/utils/spotify";
+import { fetchSongByName } from "@/helpers/spotify";
 import Image from "next/image";
 
 export default async function SongPage({

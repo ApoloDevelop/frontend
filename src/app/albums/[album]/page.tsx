@@ -1,4 +1,4 @@
-import { fetchAlbumByName } from "@/utils/spotify";
+import { fetchAlbumByName } from "@/helpers/spotify";
 import Image from "next/image";
 
 export default async function AlbumPage({

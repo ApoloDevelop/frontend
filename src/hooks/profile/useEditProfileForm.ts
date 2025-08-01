@@ -1,4 +1,4 @@
-import { splitPhone } from "@/utils/phone";
+import { splitPhone } from "@/helpers/phone";
 import { useState } from "react";
 
 export function useEditProfileForm(user: any) {

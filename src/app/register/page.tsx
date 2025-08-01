@@ -12,7 +12,7 @@ import { useImageCropper } from "@/hooks/register/useImageCropper";
 import { useAlert } from "@/hooks/register/useAlert";
 import { usePasswordToggle } from "@/hooks/register/usePasswordToggle";
 import { useStepValidation } from "@/hooks/register/useStepValidation";
-import { isCurrentPageValid } from "@/utils/registerValidation";
+import { isCurrentPageValid } from "@/helpers/registerValidation";
 import { StepIndicator } from "@/components/register/StepIndicator";
 import { RegisterFormStep1 } from "@/components/register/steps/RegisterFormStep1";
 import { RegisterFormStep2 } from "@/components/register/steps/RegisterFormStep2";
