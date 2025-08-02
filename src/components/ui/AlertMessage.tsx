@@ -15,7 +15,7 @@ export function AlertMessage({
 
   return (
     <div
-      className={`fixed top-4 left-1/2 -translate-x-1/2 w-full max-w-md transition-opacity duration-300 ${
+      className={` fixed top-4 left-1/2 -translate-x-1/2 w-full max-w-md transition-opacity duration-300 ${
         showAlert ? "opacity-100" : "opacity-0"
       }`}
       style={{

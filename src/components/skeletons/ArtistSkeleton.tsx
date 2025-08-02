@@ -4,7 +4,7 @@ export default function ArtistSkeleton() {
   return (
     <div className="container mx-auto relative px-2 md:px-8 lg:px-4">
       {/* Banner */}
-      <div className="h-80 bg-white/60 rounded-md animate-pulse"></div>
+      <div className="h-80 bg-gray-200 rounded-md animate-pulse"></div>
 
       {/* Header: Avatar + Title */}
       <div className="flex items-center mt-[-32px] mb-8 relative">

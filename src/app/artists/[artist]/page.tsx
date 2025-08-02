@@ -152,13 +152,13 @@ export default async function ArtistPage({
           </p>
         </div>
         {/* Botón de favorito, alineado a la derecha */}
-
-        <FavoriteButton
+        <FavoriteButton artistName={artistData.name} userId={1} height={48} />
+        <AddToListDialog
+          userId={1}
+          height={48}
+          itemType="artist"
           artistName={artistData.name}
-          userId={1} // usuario simulado
-          height={48} // opcional, puedes ajustar el tamaño
         />
-        <AddToListDialog userId={1} height={48} itemType="artist" />
       </div>
       {/* Contenido principal */}
       <div className="flex gap-12 relative z-10">
