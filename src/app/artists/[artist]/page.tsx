@@ -27,8 +27,9 @@ export default async function ArtistPage({
 }: {
   params: Promise<{ artist: string }>;
 }) {
-  const { artist } = await params;
-  const artistData = await fetchArtistByName(artist);
+  const { artist: slug } = await params;
+  const artistName = slug.replace(/-/g, " ");
+  const artistData = await fetchArtistByName(artistName);
   if (!artistData)
     return <div className="text-center py-20">Artista no encontrado.</div>;
 
@@ -128,13 +129,13 @@ export default async function ArtistPage({
             maxHeight: 200,
           }}
         />
-        <div className="ml-6 flex-1">
+        <div className="ml-6 flex-1 translate-y-30">
           <div className="flex items-center gap-4">
-            <h1 className="text-5xl font-bold text-black drop-shadow-lg mt-52">
+            <h1 className="text-5xl font-bold text-black drop-shadow-lg">
               {artistData.name}
             </h1>
             {/* Botón de valoración */}
-            <div className="mt-54">
+            <div className="inline-block ml-4">
               <ArtistRatingClient
                 artistName={artistData.name}
                 artistBirthdate={
@@ -152,13 +153,15 @@ export default async function ArtistPage({
           </p>
         </div>
         {/* Botón de favorito, alineado a la derecha */}
-        <FavoriteButton artistName={artistData.name} userId={1} height={48} />
-        <AddToListDialog
-          userId={1}
-          height={48}
-          itemType="artist"
-          artistName={artistData.name}
-        />
+        <div className="ml-auto flex items-center gap-2 translate-y-27">
+          <FavoriteButton artistName={artistData.name} userId={1} height={48} />
+          <AddToListDialog
+            userId={1}
+            height={48}
+            itemType="artist"
+            artistName={artistData.name}
+          />
+        </div>
       </div>
       {/* Contenido principal */}
       <div className="flex gap-12 relative z-10">

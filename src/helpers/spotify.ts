@@ -4,6 +4,7 @@ export async function fetchArtistByName(name: string) {
   const res = await fetch(
     `${B}/spotify/artist?name=${encodeURIComponent(name)}`
   );
+  if (res.status === 404) return null;
   if (!res.ok) throw new Error("Error al buscar artista");
   return res.json();
 }
