@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import SpotifyLogo from "@/components/icons/SpotifyLogo";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -79,17 +80,7 @@ export default function LoginPage() {
             Entrar con Google
           </Button>
           <Button onClick={() => (window.location.href = OAUTH_SPOTIFY!)}>
-            <img
-              src="https://upload.wikimedia.org/wikipedia/commons/1/19/Spotify_logo_without_text.svg"
-              alt="Spotify"
-              style={{
-                width: "21px",
-                height: "21px",
-                marginRight: "8px",
-                marginTop: "3px",
-                marginBottom: "3px",
-              }}
-            />
+            <SpotifyLogo />
             Entrar con Spotify
           </Button>
         </div>

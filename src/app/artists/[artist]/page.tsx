@@ -21,6 +21,7 @@ import { ReviewService } from "@/services/review.service";
 import { ItemService } from "@/services/item.service";
 import { FavoriteButton } from "@/components/favorites/FavoriteButton";
 import { AddToListDialog } from "@/components/lists/AddToListDialog";
+import Link from "next/link";
 
 export default async function ArtistPage({
   params,
@@ -28,7 +29,9 @@ export default async function ArtistPage({
   params: Promise<{ artist: string }>;
 }) {
   const { artist: slug } = await params;
-  const artistName = slug.replace(/-/g, " ");
+  const raw = slug.replace(/-/g, " ");
+  const decoded = decodeURIComponent(raw);
+  const artistName = decoded;
   const artistData = await fetchArtistByName(artistName);
   if (!artistData)
     return <div className="text-center py-20">Artista no encontrado.</div>;
@@ -222,22 +225,31 @@ export default async function ArtistPage({
             <h2 className="text-2xl font-bold mb-4">Álbumes recientes</h2>
             <div className="flex gap-4">
               {albums.map((alb: any) => (
-                <div
+                <Link
                   key={alb.id}
-                  className="w-1/5 flex flex-col items-center text-center "
+                  href={`/albums/${artistData.name
+                    .replace(/\s+/g, "-")
+                    .toLowerCase()}/${alb.name
+                    .replace(/\s+/g, "-")
+                    .toLowerCase()}`}
+                  className="w-1/5 flex flex-col items-center text-center group"
                 >
-                  <Image
-                    src={alb.images[0]?.url || "/default-cover.png"}
-                    alt={alb.name}
-                    width={112}
-                    height={112}
-                    className="rounded mb-2"
-                  />
-                  <p className="font-bold truncate w-full">{alb.name}</p>
+                  <div className="relative">
+                    <Image
+                      src={alb.images[0]?.url || "/default-cover.png"}
+                      alt={alb.name}
+                      width={112}
+                      height={112}
+                      className="rounded mb-2 transition-transform duration-200 group-hover:scale-105"
+                    />
+                  </div>
+                  <p className="font-bold truncate w-full transition-transform duration-200 group-hover:scale-105">
+                    {alb.name}
+                  </p>
                   <p className="text-sm text-gray-500 w-full">
                     {dayjs(alb.release_date).format("DD/MM/YYYY")}
                   </p>
-                </div>
+                </Link>
               ))}
             </div>
           </section>

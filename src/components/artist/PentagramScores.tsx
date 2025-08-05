@@ -18,14 +18,6 @@ export function PentagramScores({
   itemId: number | null;
   artistName: string;
 }) {
-  if (itemId === null) {
-    return (
-      <div className="text-center text-gray-500">
-        No hay reseñas disponibles para este artista.
-      </div>
-    );
-  }
-  console.log(itemId, artistName);
   const [modalOpen, setModalOpen] = useState(false);
   const [showingVerified, setShowingVerified] = useState(false);
 
@@ -67,23 +59,25 @@ export function PentagramScores({
 
         <div className="absolute left-[100px] top-0 flex flex-col items-center">
           <span className="font-semibold text-lg mb-2">Certificadas</span>
-          <ScoreCircle score={verified} label="" />
+          <ScoreCircle score={itemId !== null ? verified : null} label="" />
           <button
             className="text-sm text-blue-600 mt-3 hover:underline cursor-pointer"
             onClick={() => handleClick(true)}
+            disabled={itemId === null}
           >
-            {verifiedCount} valoraciones
+            {itemId !== null ? verifiedCount : 0} valoraciones
           </button>
         </div>
 
         <div className="absolute right-[100px] top-0 flex flex-col items-center">
           <span className="font-semibold text-lg mb-2">Generales</span>
-          <ScoreCircle score={unverified} label="" />
+          <ScoreCircle score={itemId !== null ? unverified : null} label="" />
           <button
             className="text-sm text-blue-600 mt-3 hover:underline cursor-pointer"
             onClick={() => handleClick(false)}
+            disabled={itemId === null}
           >
-            {unverifiedCount} valoraciones
+            {itemId !== null ? unverifiedCount : 0} valoraciones
           </button>
         </div>
       </div>
@@ -91,7 +85,7 @@ export function PentagramScores({
       <ReviewsModal
         open={modalOpen}
         onOpenChange={setModalOpen}
-        itemId={itemId}
+        itemId={itemId !== null ? itemId : 0}
         artistName={artistName}
         averageScore={showingVerified ? verified : unverified}
         verified={showingVerified}
