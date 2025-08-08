@@ -6,20 +6,17 @@ export class ReviewService {
     score,
     comment,
     userId,
-    birthdate,
   }: {
     artistName: string;
     score: number;
     comment?: string;
     userId: number;
-    birthdate?: Date;
   }) {
     return await ReviewRepository.rateArtist({
       artistName,
       score,
       comment,
       userId,
-      birthdate,
     });
   }
 

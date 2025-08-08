@@ -1,10 +1,19 @@
 import Image from "next/image";
 import { notFound } from "next/navigation";
-
+import Link from "next/link";
 import { Heart, Play, MoreHorizontal } from "lucide-react";
 import { fetchAlbumByName, fetchAlbumTracks } from "@/helpers/spotify";
 import SpotifyLogo from "@/components/icons/SpotifyLogo";
-import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
+import { msToMinSec } from "@/helpers/seconds";
 
 export default async function AlbumPage({
   params: rawParams,
@@ -12,16 +21,16 @@ export default async function AlbumPage({
   params: { artist: string; album: string };
 }) {
   const { artist: artistSlug, album: albumSlug } = await rawParams;
-  const rawAlbum = albumSlug.replace(/-/g, " ");
-  const decodedAlbum = decodeURIComponent(rawAlbum);
+
   const artistName = artistSlug.replace(/-/g, " ");
-  const albumName = decodedAlbum;
+  const albumName = decodeURIComponent(albumSlug.replace(/-/g, " "));
+
   const album = await fetchAlbumByName(albumName);
 
   if (
     !album ||
-    !album.artists.some(
-      (a: any) => a.name.toLowerCase() === artistName.toLowerCase()
+    !album.artists?.some(
+      (a: any) => a.name?.toLowerCase() === artistName.toLowerCase()
     )
   ) {
     return notFound();
@@ -29,124 +38,212 @@ export default async function AlbumPage({
 
   const tracks = await fetchAlbumTracks(album.id);
 
+  const cover = album.images?.[0]?.url || "/default-cover.png";
+  const year =
+    album.release_date && !Number.isNaN(new Date(album.release_date).getTime())
+      ? new Date(album.release_date).getFullYear()
+      : undefined;
+
   return (
     <>
-      {/* Banner con imagen blurred */}
-      <div
-        className="relative h-100 -z-10 w-full top-10 mb-20"
-        style={{
-          backgroundImage: `url(${
-            album.images?.[0]?.url || "/default-cover.png"
-          })`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          filter: "blur(20px)",
-        }}
-      ></div>
+      {/* HERO: fondo con blur + degradado para legibilidad */}
+      <div className="relative h-72 mb-18 w-full overflow-hidden">
+        <Image
+          src={cover}
+          alt=""
+          fill
+          priority
+          className="object-cover scale-110 blur-xl"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-white via-white/20 to-transparent pointer-events-none" />
+      </div>
 
-      {/* Contenido principal */}
-      <div className="relative max-w-5xl mx-auto px-4 grid gap-24 lg:grid-cols-2">
-        {/* Portada del álbum */}
-        <div className="w-full h-auto aspect-square overflow-hidden rounded-2xl shadow-lg -translate-y-40 -translate-x-80">
-          {album.images?.[0]?.url ? (
-            <Image
-              src={album.images[0].url}
-              alt={`Cover de ${album.title}`}
-              width={512}
-              height={512}
-              className="object-cover w-full h-full"
-            />
-          ) : (
-            <div className="bg-gray-200 w-full h-full flex items-center justify-center">
-              <span className="text-gray-500">Sin portada</span>
-            </div>
-          )}
-        </div>
+      {/* CONTENIDO */}
+      <div className="relative -mt-16 pb-16">
+        <div className="mx-auto max-w-6xl px-4">
+          {/* Breadcrumbs */}
+          <Breadcrumb>
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbLink href="/artists">Artistas</BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbLink href={`/artists/${artistSlug}`}>
+                  {artistName.toUpperCase()}
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbPage>{album.name}</BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
 
-        {/* Información y contenido */}
-        <div className="flex flex-col space-y-6">
-          {/* Título y metadatos */}
-          <div className="space-y-2">
-            <h1 className="text-4xl font-bold">{album.name}</h1>
-            <p className="text-lg">
-              <span className="font-semibold">Artista:</span>{" "}
-              {album.artists.map((artist: any, index: number) => (
-                <span key={artist.id}>
-                  <Link
-                    href={`/artists/${artist.name
-                      .replace(/\s+/g, "-")
-                      .toLowerCase()}`}
-                    className="text-purple-500 hover:underline"
-                  >
-                    {artist.name}
-                  </Link>
-                  {index < album.artists.length - 1 && ", "}
-                </span>
-              ))}
-            </p>
-            <p className="text-lg">
-              <span className="font-semibold">Fecha de lanzamiento:</span>{" "}
-              {new Date(album.release_date).toLocaleDateString()}
-            </p>
-            <p className="text-lg">
-              <span className="font-semibold">Género:</span>{" "}
-              {album.genres?.[0] ?? "N/A"}
-            </p>
-          </div>
+          <div className="grid grid-cols-12 gap-8 mt-6">
+            {/* ASIDE STICKY: cover + CTAs */}
+            <aside className="col-span-12 md:col-span-4 md:sticky md:top-24 space-y-4 self-start">
+              <div className="aspect-square w-full overflow-hidden rounded-2xl shadow-lg bg-white">
+                <Image
+                  src={cover}
+                  alt={`Cover de ${album.name}`}
+                  width={800}
+                  height={800}
+                  className="h-full w-full object-cover"
+                  priority
+                />
+              </div>
 
-          {/* Botones de acción */}
-          <div className="flex items-center space-x-4">
-            <a
-              href={album.external_urls.spotify}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center space-x-2 px-4 py-2 bg-green-800 text-white rounded-lg hover:bg-green-900 transition"
-            >
-              <SpotifyLogo />
-              <span>Reproducir en Spotify</span>
-            </a>
-            <button className="flex items-center space-x-2 px-4 py-2 border rounded-lg hover:bg-gray-100 transition">
-              <Heart size={20} />
-              <span>Favorite</span>
-            </button>
-            <button className="p-2 border rounded-lg hover:bg-gray-100 transition">
-              <MoreHorizontal size={20} />
-            </button>
-          </div>
+              <div className="flex flex-wrap items-center gap-3">
+                {/* CTA primario */}
+                <a
+                  href={album.external_urls?.spotify}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 rounded-xl bg-green-700 px-4 py-2 text-white hover:bg-green-800 transition"
+                >
+                  <SpotifyLogo />
+                  <span>Reproducir en Spotify</span>
+                </a>
 
-          {/* Tracklist */}
-          <div>
-            <h2 className="text-2xl font-semibold mb-4">Tracklist</h2>
-            <ol className="space-y-2">
-              {tracks.map((track: any, idx: number) => (
-                <li key={track.id || idx} className="flex justify-between">
-                  <span>
-                    {idx + 1}. {track.track ? track.track.name : track.name}
-                  </span>
-                  <span className="font-mono">
-                    {track.track
-                      ? new Date(track.track.duration_ms)
-                          .toISOString()
-                          .substr(14, 5)
-                      : track.duration_ms
-                      ? new Date(track.duration_ms).toISOString().substr(14, 5)
-                      : "0:00"}
-                  </span>
-                </li>
-              ))}
-            </ol>
-          </div>
+                {/* Secundarios en ghost */}
+                <Button
+                  type="button"
+                  className="inline-flex items-center gap-2 rounded-xl border px-4 py-2 hover:bg-black/5 transition"
+                  aria-label="Añadir a favoritos"
+                >
+                  <Heart size={18} />
+                  <span>Favorito</span>
+                </Button>
 
-          {/* Créditos */}
-          <div className="pt-6 border-t">
-            <h3 className="text-xl font-semibold mb-2">Credits</h3>
-            <ul className="space-y-1">
-              {album.label && (
-                <li>
-                  <span className="font-semibold">Label:</span> {album.label}
-                </li>
+                <Button
+                  type="button"
+                  className="inline-flex items-center rounded-xl border p-2 hover:bg-black/5 transition"
+                  aria-label="Más opciones"
+                >
+                  <MoreHorizontal size={18} />
+                </Button>
+              </div>
+            </aside>
+
+            {/* MAIN: título, metadatos, tracklist, créditos */}
+            <main className="col-span-12 md:col-span-8 space-y-8">
+              {/* Título + metadatos */}
+              <header className="space-y-2">
+                <h1 className="text-3xl md:text-4xl font-bold leading-tight">
+                  {album.name}
+                  {year ? (
+                    <span className="text-muted-foreground"> ({year})</span>
+                  ) : null}
+                </h1>
+
+                <p className="text-lg">
+                  <span className="font-semibold">Artista:</span>{" "}
+                  {album.artists?.map((artist: any, index: number) => (
+                    <span key={artist.id || artist.name}>
+                      <Link
+                        href={`/artists/${artist.name
+                          ?.replace(/\s+/g, "-")
+                          .toLowerCase()}`}
+                        className="text-purple-600 hover:underline"
+                      >
+                        {artist.name}
+                      </Link>
+                      {index < album.artists.length - 1 && ", "}
+                    </span>
+                  ))}
+                </p>
+
+                {album.release_date ? (
+                  <p className="text-lg">
+                    <span className="font-semibold">Lanzamiento:</span>{" "}
+                    <span
+                      title={new Date(album.release_date).toLocaleDateString()}
+                    >
+                      {new Date(album.release_date).toLocaleDateString()}
+                    </span>
+                  </p>
+                ) : null}
+
+                {album.genres && album.genres.length > 0 ? (
+                  <p className="text-lg">
+                    <span className="font-semibold">Género:</span>{" "}
+                    {album.genres[0]}
+                  </p>
+                ) : null}
+              </header>
+
+              {/* Tracklist */}
+              <section>
+                <h2 className="mb-3 text-2xl font-semibold">Tracklist</h2>
+                <ol className="divide-y rounded-xl border">
+                  {tracks.map((t: any, idx: number) => {
+                    const name = t?.name ?? t?.track?.name ?? "Untitled";
+                    const artists = (t?.artists ??
+                      t?.track?.artists ??
+                      []) as any[];
+                    const durationMs =
+                      t?.duration_ms ?? t?.track?.duration_ms ?? 0;
+                    return (
+                      <li
+                        key={t.id || `${name}-${idx}`}
+                        className="grid grid-cols-[32px_1fr_auto] items-center gap-4 px-3 py-2 hover:bg-black/5 cursor-pointer"
+                      >
+                        <span className="text-sm tabular-nums text-muted-foreground">
+                          {idx + 1}
+                        </span>
+
+                        <div className="min-w-0">
+                          <div className="truncate font-medium hover:underline">
+                            {name}
+                          </div>
+                          <div className="truncate text-sm text-muted-foreground">
+                            {artists.map((a: any, i: number) => (
+                              <span key={a.id || `${a.name}-${i}`}>
+                                <Link
+                                  href={`/artists/${a.name
+                                    ?.replace(/\s+/g, "-")
+                                    .toLowerCase()}`}
+                                  className="hover:underline"
+                                >
+                                  {a.name}
+                                </Link>
+                                {i < artists.length - 1 && ", "}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+
+                        <span className="text-sm tabular-nums text-muted-foreground">
+                          {msToMinSec(durationMs)}
+                        </span>
+                      </li>
+                    );
+                  })}
+                </ol>
+              </section>
+
+              {/* Créditos */}
+              {(album.label || album.total_tracks) && (
+                <section className="pt-4 border-t">
+                  <h3 className="mb-2 text-xl font-semibold">Créditos</h3>
+                  <ul className="space-y-1 text-base">
+                    {album.label ? (
+                      <li>
+                        <span className="font-semibold">Discográfica:</span>{" "}
+                        {album.label}
+                      </li>
+                    ) : null}
+                    {typeof album.total_tracks === "number" ? (
+                      <li>
+                        <span className="font-semibold">Nº de pistas:</span>{" "}
+                        {album.total_tracks}
+                      </li>
+                    ) : null}
+                  </ul>
+                </section>
               )}
-            </ul>
+            </main>
           </div>
         </div>
       </div>

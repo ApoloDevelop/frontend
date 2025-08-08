@@ -4,13 +4,7 @@ import { Button } from "@/components/ui/button";
 import { ArtistRatingModal } from "./ArtistRatingModal";
 import { ReviewService } from "@/services/review.service";
 
-export function ArtistRatingClient({
-  artistName,
-  artistBirthdate,
-}: {
-  artistName: string;
-  artistBirthdate?: Date;
-}) {
+export function ArtistRatingClient({ artistName }: { artistName: string }) {
   const [open, setOpen] = useState(false);
 
   const handleSubmit = async (score: number, comment: string) => {
@@ -19,7 +13,6 @@ export function ArtistRatingClient({
       score,
       comment,
       userId: 1, // Aquí debería obtener el ID del usuario actual
-      birthdate: artistBirthdate,
     });
     setOpen(false);
   };

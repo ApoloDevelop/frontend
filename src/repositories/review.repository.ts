@@ -4,20 +4,18 @@ export class ReviewRepository {
     score,
     comment,
     userId,
-    birthdate,
   }: {
     artistName: string;
     score: number;
     comment?: string;
     userId: number;
-    birthdate?: Date;
   }) {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_BACKEND_URL}/reviews/artist`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ artistName, score, comment, userId, birthdate }),
+        body: JSON.stringify({ artistName, score, comment, userId }),
       }
     );
     if (!res.ok) {
