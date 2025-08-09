@@ -1,7 +1,9 @@
+// PentagramScores.tsx
 "use client";
 import React, { useState } from "react";
 import { ScoreCircle } from "./ScoreCircle";
 import { ReviewsModal } from "../reviews/ReviewModal";
+import { ShieldCheck, Users } from "lucide-react";
 
 export function PentagramScores({
   verified,
@@ -9,14 +11,14 @@ export function PentagramScores({
   verifiedCount,
   unverifiedCount,
   itemId,
-  artistName,
+  name,
 }: {
   verified: number | null;
   unverified: number | null;
   verifiedCount: number;
   unverifiedCount: number;
   itemId: number | null;
-  artistName: string;
+  name: string;
 }) {
   const [modalOpen, setModalOpen] = useState(false);
   const [showingVerified, setShowingVerified] = useState(false);
@@ -26,67 +28,68 @@ export function PentagramScores({
     setModalOpen(true);
   };
 
-  return (
-    <div className="w-full flex flex-col items-center mb-8">
-      <div className="relative w-[700px] h-[100px] flex items-center justify-center">
-        {/* Pentagrama */}
-        <svg
-          className="absolute left-0 top-[-2px]"
-          width="700"
-          height="160"
-          viewBox="0 0 700 160"
-        >
-          {[0, 1, 2, 3, 4].map((i) => (
-            <line
-              key={i}
-              x1={0}
-              x2={700}
-              y1={40 + i * 20}
-              y2={40 + i * 20}
-              stroke="#333"
-              strokeWidth={3}
-            />
-          ))}
-          <line
-            x1={350}
-            x2={350}
-            y1={40}
-            y2={120}
-            stroke="#333"
-            strokeWidth={4}
-          />
-        </svg>
+  const disabled = itemId === null;
 
-        <div className="absolute left-[100px] top-0 flex flex-col items-center">
-          <span className="font-semibold text-lg mb-2">Certificadas</span>
-          <ScoreCircle score={itemId !== null ? verified : null} label="" />
-          <button
-            className="text-sm text-blue-600 mt-3 hover:underline cursor-pointer"
-            onClick={() => handleClick(true)}
-            disabled={itemId === null}
-          >
-            {itemId !== null ? verifiedCount : 0} valoraciones
-          </button>
+  return (
+    <div className="w-full">
+      <div className="rounded-2xl border bg-white/70 backdrop-blur-sm shadow-sm p-4 md:p-6">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-semibold">Valoraciones</h3>
+          <span className="text-sm text-muted-foreground">{name}</span>
         </div>
 
-        <div className="absolute right-[100px] top-0 flex flex-col items-center">
-          <span className="font-semibold text-lg mb-2">Generales</span>
-          <ScoreCircle score={itemId !== null ? unverified : null} label="" />
-          <button
-            className="text-sm text-blue-600 mt-3 hover:underline cursor-pointer"
-            onClick={() => handleClick(false)}
-            disabled={itemId === null}
-          >
-            {itemId !== null ? unverifiedCount : 0} valoraciones
-          </button>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Verificadas */}
+          <div className="flex flex-col items-center gap-2">
+            <div className="inline-flex items-center gap-2 text-sm font-medium">
+              <span className="inline-flex items-center gap-1 rounded-full border px-2 py-1">
+                <ShieldCheck className="h-4 w-4" />
+                Certificadas
+              </span>
+            </div>
+            <ScoreCircle
+              score={disabled ? null : verified}
+              ariaLabel="Nota verificada"
+              size={84}
+            />
+            <button
+              className="text-sm text-purple-700 hover:underline disabled:text-gray-400"
+              onClick={() => handleClick(true)}
+              disabled={disabled}
+            >
+              {disabled ? 0 : verifiedCount} valoraciones
+            </button>
+          </div>
+
+          {/* Generales */}
+          <div className="flex flex-col items-center gap-2">
+            <div className="inline-flex items-center gap-2 text-sm font-medium">
+              <span className="inline-flex items-center gap-1 rounded-full border px-2 py-1">
+                <Users className="h-4 w-4" />
+                Generales
+              </span>
+            </div>
+            <ScoreCircle
+              score={disabled ? null : unverified}
+              ariaLabel="Nota general"
+              size={84}
+            />
+            <button
+              className="text-sm text-purple-700 hover:underline disabled:text-gray-400"
+              onClick={() => handleClick(false)}
+              disabled={disabled}
+            >
+              {disabled ? 0 : unverifiedCount} valoraciones
+            </button>
+          </div>
         </div>
       </div>
 
       <ReviewsModal
         open={modalOpen}
         onOpenChange={setModalOpen}
-        itemId={itemId !== null ? itemId : 0}
-        artistName={artistName}
+        itemId={itemId ?? 0}
+        name={name}
         averageScore={showingVerified ? verified : unverified}
         verified={showingVerified}
       />

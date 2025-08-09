@@ -7,27 +7,40 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 
-export function ArtistRatingModal({
+type RateableType = "artist" | "album" | "track" | "venue";
+
+export function RatingModal({
   open,
   onClose,
   onSubmit,
-  artistName,
+  name,
+  type,
 }: {
   open: boolean;
   onClose: () => void;
   onSubmit: (score: number, comment: string, title: string) => void;
-  artistName: string;
+  name: string;
+  type: RateableType;
 }) {
   const [score, setScore] = useState(0);
   const [comment, setComment] = useState("");
   const [title, setTitle] = useState("");
   const [hovered, setHovered] = useState<number | null>(null);
 
+  const headingByType: Record<RateableType, string> = {
+    artist: "Puntúa a",
+    album: "Puntúa el álbum",
+    track: "Puntúa la canción",
+    venue: "Puntúa la sala",
+  };
+
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Puntúa a {artistName}</DialogTitle>
+          <DialogTitle>
+            {headingByType[type]} {name}
+          </DialogTitle>
         </DialogHeader>
         <div className="flex flex-col items-center gap-4">
           <div className="flex gap-1">

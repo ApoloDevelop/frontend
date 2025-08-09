@@ -32,7 +32,7 @@ interface ReviewsModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   itemId: number;
-  artistName: string;
+  name: string;
   averageScore: number | null;
   verified: boolean;
 }
@@ -41,7 +41,7 @@ export function ReviewsModal({
   open,
   onOpenChange,
   itemId,
-  artistName,
+  name,
   averageScore,
   verified,
 }: ReviewsModalProps) {
@@ -80,8 +80,8 @@ export function ReviewsModal({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>
-            Reseñas {verified ? "verificadas" : "no verificadas"} de{" "}
-            {artistName}: {averageScore ?? "-"}
+            Reseñas {verified ? "verificadas" : "no verificadas"} de {name}:{" "}
+            {averageScore ?? "-"}
           </DialogTitle>
         </DialogHeader>
 

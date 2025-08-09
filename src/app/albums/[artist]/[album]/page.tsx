@@ -14,6 +14,9 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { msToMinSec } from "@/helpers/seconds";
+import { RatingClient } from "@/components/artist/RatingClient";
+import { ReviewService } from "@/services/review.service";
+import { PentagramScores } from "@/components/artist/PentagramScores";
 
 export default async function AlbumPage({
   params: rawParams,
@@ -37,6 +40,7 @@ export default async function AlbumPage({
   }
 
   const tracks = await fetchAlbumTracks(album.id);
+  const stats = await ReviewService.getAlbumReviewStats(album.name, artistName);
 
   const cover = album.images?.[0]?.url || "/default-cover.png";
   const year =
@@ -93,18 +97,14 @@ export default async function AlbumPage({
                   priority
                 />
               </div>
-
+              <RatingClient
+                name={album.name}
+                type="album"
+                userId={1}
+                artistName={artistName}
+              />
               <div className="flex flex-wrap items-center gap-3">
                 {/* CTA primario */}
-                <a
-                  href={album.external_urls?.spotify}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 rounded-xl bg-green-700 px-4 py-2 text-white hover:bg-green-800 transition"
-                >
-                  <SpotifyLogo />
-                  <span>Reproducir en Spotify</span>
-                </a>
 
                 {/* Secundarios en ghost */}
                 <Button
@@ -123,6 +123,15 @@ export default async function AlbumPage({
                 >
                   <MoreHorizontal size={18} />
                 </Button>
+                <a
+                  href={album.external_urls?.spotify}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 rounded-xl bg-green-700 px-4 py-2 text-white hover:bg-green-800 transition"
+                >
+                  <SpotifyLogo />
+                  <span>Reproducir en Spotify</span>
+                </a>
               </div>
             </aside>
 
@@ -172,6 +181,17 @@ export default async function AlbumPage({
                   </p>
                 ) : null}
               </header>
+
+              <div className="flex justify-end">
+                <PentagramScores
+                  verified={stats.verified}
+                  unverified={stats.unverified}
+                  verifiedCount={stats.verifiedCount}
+                  unverifiedCount={stats.unverifiedCount}
+                  itemId={stats.itemId}
+                  name={album.name}
+                />
+              </div>
 
               {/* Tracklist */}
               <section>

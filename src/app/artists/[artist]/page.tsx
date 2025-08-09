@@ -15,7 +15,7 @@ import {
   MbArtist,
 } from "@/helpers/musicbrainz";
 import Flag from "react-world-flags";
-import { ArtistRatingClient } from "@/components/artist/ArtistRatingClient";
+import { RatingClient } from "@/components/artist/RatingClient";
 import { PentagramScores } from "@/components/artist/PentagramScores";
 import { ReviewService } from "@/services/review.service";
 import { ItemService } from "@/services/item.service";
@@ -108,7 +108,7 @@ export default async function ArtistPage({
     <div className="container mx-auto relative">
       <div
         id="blurred-bg"
-        className="absolute top-0 -mt-24 left-0 right-0 h-80 w-full -z-10 "
+        className="absolute top-0 -mt-24 left-0 right-0 h-48 sm:h-64 md:h-72 lg:h-80 w-full -z-10 "
       >
         <Image
           src={artistData.images[0]?.url || "/default-cover.png"}
@@ -118,28 +118,25 @@ export default async function ArtistPage({
         />
       </div>
 
-      <div id="header" className="flex mt-32 items-center mb-8 relative z-10">
+      <div
+        id="header"
+        className="flex flex-col sm:flex-row gap-4 sm:gap-6 mt-24 sm:mt-32 items-start sm:items-center mb-6 sm:mb-8 relative z-10"
+      >
         <Image
           src={artistData.images[0]?.url || "/default-cover.png"}
           alt={artistData.name}
           width={200}
           height={200}
-          className="rounded-lg shadow-lg mt-35 object-cover"
-          style={{
-            minWidth: 200,
-            minHeight: 200,
-            maxWidth: 200,
-            maxHeight: 200,
-          }}
+          className="rounded-lg object-cover shadow-lg w-28 h-28 sm:w-40 sm:h-40 md:w-48 md:h-48"
         />
-        <div className="ml-6 flex-1 translate-y-30">
+        <div className="ml-0 sm:ml-6 mt-2 sm:mt-0 flex-1">
           <div className="flex items-center gap-4">
             <h1 className="text-5xl font-bold text-black drop-shadow-lg">
               {artistData.name}
             </h1>
             {/* Botón de valoración */}
             <div className="inline-block ml-4">
-              <ArtistRatingClient artistName={artistData.name} />
+              <RatingClient name={artistData.name} type="artist" userId={1} />
             </div>
           </div>
           <p className="text-lg text-gray-600">
@@ -151,7 +148,7 @@ export default async function ArtistPage({
           </p>
         </div>
         {/* Botón de favorito, alineado a la derecha */}
-        <div className="ml-auto flex items-center gap-2 translate-y-27">
+        <div className="ml-0 sm:ml-auto mt-3 sm:mt-0 flex flex-wrap items-center gap-2">
           <FavoriteButton artistName={artistData.name} userId={1} height={48} />
           <AddToListDialog
             userId={1}
@@ -162,86 +159,78 @@ export default async function ArtistPage({
         </div>
       </div>
       {/* Contenido principal */}
-      <div className="flex gap-12 relative z-10">
+      <div className="flex flex-col lg:flex-row gap-6 lg:gap-12 relative z-10">
         {/* Columna izquierda */}
-        <div className="w-2/3 space-y-8">
-          <section className="bg-white/80 p-6 rounded-lg shadow">
-            <h2 className="text-2xl font-bold mb-2">Valoraciones</h2>
+        <div className="w-full lg:w-2/3 space-y-6 sm:space-y-8">
+          <section className="bg-white/80 p-4 sm:p-6 rounded-lg shadow">
+            <h2 className="text-3xl font-bold mb-2">Valoraciones</h2>
             <PentagramScores
               verified={averages.verified}
               unverified={averages.unverified}
               verifiedCount={reviewCounts.verifiedCount}
               unverifiedCount={reviewCounts.unverifiedCount}
               itemId={item?.itemId ?? null}
-              artistName={artistData.name}
+              name={artistData.name}
             />
           </section>
-          {/* Biografía actualizada */}
-          <section className="bg-white/80 p-6 rounded-lg shadow">
-            <h2 className="text-2xl font-bold mb-2">Biografía</h2>
-
+          {/* Biografía */}
+          <section className="bg-white/80 p-4 sm:p-6 rounded-lg shadow">
+            <h2 className="mb-4 text-3xl font-bold">Biografía</h2>
             {details ? (
-              <>
-                <p>
-                  <strong>Nombre completo:</strong> {details.fullName}
-                </p>
-                <p>
-                  <strong>Fecha de nacimiento:</strong>{" "}
+              <div className="grid grid-cols-1 gap-x-8 gap-y-2 text-lg sm:grid-cols-2">
+                <div>
+                  <span className="font-semibold">Nombre completo:</span>{" "}
+                  {details.fullName ?? "Desconocido"}
+                </div>
+                <div>
+                  <span className="font-semibold">Fecha de nacimiento:</span>{" "}
                   {details.birthDate
                     ? dayjs(details.birthDate).format("DD/MM/YYYY")
                     : "Desconocida"}
-                </p>
-                <p>
-                  <strong>Lugar de nacimiento:</strong>{" "}
-                  {details.birthPlace || "Desconocido"},
+                </div>
+                <div className="col-span-1 sm:col-span-2 flex items-center gap-2">
+                  <span className="font-semibold">Lugar de nacimiento:</span>
+                  <span>{details.birthPlace || "Desconocido"}</span>
                   {details.birthCountryCode ? (
-                    <Flag
-                      code={details.birthCountryCode}
-                      className="w-5 h-5 ml-2 inline-block"
-                    />
-                  ) : (
-                    "—"
-                  )}
-                </p>
-                <p>
-                  <strong>Género/s:</strong>{" "}
-                  {artistData.genres.length
+                    <Flag code={details.birthCountryCode} className="h-5 w-5" />
+                  ) : null}
+                </div>
+                <div className="col-span-1 sm:col-span-2">
+                  <span className="font-semibold">Género/s:</span>{" "}
+                  {artistData.genres?.length
                     ? artistData.genres.join(", ")
                     : "No disponibles"}
-                </p>
-              </>
+                </div>
+              </div>
             ) : (
               <p className="text-gray-700">No se pudo cargar la biografía.</p>
             )}
           </section>
 
           {/* Álbumes recientes */}
-          <section className="bg-white/80 p-6 rounded-lg shadow">
-            <h2 className="text-2xl font-bold mb-4">Álbumes recientes</h2>
-            <div className="flex gap-4">
+          <section className="bg-white/80 p-4 sm:p-6 rounded-lg shadow">
+            <h2 className="mb-4 text-3xl font-bold">Álbumes recientes</h2>
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-5">
               {albums.map((alb: any) => (
                 <Link
                   key={alb.id}
-                  href={`/albums/${artistData.name
-                    .replace(/\s+/g, "-")
-                    .toLowerCase()}/${alb.name
+                  href={`/albums/${slug}/${alb.name
                     .replace(/\s+/g, "-")
                     .toLowerCase()}`}
-                  className="w-1/5 flex flex-col items-center text-center group"
+                  className="group"
                 >
-                  <div className="relative">
+                  <div className="relative overflow-hidden rounded-lg">
                     <Image
                       src={alb.images[0]?.url || "/default-cover.png"}
                       alt={alb.name}
-                      width={112}
-                      height={112}
-                      className="rounded mb-2 transition-transform duration-200 group-hover:scale-105"
+                      width={300}
+                      height={300}
+                      sizes="(max-width:768px) 50vw, (max-width:1024px) 33vw, 20vw"
+                      className="aspect-square object-cover transition-transform duration-200 group-hover:scale-105"
                     />
                   </div>
-                  <p className="font-bold truncate w-full transition-transform duration-200 group-hover:scale-105">
-                    {alb.name}
-                  </p>
-                  <p className="text-sm text-gray-500 w-full">
+                  <p className="mt-2 w-full truncate font-medium">{alb.name}</p>
+                  <p className="w-full text-sm text-gray-500">
                     {dayjs(alb.release_date).format("DD/MM/YYYY")}
                   </p>
                 </Link>
@@ -249,28 +238,29 @@ export default async function ArtistPage({
             </div>
           </section>
           {/* Artistas relacionados */}
-          <section className="bg-white/80 p-6 rounded-lg shadow">
-            <h2 className="text-2xl font-bold mb-4">Artistas relacionados</h2>
+          <section className="bg-white/80 p-4 sm:p-6 rounded-lg shadow">
+            <h2 className="mb-4 text-3xl font-bold">Artistas relacionados</h2>
             {similar.length ? (
               <ul className="flex gap-4 overflow-x-auto">
                 {similar.map((a) => (
-                  <li key={a.id} className="w-1/5 text-center">
-                    {/* Aquí podrías usar fetchArtistByName(a.name) si quieres imagen */}
-                    <p className="font-bold truncate">{a.name}</p>
+                  <li key={a.id} className="w-40 flex-none text-center">
+                    <p className="truncate font-semibold">{a.name}</p>
                   </li>
                 ))}
               </ul>
             ) : (
-              <p>No se encontraron artistas similares por tags.</p>
+              <p className="text-gray-700">
+                No se encontraron artistas similares por tags.
+              </p>
             )}
           </section>
         </div>
 
         {/* Columna derecha */}
-        <div className="w-1/3 flex flex-col gap-8">
+        <div className="w-full lg:w-1/3 flex flex-col gap-6 sm:gap-8 lg:sticky lg:top-24">
           {/* Último lanzamiento */}
-          <section className="bg-white/80 p-6 rounded-lg shadow">
-            <h2 className="text-xl font-bold mb-4">Último lanzamiento</h2>
+          <section className="bg-white/80 p-4 sm:p-6 rounded-lg shadow">
+            <h2 className="text-3xl font-bold mb-4">Último lanzamiento</h2>
             {lastRelease ? (
               <div className="flex items-center gap-4">
                 <Image
@@ -296,8 +286,8 @@ export default async function ArtistPage({
           </section>
 
           {/* Canciones populares */}
-          <section className="bg-white/80 p-6 rounded-lg shadow">
-            <h2 className="text-xl font-bold mb-4">Canciones populares</h2>
+          <section className="bg-white/80 p-4 sm:p-6 rounded-lg shadow">
+            <h2 className="text-3xl font-bold mb-4">Canciones populares</h2>
             {topTracks.length ? (
               <ol className="list-decimal list-inside space-y-2 text-gray-700">
                 {topTracks.map((tr: any) => (
