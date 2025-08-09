@@ -18,6 +18,13 @@ import { RatingClient } from "@/components/artist/RatingClient";
 import { ReviewService } from "@/services/review.service";
 import { PentagramScores } from "@/components/artist/PentagramScores";
 
+const fold = (s: string) =>
+  s
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim();
+
 export default async function AlbumPage({
   params: rawParams,
 }: {
@@ -25,16 +32,14 @@ export default async function AlbumPage({
 }) {
   const { artist: artistSlug, album: albumSlug } = await rawParams;
 
-  const artistName = artistSlug.replace(/-/g, " ");
+  const artistName = decodeURIComponent(artistSlug.replace(/-/g, " "));
   const albumName = decodeURIComponent(albumSlug.replace(/-/g, " "));
 
   const album = await fetchAlbumByName(albumName);
 
   if (
     !album ||
-    !album.artists?.some(
-      (a: any) => a.name?.toLowerCase() === artistName.toLowerCase()
-    )
+    !album.artists?.some((a: any) => fold(a.name) === fold(artistName))
   ) {
     return notFound();
   }
@@ -87,6 +92,13 @@ export default async function AlbumPage({
           <div className="grid grid-cols-12 gap-8 mt-6">
             {/* ASIDE STICKY: cover + CTAs */}
             <aside className="col-span-12 md:col-span-4 md:sticky md:top-24 space-y-4 self-start">
+              <h1 className="text-3xl md:text-4xl font-bold leading-tight">
+                {album.name}
+                {year ? (
+                  <span className="text-muted-foreground"> ({year})</span>
+                ) : null}
+              </h1>
+
               <div className="aspect-square w-full overflow-hidden rounded-2xl shadow-lg bg-white">
                 <Image
                   src={cover}
@@ -139,13 +151,6 @@ export default async function AlbumPage({
             <main className="col-span-12 md:col-span-8 space-y-8">
               {/* Título + metadatos */}
               <header className="space-y-2">
-                <h1 className="text-3xl md:text-4xl font-bold leading-tight">
-                  {album.name}
-                  {year ? (
-                    <span className="text-muted-foreground"> ({year})</span>
-                  ) : null}
-                </h1>
-
                 <p className="text-lg">
                   <span className="font-semibold">Artista:</span>{" "}
                   {album.artists?.map((artist: any, index: number) => (
