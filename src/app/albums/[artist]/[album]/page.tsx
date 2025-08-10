@@ -17,6 +17,8 @@ import { msToMinSec } from "@/helpers/seconds";
 import { RatingClient } from "@/components/artist/RatingClient";
 import { ReviewService } from "@/services/review.service";
 import { PentagramScores } from "@/components/artist/PentagramScores";
+import { FavoriteButton } from "@/components/favorites/FavoriteButton";
+import { AddToListDialog } from "@/components/lists/AddToListDialog";
 
 const fold = (s: string) =>
   s
@@ -119,22 +121,19 @@ export default async function AlbumPage({
                 {/* CTA primario */}
 
                 {/* Secundarios en ghost */}
-                <Button
-                  type="button"
-                  className="inline-flex items-center gap-2 rounded-xl border px-4 py-2 hover:bg-black/5 transition"
-                  aria-label="Añadir a favoritos"
-                >
-                  <Heart size={18} />
-                  <span>Favorito</span>
-                </Button>
+                <FavoriteButton
+                  type="album"
+                  name={album.name}
+                  artistName={artistName}
+                  userId={1}
+                />
 
-                <Button
-                  type="button"
-                  className="inline-flex items-center rounded-xl border p-2 hover:bg-black/5 transition"
-                  aria-label="Más opciones"
-                >
-                  <MoreHorizontal size={18} />
-                </Button>
+                <AddToListDialog
+                  userId={1}
+                  itemType="album"
+                  name={album.name}
+                  artistName={artistName}
+                />
                 <a
                   href={album.external_urls?.spotify}
                   target="_blank"

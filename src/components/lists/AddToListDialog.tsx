@@ -14,6 +14,10 @@ import { Input } from "../ui/input";
 import { ItemService } from "@/services/item.service";
 import { useAlert } from "@/hooks/register/useAlert";
 import { AlertMessage } from "../ui/AlertMessage";
+import { Plus } from "lucide-react";
+import { cn } from "@/lib/utils";
+
+type ItemType = "artist" | "album" | "track" | "venue";
 
 interface ListItem {
   itemId: number;
@@ -27,17 +31,24 @@ interface CustomList {
 
 interface AddToListDialogProps {
   userId: number;
+  itemType: ItemType;
+  name: string; // nombre del ítem (artista/álbum/canción/sala)
+  artistName?: string; // requerido para album/track
+  location?: string; // opcional para venue
   height?: number;
-  itemType: string;
-  artistName: string; // Añadido para asociar el artista
+  className?: string; // para estilos personalizados
 }
 
 export function AddToListDialog({
   userId,
-  height,
   itemType,
+  name,
   artistName,
+  location,
+  height,
+  className,
 }: AddToListDialogProps) {
+  console.log({ userId, itemType, name, artistName, location, height });
   const { alertMsgs, setAlertMsgs, showAlert } = useAlert();
   const [open, setOpen] = useState(false);
   const [lists, setLists] = useState<CustomList[]>([]);
@@ -48,12 +59,26 @@ export function AddToListDialog({
   const [removeDialogOpen, setRemoveDialogOpen] = useState(false);
   const [selectedListId, setSelectedListId] = useState<number | null>(null);
 
+  const niceType = (t: ItemType) =>
+    t === "artist"
+      ? "El/la artista"
+      : t === "album"
+      ? "El álbum"
+      : t === "track"
+      ? "La canción"
+      : "La sala";
+
+  const resolveItem = async () => {
+    // Este método asume que ItemService soporta el contexto opcional { artistName, location }
+    return ItemService.findItemByTypeAndName(itemType, name, {
+      artistName,
+      location,
+    });
+  };
+
   const handleAddItemToList = async (listId: number) => {
     try {
-      const item = await ItemService.findItemByTypeAndName(
-        itemType,
-        artistName
-      ); // Obtener el itemId
+      const item = await resolveItem();
       if (!item) {
         console.error("No se encontró el ítem");
         return;
@@ -66,7 +91,9 @@ export function AddToListDialog({
       if (list) {
         setAlertMsgs((prev) => [
           ...prev,
-          `El artista "${artistName}" se ha añadido a la lista "${list.name}".`,
+          `${niceType(itemType)} "${name}" se ha añadido a la lista "${
+            list.name
+          }".`,
         ]);
       }
 
@@ -90,15 +117,14 @@ export function AddToListDialog({
       setLists((prev) => [...prev, { ...newList, listItems: [] }]);
 
       // Añadir el ítem a la nueva lista
-      const item = await ItemService.findItemByTypeAndName(
-        itemType,
-        artistName
-      );
+      const item = await resolveItem();
       if (item) {
         await ListService.addItemToList(newList.id, item.itemId);
         setAlertMsgs((prev) => [
           ...prev,
-          `El artista ${artistName} se ha añadido a la nueva lista "${newListName}".`,
+          `${niceType(
+            itemType
+          )} "${name}" se ha añadido a la nueva lista "${newListName}".`,
         ]);
       }
 
@@ -121,10 +147,7 @@ export function AddToListDialog({
     if (!selectedListId) return;
 
     try {
-      const item = await ItemService.findItemByTypeAndName(
-        itemType,
-        artistName
-      );
+      const item = await resolveItem();
       if (!item) {
         console.error("No se encontró el ítem");
         return;
@@ -140,41 +163,37 @@ export function AddToListDialog({
   };
 
   useEffect(() => {
-    if (open) {
-      setLoading(true);
-      ListService.getUserLists(userId, itemType)
-        .then((fetchedLists) => {
-          setLists(
-            fetchedLists.map((list) => ({
-              ...list,
-              listItems: (list as CustomList).listItems ?? [],
-            }))
-          );
+    if (!open) return;
+    setLoading(true);
 
-          // Verificar en qué listas está el ítem
-          ItemService.findItemByTypeAndName(itemType, artistName).then(
-            (item) => {
-              if (item) {
-                const itemId = item.itemId;
-                // Ensure all lists have listItems property
-                const listsWithItem = fetchedLists
-                  .map((list) => ({
-                    ...list,
-                    listItems: (list as CustomList).listItems ?? [],
-                  }))
-                  .filter((list) =>
-                    list.listItems.some((i) => i.itemId === itemId)
-                  )
-                  .map((list) => list.id);
-                setItemLists(listsWithItem);
-              }
-            }
-          );
-        })
-        .catch((error) => console.error("Error al cargar las listas:", error))
-        .finally(() => setLoading(false));
-    }
-  }, [open, userId]);
+    (async () => {
+      try {
+        // 1) Traer listas del usuario (filtradas por tipo)
+        const fetchedLists = await ListService.getUserLists(userId, itemType);
+        const normalized = fetchedLists.map((list) => ({
+          ...list,
+          listItems: (list as any).listItems ?? [],
+        })) as CustomList[];
+        setLists(normalized);
+
+        // 2) Saber en qué listas está el ítem actual
+        const item = await resolveItem();
+        if (item) {
+          const itemId = item.itemId;
+          const listsWithItem = normalized
+            .filter((l) => l.listItems.some((i) => i.itemId === itemId))
+            .map((l) => l.id);
+          setItemLists(listsWithItem);
+        } else {
+          setItemLists([]);
+        }
+      } catch (e) {
+        console.error("Error al cargar listas/ítem:", e);
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, [open, userId, itemType, name, artistName, location]);
 
   return (
     <>
@@ -188,10 +207,15 @@ export function AddToListDialog({
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
           <Button
-            className={`ml-4 px-4 text-white transition" ${
-              height ? `mt-${height}` : ""
-            }`}
+            type="button"
+            className={cn(
+              "inline-flex items-center rounded-md disabled:opacity-60",
+              height ? `h-${height}` : "",
+              className
+            )}
+            title="Añadir a lista"
           >
+            <Plus className="h-4 w-4" />
             Añadir a lista
           </Button>
         </DialogTrigger>

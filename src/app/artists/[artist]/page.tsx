@@ -149,12 +149,11 @@ export default async function ArtistPage({
         </div>
         {/* Botón de favorito, alineado a la derecha */}
         <div className="ml-0 sm:ml-auto mt-3 sm:mt-0 flex flex-wrap items-center gap-2">
-          <FavoriteButton artistName={artistData.name} userId={1} height={48} />
+          <FavoriteButton type="artist" name={artistData.name} userId={1} />
           <AddToListDialog
             userId={1}
-            height={48}
             itemType="artist"
-            artistName={artistData.name}
+            name={artistData.name}
           />
         </div>
       </div>

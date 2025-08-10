@@ -1,54 +1,85 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { Star } from "lucide-react";
+import { Heart, Star } from "lucide-react";
 import { FavoriteService } from "@/services/favorites.service";
 import { useAlert } from "@/hooks/register/useAlert";
 import { AlertMessage } from "../ui/AlertMessage";
+import { Button } from "../ui/button";
+import { cn } from "@/lib/utils";
+
+type FavType = "artist" | "album" | "track" | "venue";
 
 interface FavoriteButtonProps {
-  artistName: string;
+  type: FavType;
+  name: string;
   userId: number; //(fake: 1)
-  height?: number; // opcional, para personalizar el tamaño del botón
+  artistName?: string; // Optional, used for artist favorites
+  location?: string; // Optional, used for venue favorites
+  className?: string; // Optional, used for custom styling
 }
 
 export function FavoriteButton({
-  artistName,
+  type,
+  name,
   userId,
-  height,
+  artistName,
+  location,
+  className,
 }: FavoriteButtonProps) {
   const [isFavorite, setIsFavorite] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
   const { alertMsgs, setAlertMsgs, showAlert } = useAlert();
 
   useEffect(() => {
-    async function checkFavorite() {
+    let mounted = true;
+    (async () => {
       try {
-        const fav = await FavoriteService.isFavorite(artistName, userId);
-        setIsFavorite(fav);
+        const fav = await FavoriteService.isFavorite({
+          type,
+          name,
+          userId,
+          artistName,
+          location,
+        });
+        if (mounted) setIsFavorite(fav);
       } catch (err) {
-        console.error("Error al obtener el estado de favorito", err);
+        console.error("Error al obtener favorito", err);
       } finally {
-        setLoading(false);
+        if (mounted) setLoading(false);
       }
-    }
-    checkFavorite();
-  }, [artistName, userId]);
+    })();
+    return () => {
+      mounted = false;
+    };
+  }, [type, name, userId, artistName, location]);
 
   const toggleFavorite = async () => {
     if (loading) return;
     setLoading(true);
     try {
       if (isFavorite) {
-        await FavoriteService.removeFavorite(artistName, userId);
+        await FavoriteService.removeFavorite({
+          type,
+          name,
+          userId,
+          artistName,
+          location,
+        });
         setIsFavorite(false);
-        setAlertMsgs([`Has eliminado a ${artistName} de tus favoritos`]);
+        setAlertMsgs([`Has eliminado "${name}" de tus favoritos`]);
       } else {
-        await FavoriteService.addFavorite(artistName, userId);
+        await FavoriteService.addFavorite({
+          type,
+          name,
+          userId,
+          artistName,
+          location,
+        });
         setIsFavorite(true);
-        setAlertMsgs([`Has añadido a ${artistName} a tus favoritos`]);
+        setAlertMsgs([`Has añadido "${name}" a tus favoritos`]);
       }
     } catch (err) {
-      console.error("Error al cambiar estado de favorito", err);
+      console.error("Error al cambiar favorito", err);
     } finally {
       setLoading(false);
     }
@@ -61,21 +92,26 @@ export function FavoriteButton({
         showAlert={showAlert}
         topSize="-8rem"
       />
-      <button
-        aria-label={isFavorite ? "Eliminar de favoritos" : "Añadir a favoritos"}
+      <Button
+        type="button"
         onClick={toggleFavorite}
         disabled={loading}
-        className={`p-2 hover:opacity-60 transition-opacity cursor-pointer ${
-          height ? `mt-${height}` : ""
-        }`}
+        aria-pressed={isFavorite}
+        aria-label={isFavorite ? "Eliminar de favoritos" : "Añadir a favoritos"}
         title={isFavorite ? "Eliminar de favoritos" : "Añadir a favoritos"}
+        className={cn(
+          // mismo look & feel que tu AlbumPage
+          "inline-flex items-center rounded-md disabled:opacity-60",
+          className
+        )}
       >
         <Star
-          size={32}
-          className={isFavorite ? "text-yellow-500" : "text-gray-400"}
+          size={18}
+          className={isFavorite ? "text-yellow-500" : "text-gray-500"}
           fill={isFavorite ? "currentColor" : "none"}
         />
-      </button>
+        <span>{isFavorite ? "Favorito" : "Favorito"}</span>
+      </Button>
     </>
   );
 }

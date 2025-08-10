@@ -1,48 +1,62 @@
 export class FavoriteRepository {
-  static async fetchIsFavorite(
-    artistName: string,
-    userId: number
-  ): Promise<boolean> {
-    const res = await fetch(
-      `${
-        process.env.NEXT_PUBLIC_BACKEND_URL
-      }/favorites?artistName=${encodeURIComponent(
-        artistName
-      )}&userId=${userId}`,
-      { method: "GET", headers: { "Content-Type": "application/json" } }
+  static async isFavorite(payload: {
+    type: "album" | "track" | "venue" | "artist";
+    name: string;
+    userId: number;
+    artistName?: string;
+    location?: string;
+  }): Promise<boolean> {
+    const url = new URL(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/favorites?userId=${payload.userId}`
     );
-    if (!res.ok) throw new Error("No se pudo obtener el estado de favorito");
-    const data: { isFavorite: boolean } = await res.json();
-    return data.isFavorite;
+    url.searchParams.set("type", payload.type);
+    url.searchParams.set("name", payload.name);
+    url.searchParams.set("userId", String(payload.userId));
+    if (payload.artistName)
+      url.searchParams.set("artistName", payload.artistName);
+    if (payload.location) url.searchParams.set("location", payload.location);
+
+    console.log(url.toString());
+    const res = await fetch(url.toString(), { cache: "no-store" });
+    if (!res.ok) throw new Error("Error buscando el estado de favorito");
+    const data = await res.json();
+    return !!data?.isFavorite;
   }
 
-  static async postAddFavorite(
-    artistName: string,
-    userId: number
-  ): Promise<void> {
+  static async addFavorite(payload: {
+    type: "album" | "track" | "venue" | "artist";
+    name: string;
+    userId: number;
+    artistName?: string;
+    location?: string;
+  }): Promise<void> {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_BACKEND_URL}/favorites`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ artistName, user: userId }),
+        body: JSON.stringify(payload),
       }
     );
-    if (!res.ok) throw new Error("No se pudo añadir a favoritos");
+    if (!res.ok) throw new Error("Error añadiendo favorito");
   }
 
-  static async deleteRemoveFavorite(
-    artistName: string,
-    userId: number
-  ): Promise<void> {
-    const res = await fetch(
-      `${
-        process.env.NEXT_PUBLIC_BACKEND_URL
-      }/favorites?artistName=${encodeURIComponent(
-        artistName
-      )}&userId=${userId}`,
-      { method: "DELETE", headers: { "Content-Type": "application/json" } }
-    );
-    if (!res.ok) throw new Error("No se pudo eliminar de favoritos");
+  static async removeFavorite(payload: {
+    type: "album" | "track" | "venue" | "artist";
+    name: string;
+    userId: number;
+    artistName?: string;
+    location?: string;
+  }): Promise<void> {
+    const url = new URL(`${process.env.NEXT_PUBLIC_BACKEND_URL}/favorites`);
+    url.searchParams.set("type", payload.type);
+    url.searchParams.set("name", payload.name);
+    url.searchParams.set("userId", String(payload.userId));
+    if (payload.artistName)
+      url.searchParams.set("artistName", payload.artistName);
+    if (payload.location) url.searchParams.set("location", payload.location);
+
+    const res = await fetch(url.toString(), { method: "DELETE" });
+    if (!res.ok) throw new Error("Error eliminando favorito");
   }
 }

@@ -1,21 +1,24 @@
 import { FavoriteRepository } from "@/repositories/favorites.repository";
 
+type FavPayload = {
+  type: "artist" | "album" | "track" | "venue";
+  name: string;
+  userId: number;
+  artistName?: string;
+  location?: string;
+};
+
 export class FavoriteService {
-  static async isFavorite(
-    artistName: string,
-    userId: number
-  ): Promise<boolean> {
-    return FavoriteRepository.fetchIsFavorite(artistName, userId);
+  static async isFavorite(payload: FavPayload): Promise<boolean> {
+    console.log("Checking if favorite:", payload);
+    return FavoriteRepository.isFavorite(payload);
   }
 
-  static async addFavorite(artistName: string, userId: number): Promise<void> {
-    return FavoriteRepository.postAddFavorite(artistName, userId);
+  static async addFavorite(payload: FavPayload): Promise<void> {
+    return FavoriteRepository.addFavorite(payload);
   }
 
-  static async removeFavorite(
-    artistName: string,
-    userId: number
-  ): Promise<void> {
-    return FavoriteRepository.deleteRemoveFavorite(artistName, userId);
+  static async removeFavorite(payload: FavPayload): Promise<void> {
+    return FavoriteRepository.removeFavorite(payload);
   }
 }
