@@ -15,8 +15,8 @@ import {
   MbArtist,
 } from "@/helpers/musicbrainz";
 import Flag from "react-world-flags";
-import { RatingClient } from "@/components/artist/RatingClient";
-import { PentagramScores } from "@/components/artist/PentagramScores";
+import { RatingClient } from "@/components/reviews/RatingClient";
+import { Scores } from "@/components/reviews/Scores";
 import { ReviewService } from "@/services/review.service";
 import { ItemService } from "@/services/item.service";
 import { FavoriteButton } from "@/components/favorites/FavoriteButton";
@@ -105,37 +105,37 @@ export default async function ArtistPage({
   // const bioAI = await fetchArtistBio(artist);
 
   return (
-    <div className="container mx-auto relative">
+    <div className="container mx-auto">
       <div
-        id="blurred-bg"
-        className="absolute top-0 -mt-24 left-0 right-0 h-48 sm:h-64 md:h-72 lg:h-80 w-full -z-10 "
+        id="hero"
+        className="relative h-48 sm:h-64 md:h-72 lg:h-80 w-full mb-6"
       >
         <Image
           src={artistData.images[0]?.url || "/default-cover.png"}
           alt={artistData.name}
           fill
           className="object-cover blur-sm"
+          priority
         />
       </div>
 
       <div
         id="header"
-        className="flex flex-col sm:flex-row gap-4 sm:gap-6 mt-24 sm:mt-32 items-start sm:items-center mb-6 sm:mb-8 relative z-10"
+        className="flex flex-col sm:flex-row gap-4 sm:gap-6 items-start sm:items-center mb-6 sm:mb-8"
       >
-        <Image
-          src={artistData.images[0]?.url || "/default-cover.png"}
-          alt={artistData.name}
-          width={200}
-          height={200}
-          className="rounded-lg object-cover shadow-lg w-28 h-28 sm:w-40 sm:h-40 md:w-48 md:h-48"
-        />
+        <div className="relative -mt-14 sm:-mt-20 md:-mt-28 z-10">
+          <Image
+            src={artistData.images[0]?.url || "/default-cover.png"}
+            alt={artistData.name}
+            width={200}
+            height={200}
+            className="rounded-lg object-cover shadow-lg w-28 h-28 sm:w-40 sm:h-40 md:w-48 md:h-48"
+          />
+        </div>
         <div className="ml-0 sm:ml-6 mt-2 sm:mt-0 flex-1">
-          <div className="flex items-center gap-4">
-            <h1 className="text-5xl font-bold text-black drop-shadow-lg">
-              {artistData.name}
-            </h1>
-            {/* Botón de valoración */}
-            <div className="inline-block ml-4">
+          <div className="flex items-center gap-4 flex-wrap">
+            <h1 className="text-5xl font-bold text-black">{artistData.name}</h1>
+            <div className="inline-block">
               <RatingClient name={artistData.name} type="artist" userId={1} />
             </div>
           </div>
@@ -147,7 +147,7 @@ export default async function ArtistPage({
               : ""}
           </p>
         </div>
-        {/* Botón de favorito, alineado a la derecha */}
+
         <div className="ml-0 sm:ml-auto mt-3 sm:mt-0 flex flex-wrap items-center gap-2">
           <FavoriteButton type="artist" name={artistData.name} userId={1} />
           <AddToListDialog
@@ -163,13 +163,14 @@ export default async function ArtistPage({
         <div className="w-full lg:w-2/3 space-y-6 sm:space-y-8">
           <section className="bg-white/80 p-4 sm:p-6 rounded-lg shadow">
             <h2 className="text-3xl font-bold mb-2">Valoraciones</h2>
-            <PentagramScores
+            <Scores
               verified={averages.verified}
               unverified={averages.unverified}
               verifiedCount={reviewCounts.verifiedCount}
               unverifiedCount={reviewCounts.unverifiedCount}
               itemId={item?.itemId ?? null}
               name={artistData.name}
+              variant="inline"
             />
           </section>
           {/* Biografía */}
@@ -217,6 +218,7 @@ export default async function ArtistPage({
                     .replace(/\s+/g, "-")
                     .toLowerCase()}`}
                   className="group"
+                  scroll
                 >
                   <div className="relative overflow-hidden rounded-lg">
                     <Image

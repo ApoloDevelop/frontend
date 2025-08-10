@@ -15,8 +15,8 @@ import {
   MbArtist,
 } from "@/helpers/musicbrainz";
 import Flag from "react-world-flags";
-import { ArtistRatingClient } from "@/components/artist/RatingClient";
-import { PentagramScores } from "@/components/artist/PentagramScores";
+import { ArtistRatingClient } from "@/components/reviews/RatingClient";
+import { PentagramScores } from "@/components/reviews/Scores";
 import { ReviewService } from "@/services/review.service";
 import { ItemService } from "@/services/item.service";
 import { FavoriteButton } from "@/components/favorites/FavoriteButton";

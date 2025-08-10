@@ -1,10 +1,8 @@
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { Heart, Play, MoreHorizontal } from "lucide-react";
 import { fetchAlbumByName, fetchAlbumTracks } from "@/helpers/spotify";
 import SpotifyLogo from "@/components/icons/SpotifyLogo";
-import { Button } from "@/components/ui/button";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -14,9 +12,9 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { msToMinSec } from "@/helpers/seconds";
-import { RatingClient } from "@/components/artist/RatingClient";
+import { RatingClient } from "@/components/reviews/RatingClient";
 import { ReviewService } from "@/services/review.service";
-import { PentagramScores } from "@/components/artist/PentagramScores";
+import { Scores } from "@/components/reviews/Scores";
 import { FavoriteButton } from "@/components/favorites/FavoriteButton";
 import { AddToListDialog } from "@/components/lists/AddToListDialog";
 
@@ -159,6 +157,7 @@ export default async function AlbumPage({
                           ?.replace(/\s+/g, "-")
                           .toLowerCase()}`}
                         className="text-purple-600 hover:underline"
+                        scroll
                       >
                         {artist.name}
                       </Link>
@@ -186,14 +185,15 @@ export default async function AlbumPage({
                 ) : null}
               </header>
 
-              <div className="flex justify-end">
-                <PentagramScores
+              <div className="w-full lg:w-[737px] justify-self-start">
+                <Scores
                   verified={stats.verified}
                   unverified={stats.unverified}
                   verifiedCount={stats.verifiedCount}
                   unverifiedCount={stats.unverifiedCount}
                   itemId={stats.itemId}
                   name={album.name}
+                  variant="card"
                 />
               </div>
 
@@ -229,6 +229,7 @@ export default async function AlbumPage({
                                     ?.replace(/\s+/g, "-")
                                     .toLowerCase()}`}
                                   className="hover:underline"
+                                  scroll
                                 >
                                   {a.name}
                                 </Link>

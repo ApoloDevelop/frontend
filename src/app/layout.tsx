@@ -1,5 +1,7 @@
+import { Scroll } from "lucide-react";
 import "./globals.css";
 import Header from "@/components/ui/Header";
+import ScrollTopOnRouteChange from "@/components/system/ScrollTopOnRouteChange";
 
 export const metadata = {
   title: "Apolo",
@@ -15,6 +17,7 @@ export default function RootLayout({
     <html lang="es" suppressHydrationWarning>
       <body>
         <Header />
+        <ScrollTopOnRouteChange behavior="instant" />
         <main>{children}</main>
       </body>
     </html>
