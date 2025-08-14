@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { RatingModal } from "./RatingModal";
 import { ReviewService } from "@/services/review.service";
+import { Star } from "lucide-react";
 
 type RateableType = "artist" | "album" | "track" | "venue";
 
@@ -56,7 +57,9 @@ export function RatingClient(props: RatingClientProps) {
 
   return (
     <>
-      <Button onClick={() => setOpen(true)}>{buttonLabel}</Button>
+      <Button onClick={() => setOpen(true)}>
+        <Star /> {buttonLabel}
+      </Button>
       <RatingModal
         open={open}
         onClose={() => setOpen(false)}

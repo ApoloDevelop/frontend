@@ -5,7 +5,6 @@ import {
   fetchArtistAlbums,
   fetchArtistTopTracks,
   fetchArtistReleases,
-  // fetchArtistBio,
 } from "@/helpers/spotify";
 import {
   ArtistDetails,
@@ -102,7 +101,6 @@ export default async function ArtistPage({
       (a: { release_date: string }, b: { release_date: string }) =>
         new Date(b.release_date).getTime() - new Date(a.release_date).getTime()
     )[0];
-  // const bioAI = await fetchArtistBio(artist);
 
   return (
     <div className="container mx-auto">
@@ -135,7 +133,7 @@ export default async function ArtistPage({
         <div className="ml-0 sm:ml-6 mt-2 sm:mt-0 flex-1">
           <div className="flex items-center gap-4 flex-wrap">
             <h1 className="text-5xl font-bold text-black">{artistData.name}</h1>
-            <div className="inline-block">
+            <div className="inline-block mt-2">
               <RatingClient name={artistData.name} type="artist" userId={1} />
             </div>
           </div>
@@ -148,7 +146,7 @@ export default async function ArtistPage({
           </p>
         </div>
 
-        <div className="ml-0 sm:ml-auto mt-3 sm:mt-0 flex flex-wrap items-center gap-2">
+        <div className="ml-0 sm:ml-auto mt-3 sm:mt-2 flex flex-wrap items-center gap-2">
           <FavoriteButton type="artist" name={artistData.name} userId={1} />
           <AddToListDialog
             userId={1}

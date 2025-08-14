@@ -105,9 +105,9 @@ export function FavoriteButton({
           className
         )}
       >
-        <Star
+        <Heart
           size={18}
-          className={isFavorite ? "text-yellow-500" : "text-gray-500"}
+          className={isFavorite ? "text-red-500" : "text-white"}
           fill={isFavorite ? "currentColor" : "none"}
         />
         <span>{isFavorite ? "Favorito" : "Favorito"}</span>

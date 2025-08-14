@@ -17,13 +17,9 @@ import { ReviewService } from "@/services/review.service";
 import { Scores } from "@/components/reviews/Scores";
 import { FavoriteButton } from "@/components/favorites/FavoriteButton";
 import { AddToListDialog } from "@/components/lists/AddToListDialog";
-
-const fold = (s: string) =>
-  s
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase()
-    .trim();
+import { fold, slugify } from "@/helpers/normalization";
+import { AlbumTracklist } from "@/components/album/AlbumTracklist";
+import { Hero } from "@/components/images/Hero";
 
 export default async function AlbumPage({
   params: rawParams,
@@ -56,16 +52,7 @@ export default async function AlbumPage({
   return (
     <>
       {/* HERO: fondo con blur + degradado para legibilidad */}
-      <div className="relative h-72 mb-18 w-full overflow-hidden">
-        <Image
-          src={cover}
-          alt=""
-          fill
-          priority
-          className="object-cover scale-110 blur-xl"
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-white via-white/20 to-transparent pointer-events-none" />
-      </div>
+      <Hero cover={cover} />
 
       {/* CONTENIDO */}
       <div className="relative -mt-16 pb-16">
@@ -136,7 +123,7 @@ export default async function AlbumPage({
                   href={album.external_urls?.spotify}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 rounded-xl bg-green-700 px-4 py-2 text-white hover:bg-green-800 transition"
+                  className="inline-flex items-center gap-2 rounded-xl bg-green-900 px-4 py-2 text-white hover:bg-green-700 transition"
                 >
                   <SpotifyLogo />
                   <span>Reproducir en Spotify</span>
@@ -198,55 +185,7 @@ export default async function AlbumPage({
               </div>
 
               {/* Tracklist */}
-              <section>
-                <h2 className="mb-3 text-2xl font-semibold">Tracklist</h2>
-                <ol className="divide-y rounded-xl border">
-                  {tracks.map((t: any, idx: number) => {
-                    const name = t?.name ?? t?.track?.name ?? "Untitled";
-                    const artists = (t?.artists ??
-                      t?.track?.artists ??
-                      []) as any[];
-                    const durationMs =
-                      t?.duration_ms ?? t?.track?.duration_ms ?? 0;
-                    return (
-                      <li
-                        key={t.id || `${name}-${idx}`}
-                        className="grid grid-cols-[32px_1fr_auto] items-center gap-4 px-3 py-2 hover:bg-black/5 cursor-pointer"
-                      >
-                        <span className="text-sm tabular-nums text-muted-foreground">
-                          {idx + 1}
-                        </span>
-
-                        <div className="min-w-0">
-                          <div className="truncate font-medium hover:underline">
-                            {name}
-                          </div>
-                          <div className="truncate text-sm text-muted-foreground">
-                            {artists.map((a: any, i: number) => (
-                              <span key={a.id || `${a.name}-${i}`}>
-                                <Link
-                                  href={`/artists/${a.name
-                                    ?.replace(/\s+/g, "-")
-                                    .toLowerCase()}`}
-                                  className="hover:underline"
-                                  scroll
-                                >
-                                  {a.name}
-                                </Link>
-                                {i < artists.length - 1 && ", "}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-
-                        <span className="text-sm tabular-nums text-muted-foreground">
-                          {msToMinSec(durationMs)}
-                        </span>
-                      </li>
-                    );
-                  })}
-                </ol>
-              </section>
+              <AlbumTracklist tracks={tracks} />
 
               {/* Créditos */}
               {(album.label || album.total_tracks) && (
