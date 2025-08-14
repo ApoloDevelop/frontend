@@ -3,15 +3,6 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { fetchAlbumByName, fetchAlbumTracks } from "@/helpers/spotify";
 import SpotifyLogo from "@/components/icons/SpotifyLogo";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
-import { msToMinSec } from "@/helpers/seconds";
 import { RatingClient } from "@/components/reviews/RatingClient";
 import { ReviewService } from "@/services/review.service";
 import { Scores } from "@/components/reviews/Scores";
@@ -20,6 +11,7 @@ import { AddToListDialog } from "@/components/lists/AddToListDialog";
 import { fold, slugify } from "@/helpers/normalization";
 import { AlbumTracklist } from "@/components/album/AlbumTracklist";
 import { Hero } from "@/components/images/Hero";
+import { CustomBreadcrumb } from "@/components/ui/CustomBreadcrumb";
 
 export default async function AlbumPage({
   params: rawParams,
@@ -31,7 +23,7 @@ export default async function AlbumPage({
   const artistName = decodeURIComponent(artistSlug.replace(/-/g, " "));
   const albumName = decodeURIComponent(albumSlug.replace(/-/g, " "));
 
-  const album = await fetchAlbumByName(albumName);
+  const album = await fetchAlbumByName(albumName, artistName);
 
   if (
     !album ||
@@ -49,6 +41,15 @@ export default async function AlbumPage({
       ? new Date(album.release_date).getFullYear()
       : undefined;
 
+  const breadcrumbItems = [
+    { label: "ARTISTAS", href: "/artists" },
+    { label: artistName.toUpperCase(), href: `/artists/${artistSlug}` },
+    {
+      label: album.name.toUpperCase(),
+      isCurrentPage: true,
+    },
+  ];
+
   return (
     <>
       {/* HERO: fondo con blur + degradado para legibilidad */}
@@ -58,28 +59,15 @@ export default async function AlbumPage({
       <div className="relative -mt-16 pb-16">
         <div className="mx-auto max-w-6xl px-4">
           {/* Breadcrumbs */}
-          <Breadcrumb>
-            <BreadcrumbList>
-              <BreadcrumbItem>
-                <BreadcrumbLink href="/artists">Artistas</BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbLink href={`/artists/${artistSlug}`}>
-                  {artistName.toUpperCase()}
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbPage>{album.name}</BreadcrumbPage>
-              </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
+          <CustomBreadcrumb items={breadcrumbItems} />
 
           <div className="grid grid-cols-12 gap-8 mt-6">
             {/* ASIDE STICKY: cover + CTAs */}
             <aside className="col-span-12 md:col-span-4 md:sticky md:top-24 space-y-4 self-start">
-              <h1 className="text-3xl md:text-4xl font-bold leading-tight">
+              <h1
+                title={album.name}
+                className="text-3xl md:text-4xl font-bold leading-tight"
+              >
                 {album.name}
                 {year ? (
                   <span className="text-muted-foreground"> ({year})</span>
@@ -140,9 +128,7 @@ export default async function AlbumPage({
                   {album.artists?.map((artist: any, index: number) => (
                     <span key={artist.id || artist.name}>
                       <Link
-                        href={`/artists/${artist.name
-                          ?.replace(/\s+/g, "-")
-                          .toLowerCase()}`}
+                        href={`/artists/${slugify(artist.name)}`}
                         className="text-purple-600 hover:underline"
                         scroll
                       >
@@ -185,7 +171,7 @@ export default async function AlbumPage({
               </div>
 
               {/* Tracklist */}
-              <AlbumTracklist tracks={tracks} />
+              <AlbumTracklist albumSlug={albumSlug} tracks={tracks} />
 
               {/* Créditos */}
               {(album.label || album.total_tracks) && (

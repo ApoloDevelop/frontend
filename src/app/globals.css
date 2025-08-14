@@ -189,6 +189,30 @@
   overflow-wrap: break-word;
 }
 
+.wrap-title {
+  overflow-wrap: break-word;
+  white-space: pre-wrap; /* respeta saltos de línea */
+  word-break: break-word;
+  hyphens: auto;
+  text-wrap: balance;
+  max-width: 65ch;
+}
+
+.clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3; /* nº de líneas */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  word-break: break-word;
+  hyphens: auto;
+  max-width: 65ch; /* similar a max-w-prose */
+}
+@media (min-width: 768px) {
+  .clamp-3 {
+    -webkit-line-clamp: 4;
+  } /* 4 líneas en md+ */
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

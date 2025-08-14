@@ -5,7 +5,8 @@ import { Hero } from "@/components/images/Hero";
 import { AddToListDialog } from "@/components/lists/AddToListDialog";
 import { RatingClient } from "@/components/reviews/RatingClient";
 import { Scores } from "@/components/reviews/Scores";
-import { fold, slugify } from "@/helpers/normalization";
+import { CustomBreadcrumb } from "@/components/ui/CustomBreadcrumb";
+import { fold, slugify, wrapWord } from "@/helpers/normalization";
 import { msToMinSec } from "@/helpers/seconds";
 import { fetchSongByName } from "@/helpers/spotify";
 import Image from "next/image";
@@ -47,51 +48,50 @@ Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.`,
       writers: ["Autor 1", "Autor 2"],
       label: "Apolo Music / Distribuido por Ficticia Records",
     },
-    external: {
-      spotify: "#", // enlace ficticio
-    },
   };
 }
 
 export default async function SongPage({
   params: rawParams,
 }: {
-  params: { artist: string; song: string };
+  params: { artist: string; album: string; song: string };
 }) {
-  const { artist: artistSlug, song: songSlug } = await rawParams;
+  const {
+    artist: artistSlug,
+    album: albumSlug,
+    song: songSlug,
+  } = await rawParams;
 
   const artistName = decodeURIComponent(artistSlug.replace(/-/g, " "));
+  const albumName = decodeURIComponent(albumSlug.replace(/-/g, " "));
   const songName = decodeURIComponent(songSlug.replace(/-/g, " "));
   const mock = getMockData(songName);
 
   const keyText =
     NOTE_NAMES[mock.keyIndex] + (mock.mode === "minor" ? "m" : "");
 
-  let track = await fetchSongByName(`${songName} ${artistName}`).catch(
-    () => null
-  );
-
-  // 2) Fallback: solo "canción"
-  if (
-    !track ||
-    !track.artists?.some((a: any) => fold(a.name) === fold(artistName))
-  ) {
-    track = await fetchSongByName(songName).catch(() => null);
-  }
-
-  // 3) Validación final por artista
-  if (
-    !track ||
-    !track.artists?.some((a: any) => fold(a.name) === fold(artistName))
-  ) {
-    return notFound();
-  }
+  const track = await fetchSongByName(songName, albumName, artistName);
 
   const cover = track.album?.images?.[0]?.url || "/default-cover.png";
   const durationMs = track.duration_ms ?? 0;
   const explicit = !!track.explicit;
   const albumRelease = track.album?.release_date ?? null;
-  const albumName = track.album?.name || "-";
+
+  const breadcrumbItems = [
+    { label: "ARTISTAS", href: "/artists" },
+    {
+      label: wrapWord(artistName).toUpperCase(),
+      href: `/artists/${artistSlug}`,
+    },
+    {
+      label: wrapWord(albumName).toUpperCase(),
+      href: `/albums/${artistSlug}/${slugify(albumName)}`,
+    },
+    {
+      label: wrapWord(track.name).toUpperCase(),
+      isCurrentPage: true,
+    },
+  ];
 
   return (
     <>
@@ -100,10 +100,11 @@ export default async function SongPage({
 
       <div className="relative -mt-12 pb-20">
         <div className="mx-auto max-w-6xl px-4">
-          <div className="grid grid-cols-12 gap-8">
+          <CustomBreadcrumb items={breadcrumbItems} />
+          <div className="grid grid-cols-12 gap-8 mt-4">
             {/* ASIDE: portada + CTAs (placeholders) */}
             <aside className="col-span-12 md:col-span-4 md:sticky md:top-24 self-start space-y-4">
-              <h1 className="text-3xl md:text-4xl font-bold leading-tight">
+              <h1 className="text-3xl md:text-4xl font-bold leading-tight clamp-3">
                 {track.name}
               </h1>
 
@@ -119,7 +120,7 @@ export default async function SongPage({
               </div>
 
               {/* metainformación comprimida */}
-              <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
+              <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-sm text-muted-foreground">
                 <span>{msToMinSec(durationMs)}</span>
                 <span aria-hidden>•</span>
                 <time dateTime={albumRelease}>
@@ -243,7 +244,7 @@ export default async function SongPage({
                   verifiedCount={100}
                   unverifiedCount={50}
                   itemId={1}
-                  name={track.name}
+                  name={wrapWord(track.name)}
                   variant="card"
                 />
               </section>
@@ -318,7 +319,9 @@ export default async function SongPage({
                       className="rounded-lg object-cover"
                     />
                     <div className="min-w-0">
-                      <p className="font-semibold truncate">{albumName}</p>
+                      <p className="font-semibold truncate">
+                        {track.album.name}
+                      </p>
                       <p className="text-sm text-gray-500 truncate">
                         {track.album.artists.map((a: any) => a.name).join(", ")}
                       </p>

@@ -1,14 +1,14 @@
 "use client";
-import Link from "next/link";
 import { slugify } from "@/helpers/normalization";
 import { msToMinSec } from "@/helpers/seconds";
 import { useRouter } from "next/navigation";
 
 interface AlbumTracklistProps {
+  albumSlug: string;
   tracks: any[];
 }
 
-export function AlbumTracklist({ tracks }: AlbumTracklistProps) {
+export function AlbumTracklist({ albumSlug, tracks }: AlbumTracklistProps) {
   const router = useRouter();
   return (
     <section>
@@ -21,11 +21,14 @@ export function AlbumTracklist({ tracks }: AlbumTracklistProps) {
 
           const songSlug = slugify(name);
           const artistSlug = slugify(artists[0]?.name);
+
           return (
             <li
               key={t.id || `${name}-${idx}`}
               className="grid grid-cols-[32px_1fr_auto] items-center gap-4 px-3 py-2 hover:bg-black/5 cursor-pointer"
-              onClick={() => router.push(`/songs/${artistSlug}/${songSlug}`)}
+              onClick={() =>
+                router.push(`/songs/${artistSlug}/${albumSlug}/${songSlug}`)
+              }
             >
               <span className="text-sm tabular-nums text-muted-foreground">
                 {idx + 1}
