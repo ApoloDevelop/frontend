@@ -14,6 +14,7 @@ import { SongstatsService } from "@/services/songstats.service";
 import Image from "next/image";
 import Link from "next/link";
 import { GeniusService } from "@/services/genius.service";
+import { LyricsDisplayer } from "@/components/song/LyricsDisplayer";
 
 export default async function SongPage({
   params: rawParams,
@@ -31,8 +32,23 @@ export default async function SongPage({
   const songName = decodeURIComponent(songSlug.replace(/-/g, " "));
 
   const track = await fetchSongByName(songName, albumName, artistName);
-  const info = await SongstatsService.getTrackInfo(track.id);
-  const lyrics = await GeniusService.getLyricsByTrack(songName, artistName);
+  // const info = await SongstatsService.getTrackInfo(track.id);
+  const info = {
+    bpm: 120, // Valor mock
+    key: "C Major", // Valor mock
+    genres: ["Pop", "Indie"], // Valor mock
+    collaborators: [
+      { name: "John Doe", roles: ["Composer", "Producer"] },
+      { name: "Jane Smith", roles: ["Lyricist"] },
+    ], // Valor mock
+    label: "Mock Label", // Valor mock
+    distributor: "Mock Distributor", // Valor mock
+  };
+  // const lyrics = await GeniusService.getLyricsByTrack(songName, artistName);
+  const lyrics = {
+    lyrics:
+      "Esta es una letra de ejemplo para la canción. \nEsta es la segunda línea de la letra. \nEsta es la tercera línea de la letra. \nEsta es una letra de ejemplo para la canción. \nEsta es la segunda línea de la letra. \nEsta es la tercera línea de la letra. \nEsta es una letra de ejemplo para la canción. \nEsta es la segunda línea de la letra. \nEsta es la tercera línea de la letra.", // Valor mock
+  };
 
   const cover = track.album?.images?.[0]?.url || "/default-cover.png";
   const durationMs = track.duration_ms ?? 0;
@@ -70,8 +86,6 @@ export default async function SongPage({
     })
     // si alguien se queda sin roles tras filtrar, no lo muestres
     .filter((c) => c.roles.length > 0);
-
-  const shownGenres = genres.filter(Boolean).slice(0, 4);
 
   const collaboratorsByRole = sortCollabs(translatedCollaborators);
 
@@ -205,9 +219,7 @@ export default async function SongPage({
                   {!!genres.length && (
                     <p className="text-lg">
                       <span className="font-semibold">Género/s:</span>{" "}
-                      <span className="capitalize">
-                        {shownGenres.join(", ")}
-                      </span>
+                      <span className="capitalize">{genres.join(", ")}</span>
                     </p>
                   )}
                 </div>
@@ -252,11 +264,7 @@ export default async function SongPage({
                 <h2 id="lyrics-title" className="mb-3 text-2xl font-semibold">
                   Letra
                 </h2>
-                <div className="rounded-xl border p-4 leading-relaxed text-gray-800 bg-white whitespace-pre-wrap">
-                  {lyrics.lyrics ?? (
-                    <p className="text-gray-500">No hay letra disponible.</p>
-                  )}
-                </div>
+                <LyricsDisplayer lyrics={lyrics.lyrics} />
               </section>
 
               {/* Créditos */}
