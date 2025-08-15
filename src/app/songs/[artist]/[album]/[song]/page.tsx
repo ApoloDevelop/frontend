@@ -6,50 +6,14 @@ import { AddToListDialog } from "@/components/lists/AddToListDialog";
 import { RatingClient } from "@/components/reviews/RatingClient";
 import { Scores } from "@/components/reviews/Scores";
 import { CustomBreadcrumb } from "@/components/ui/CustomBreadcrumb";
-import { fold, slugify, wrapWord } from "@/helpers/normalization";
+import { slugify, wrapWord } from "@/helpers/normalization";
 import { msToMinSec } from "@/helpers/seconds";
 import { fetchSongByName } from "@/helpers/spotify";
+import { normalizeRole, roleLabelEs, sortCollabs } from "@/helpers/collabs";
+import { SongstatsService } from "@/services/songstats.service";
 import Image from "next/image";
 import Link from "next/link";
-import { notFound } from "next/navigation";
-
-// --- utils locales (sin dependencias) ---
-const NOTE_NAMES = [
-  "C",
-  "C#",
-  "D",
-  "D#",
-  "E",
-  "F",
-  "F#",
-  "G",
-  "G#",
-  "A",
-  "A#",
-  "B",
-];
-
-// --- datos de ejemplo (placeholders) ---
-function getMockData(songName: string) {
-  return {
-    genres: ["latin pop", "reggaeton"],
-    bpm: 98,
-    keyIndex: 8, // G#
-    mode: "minor" as "major" | "minor",
-    lyrics: `Verso 1
-Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-Pre-coro
-Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-Coro
-Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.`,
-    credits: {
-      composers: ["Compositor A", "Compositora B"],
-      producers: ["Productor X", "Productora Y"],
-      writers: ["Autor 1", "Autor 2"],
-      label: "Apolo Music / Distribuido por Ficticia Records",
-    },
-  };
-}
+import { GeniusService } from "@/services/genius.service";
 
 export default async function SongPage({
   params: rawParams,
@@ -65,17 +29,51 @@ export default async function SongPage({
   const artistName = decodeURIComponent(artistSlug.replace(/-/g, " "));
   const albumName = decodeURIComponent(albumSlug.replace(/-/g, " "));
   const songName = decodeURIComponent(songSlug.replace(/-/g, " "));
-  const mock = getMockData(songName);
-
-  const keyText =
-    NOTE_NAMES[mock.keyIndex] + (mock.mode === "minor" ? "m" : "");
 
   const track = await fetchSongByName(songName, albumName, artistName);
+  const info = await SongstatsService.getTrackInfo(track.id);
+  const lyrics = await GeniusService.getLyricsByTrack(songName, artistName);
 
   const cover = track.album?.images?.[0]?.url || "/default-cover.png";
   const durationMs = track.duration_ms ?? 0;
   const explicit = !!track.explicit;
   const albumRelease = track.album?.release_date ?? null;
+  const bpm = info?.bpm ?? null;
+  const key = info?.key ?? null;
+  const genres = info?.genres ?? [];
+  const collaborators = info?.collaborators ?? [];
+  const label = info?.label ?? null;
+  const distributor = info?.distributor ?? null;
+
+  const translatedCollaborators = (
+    collaborators as Array<{ name: string; roles: string[] }>
+  )
+    .map((c) => {
+      // normaliza y traduce cada rol
+      const translated = (c.roles || [])
+        .flatMap((r) => {
+          // admite roles con separadores raros: "Composer / Songwriter"
+          return String(r)
+            .split(/[\/,&|]/g)
+            .map((s) => s.trim())
+            .filter(Boolean);
+        })
+        .map(normalizeRole)
+        .sort()
+        .map(roleLabelEs)
+        .filter((lbl): lbl is string => Boolean(lbl));
+
+      // de-duplicar
+      const unique = Array.from(new Set(translated));
+
+      return { name: c.name, roles: unique };
+    })
+    // si alguien se queda sin roles tras filtrar, no lo muestres
+    .filter((c) => c.roles.length > 0);
+
+  const shownGenres = genres.filter(Boolean).slice(0, 4);
+
+  const collaboratorsByRole = sortCollabs(translatedCollaborators);
 
   const breadcrumbItems = [
     { label: "ARTISTAS", href: "/artists" },
@@ -126,10 +124,10 @@ export default async function SongPage({
                 <time dateTime={albumRelease}>
                   {new Date(albumRelease).toLocaleDateString()}
                 </time>
-                {!!mock.genres.length && (
+                {!!genres.length && (
                   <>
                     <span aria-hidden>•</span>
-                    <span className="capitalize">{mock.genres[0]}</span>
+                    <span className="capitalize">{genres[0]}</span>
                   </>
                 )}
                 {explicit && (
@@ -204,11 +202,11 @@ export default async function SongPage({
                       {new Date(albumRelease).toLocaleDateString()}
                     </time>
                   </p>
-                  {!!mock.genres.length && (
+                  {!!genres.length && (
                     <p className="text-lg">
                       <span className="font-semibold">Género/s:</span>{" "}
                       <span className="capitalize">
-                        {mock.genres.join(", ")}
+                        {shownGenres.join(", ")}
                       </span>
                     </p>
                   )}
@@ -222,7 +220,7 @@ export default async function SongPage({
                     <div className="text-xs uppercase tracking-wide text-purple-700">
                       BPM
                     </div>
-                    <div className="text-2xl font-bold">{mock.bpm}</div>
+                    <div className="text-2xl font-bold">{bpm ?? "-"}</div>
                   </div>
                   <div
                     aria-label="Key"
@@ -231,7 +229,7 @@ export default async function SongPage({
                     <div className="text-xs uppercase tracking-wide text-gray-600">
                       Key
                     </div>
-                    <div className="text-2xl font-bold">{keyText}</div>
+                    <div className="text-2xl font-bold">{key ?? "-"}</div>
                   </div>
                 </div>
               </header>
@@ -255,49 +253,50 @@ export default async function SongPage({
                   Letra
                 </h2>
                 <div className="rounded-xl border p-4 leading-relaxed text-gray-800 bg-white whitespace-pre-wrap">
-                  {mock.lyrics}
+                  {lyrics.lyrics ?? (
+                    <p className="text-gray-500">No hay letra disponible.</p>
+                  )}
                 </div>
               </section>
 
               {/* Créditos */}
-              <section aria-labelledby="credits-title">
-                <h2 id="credits-title" className="mb-3 text-2xl font-semibold">
+              <section aria-labelledby="collabs-title">
+                <h2 id="collabs-title" className="mb-3 text-2xl font-semibold">
                   Créditos
+                </h2>
+                {collaboratorsByRole.length ? (
+                  <div className="grid md:grid-cols-2 gap-4">
+                    {collaboratorsByRole.map(({ role, names }) => (
+                      <div
+                        key={role}
+                        className="rounded-xl border p-4 bg-white"
+                      >
+                        <h3 className="font-semibold mb-1">{role}</h3>
+                        <p className="text-gray-700">{names.join(", ")}</p>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-gray-500">
+                    No hay colaboradores disponibles.
+                  </p>
+                )}
+              </section>
+
+              <section aria-labelledby="label-title">
+                <h2 id="label-title" className="mb-3 text-2xl font-semibold">
+                  Fuente
                 </h2>
 
                 <div className="grid md:grid-cols-2 gap-4">
-                  <div className="rounded-xl border p-4 bg-white">
-                    <h3 className="font-semibold mb-2">Compositores</h3>
-                    <ul className="list-disc list-inside">
-                      {mock.credits.composers.map((n) => (
-                        <li key={n}>{n}</li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  <div className="rounded-xl border p-4 bg-white">
-                    <h3 className="font-semibold mb-2">Productores</h3>
-                    <ul className="list-disc list-inside">
-                      {mock.credits.producers.map((n) => (
-                        <li key={n}>{n}</li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  <div className="rounded-xl border p-4 bg-white md:col-span-2">
-                    <h3 className="font-semibold mb-2">Autores</h3>
-                    <ul className="list-disc list-inside">
-                      {mock.credits.writers.map((n) => (
-                        <li key={n}>{n}</li>
-                      ))}
-                    </ul>
-                  </div>
-
                   <div className="rounded-xl border p-4 bg-white md:col-span-2">
                     <h3 className="font-semibold mb-2">
-                      Label / Distribuidora
+                      Discográfica / Distribuidora
                     </h3>
-                    <p className="text-gray-700">{mock.credits.label}</p>
+                    <p className="text-gray-700">
+                      {label ?? ""}
+                      {distributor ? ` · ${distributor}` : ""}
+                    </p>
                   </div>
                 </div>
               </section>
