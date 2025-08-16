@@ -23,12 +23,24 @@ import { LatestAlbums } from "@/components/artist/LatestAlbums";
 import { ArtistBio } from "@/components/artist/ArtistBio";
 import { mockArtistData } from "@/mocks/mockSongstats";
 import { deslugify } from "@/helpers/normalization";
+import { LatestRelease } from "@/components/artist/LatestRelease";
+import { PopularSongs } from "@/components/artist/PopularSongs";
+import { NextEvent } from "@/components/artist/NextEvent";
 
 export default async function ArtistPage({
   params,
 }: {
   params: Promise<{ artist: string }>;
 }) {
+  type EventData = {
+    title: string | null;
+    date: string | null;
+    link: string | null;
+    city: string | null;
+    region: string | null;
+    countryCode: string | null;
+  };
+
   const { artist: slug } = await params;
   const raw = deslugify(slug);
   const decoded = decodeURIComponent(raw);
@@ -51,6 +63,26 @@ export default async function ArtistPage({
   const bio = info?.bio || null;
   const genres = info?.genres || [];
   const relatedArtists = info?.related_artists || [];
+
+  let nextEvent: EventData | null = null;
+
+  const events = await SongstatsService.getArtistEventInfo(artistData.id);
+  if (events?.upcoming?.length) {
+    // ordenar por fecha ascendente y quedarnos con el próximo >= hoy
+    const today = new Date();
+    const sorted = events.upcoming
+      .filter((e) => e?.date)
+      .sort(
+        (a, b) =>
+          new Date(a.date as string).getTime() -
+          new Date(b.date as string).getTime()
+      );
+
+    nextEvent =
+      sorted.find((e) => new Date(e.date as string) >= today) ??
+      sorted[0] ??
+      null;
+  }
 
   const [albums, topTracks, releases] = await Promise.all([
     fetchArtistAlbums(artistData.id),
@@ -181,54 +213,11 @@ export default async function ArtistPage({
         {/* Columna derecha */}
         <div className="w-full lg:w-1/3 flex flex-col gap-6 sm:gap-8 lg:sticky lg:top-24">
           {/* Último lanzamiento */}
-          <section className="bg-white/80 p-4 sm:p-6 rounded-lg shadow">
-            <h2 className="text-3xl font-bold mb-4">Último lanzamiento</h2>
-            {lastRelease ? (
-              <div className="flex items-center gap-4">
-                <Image
-                  src={lastRelease.images[0]?.url || "/default-cover.png"}
-                  alt={lastRelease.name}
-                  width={64}
-                  height={64}
-                  className="rounded"
-                />
-                <div>
-                  <p className="font-bold">{lastRelease.name}</p>
-                  <p className="text-sm text-gray-500">
-                    {dayjs(lastRelease.release_date).format("DD/MM/YYYY")}
-                  </p>
-                  <p className="text-xs text-gray-600 capitalize">
-                    {lastRelease.album_type}
-                  </p>
-                </div>
-              </div>
-            ) : (
-              <p className="text-gray-500">No disponible.</p>
-            )}
-          </section>
+          <LatestRelease release={lastRelease} />
 
           {/* Canciones populares */}
-          <section className="bg-white/80 p-4 sm:p-6 rounded-lg shadow">
-            <h2 className="text-3xl font-bold mb-4">Canciones populares</h2>
-            {topTracks.length ? (
-              <ol className="list-decimal list-inside space-y-2 text-gray-700">
-                {topTracks.map((tr: any) => (
-                  <li key={tr.id} className="flex items-center gap-3">
-                    <Image
-                      src={tr.album?.images[0]?.url || "/default-cover.png"}
-                      alt={tr.name}
-                      width={40}
-                      height={40}
-                      className="rounded"
-                    />
-                    <span>{tr.name}</span>
-                  </li>
-                ))}
-              </ol>
-            ) : (
-              <p className="text-gray-500">No disponible.</p>
-            )}
-          </section>
+          <PopularSongs topTracks={topTracks} />
+          <NextEvent event={nextEvent ?? null} />
         </div>
       </div>
     </div>
