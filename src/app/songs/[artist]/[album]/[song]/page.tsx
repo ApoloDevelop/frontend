@@ -6,7 +6,7 @@ import { AddToListDialog } from "@/components/lists/AddToListDialog";
 import { RatingClient } from "@/components/reviews/RatingClient";
 import { Scores } from "@/components/reviews/Scores";
 import { CustomBreadcrumb } from "@/components/ui/CustomBreadcrumb";
-import { slugify, wrapWord } from "@/helpers/normalization";
+import { deslugify, slugify, wrapWord } from "@/helpers/normalization";
 import { msToMinSec } from "@/helpers/seconds";
 import { fetchSongByName } from "@/helpers/spotify";
 import { normalizeRole, roleLabelEs, sortCollabs } from "@/helpers/collabs";
@@ -15,6 +15,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { GeniusService } from "@/services/genius.service";
 import { LyricsDisplayer } from "@/components/song/LyricsDisplayer";
+import { mockTrackData } from "@/mocks/mockSongstats";
 
 export default async function SongPage({
   params: rawParams,
@@ -27,23 +28,14 @@ export default async function SongPage({
     song: songSlug,
   } = await rawParams;
 
-  const artistName = decodeURIComponent(artistSlug.replace(/-/g, " "));
-  const albumName = decodeURIComponent(albumSlug.replace(/-/g, " "));
-  const songName = decodeURIComponent(songSlug.replace(/-/g, " "));
+  const artistName = deslugify(artistSlug);
+  const albumName = deslugify(albumSlug);
+  const songName = deslugify(songSlug);
+  console.log("Song name:", songName);
 
   const track = await fetchSongByName(songName, albumName, artistName);
   // const info = await SongstatsService.getTrackInfo(track.id);
-  const info = {
-    bpm: 120, // Valor mock
-    key: "C Major", // Valor mock
-    genres: ["Pop", "Indie"], // Valor mock
-    collaborators: [
-      { name: "John Doe", roles: ["Composer", "Producer"] },
-      { name: "Jane Smith", roles: ["Lyricist"] },
-    ], // Valor mock
-    label: "Mock Label", // Valor mock
-    distributor: "Mock Distributor", // Valor mock
-  };
+  const info = mockTrackData;
   // const lyrics = await GeniusService.getLyricsByTrack(songName, artistName);
   const lyrics = {
     lyrics:

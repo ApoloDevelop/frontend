@@ -9,6 +9,18 @@ export type Meta = {
   distributor: string | null;
 };
 
+export type RelatedArtist = {
+  id: string | null;
+  name: string | null;
+  avatar: string | null;
+};
+
+export type ArtistInfo = {
+  bio: string | null;
+  genres: string[];
+  related_artists: RelatedArtist[];
+};
+
 export class SongstatsRepository {
   static async getTrackInfo(spotifyId: string): Promise<Meta | null> {
     const url = new URL(`${B}/songstats/track/info`);
@@ -26,5 +38,21 @@ export class SongstatsRepository {
       throw new Error("Error al buscar información de la pista");
     }
     return (await res.json()) as Meta;
+  }
+
+  static async getArtistInfo(
+    spotifyArtistId: string
+  ): Promise<ArtistInfo | null> {
+    const url = new URL(`${B}/songstats/artist/info`);
+    url.searchParams.set("spotifyArtistId", spotifyArtistId);
+
+    const res = await fetch(url.toString(), {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+      cache: "no-store",
+    });
+    if (res.status === 404) return null;
+    if (!res.ok) throw new Error("Error al buscar información del artista");
+    return (await res.json()) as ArtistInfo;
   }
 }

@@ -26,6 +26,7 @@ export async function fetchSongByName(
   album?: string,
   artist?: string
 ) {
+  console.log(`Fetching song: ${name}, Album: ${album}, Artist: ${artist}`);
   const qs = new URLSearchParams({ name });
   if (album) qs.set("albumName", album);
   if (artist) qs.set("artistName", artist);

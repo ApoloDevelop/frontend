@@ -10,17 +10,19 @@ import {
   ArtistDetails,
   fetchArtistDetails,
   fetchMusicBrainzMatch,
-  fetchSimilarByTags,
-  MbArtist,
 } from "@/helpers/musicbrainz";
-import Flag from "react-world-flags";
 import { RatingClient } from "@/components/reviews/RatingClient";
 import { Scores } from "@/components/reviews/Scores";
 import { ReviewService } from "@/services/review.service";
 import { ItemService } from "@/services/item.service";
 import { FavoriteButton } from "@/components/favorites/FavoriteButton";
 import { AddToListDialog } from "@/components/lists/AddToListDialog";
-import Link from "next/link";
+import { SongstatsService } from "@/services/songstats.service";
+import { RelatedArtists } from "@/components/artist/RelatedArtists";
+import { LatestAlbums } from "@/components/artist/LatestAlbums";
+import { ArtistBio } from "@/components/artist/ArtistBio";
+import { mockArtistData } from "@/mocks/mockSongstats";
+import { deslugify } from "@/helpers/normalization";
 
 export default async function ArtistPage({
   params,
@@ -28,7 +30,7 @@ export default async function ArtistPage({
   params: Promise<{ artist: string }>;
 }) {
   const { artist: slug } = await params;
-  const raw = slug.replace(/-/g, " ");
+  const raw = deslugify(slug);
   const decoded = decodeURIComponent(raw);
   const artistName = decoded;
   const artistData = await fetchArtistByName(artistName);
@@ -43,6 +45,12 @@ export default async function ArtistPage({
     "artist",
     artistData.name
   );
+
+  // const info = await SongstatsService.getArtistInfo(artistData.id);
+  const info = mockArtistData;
+  const bio = info?.bio || null;
+  const genres = info?.genres || [];
+  const relatedArtists = info?.related_artists || [];
 
   const [albums, topTracks, releases] = await Promise.all([
     fetchArtistAlbums(artistData.id),
@@ -75,15 +83,6 @@ export default async function ArtistPage({
     mbid = await fetchMusicBrainzMatch(artistData.id, artistData.name);
   } catch (err) {
     console.warn("No se pudo emparejar en MusicBrainz:", err);
-  }
-
-  let similar: MbArtist[] = [];
-  if (mbid) {
-    try {
-      similar = await fetchSimilarByTags(mbid, 4, 8, 6);
-    } catch (e) {
-      console.warn("Error tags-similar:", e);
-    }
   }
 
   let details: ArtistDetails | null = null;
@@ -172,87 +171,11 @@ export default async function ArtistPage({
             />
           </section>
           {/* Biografía */}
-          <section className="bg-white/80 p-4 sm:p-6 rounded-lg shadow">
-            <h2 className="mb-4 text-3xl font-bold">Biografía</h2>
-            {details ? (
-              <div className="grid grid-cols-1 gap-x-8 gap-y-2 text-lg sm:grid-cols-2">
-                <div>
-                  <span className="font-semibold">Nombre completo:</span>{" "}
-                  {details.fullName ?? "Desconocido"}
-                </div>
-                <div>
-                  <span className="font-semibold">Fecha de nacimiento:</span>{" "}
-                  {details.birthDate
-                    ? dayjs(details.birthDate).format("DD/MM/YYYY")
-                    : "Desconocida"}
-                </div>
-                <div className="col-span-1 sm:col-span-2 flex items-center gap-2">
-                  <span className="font-semibold">Lugar de nacimiento:</span>
-                  <span>{details.birthPlace || "Desconocido"}</span>
-                  {details.birthCountryCode ? (
-                    <Flag code={details.birthCountryCode} className="h-5 w-5" />
-                  ) : null}
-                </div>
-                <div className="col-span-1 sm:col-span-2">
-                  <span className="font-semibold">Género/s:</span>{" "}
-                  {artistData.genres?.length
-                    ? artistData.genres.join(", ")
-                    : "No disponibles"}
-                </div>
-              </div>
-            ) : (
-              <p className="text-gray-700">No se pudo cargar la biografía.</p>
-            )}
-          </section>
-
-          {/* Álbumes recientes */}
-          <section className="bg-white/80 p-4 sm:p-6 rounded-lg shadow">
-            <h2 className="mb-4 text-3xl font-bold">Álbumes recientes</h2>
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-5">
-              {albums.map((alb: any) => (
-                <Link
-                  key={alb.id}
-                  href={`/albums/${slug}/${alb.name
-                    .replace(/\s+/g, "-")
-                    .toLowerCase()}`}
-                  className="group"
-                  scroll
-                >
-                  <div className="relative overflow-hidden rounded-lg">
-                    <Image
-                      src={alb.images[0]?.url || "/default-cover.png"}
-                      alt={alb.name}
-                      width={300}
-                      height={300}
-                      sizes="(max-width:768px) 50vw, (max-width:1024px) 33vw, 20vw"
-                      className="aspect-square object-cover transition-transform duration-200 group-hover:scale-105"
-                    />
-                  </div>
-                  <p className="mt-2 w-full truncate font-medium">{alb.name}</p>
-                  <p className="w-full text-sm text-gray-500">
-                    {dayjs(alb.release_date).format("DD/MM/YYYY")}
-                  </p>
-                </Link>
-              ))}
-            </div>
-          </section>
-          {/* Artistas relacionados */}
-          <section className="bg-white/80 p-4 sm:p-6 rounded-lg shadow">
-            <h2 className="mb-4 text-3xl font-bold">Artistas relacionados</h2>
-            {similar.length ? (
-              <ul className="flex gap-4 overflow-x-auto">
-                {similar.map((a) => (
-                  <li key={a.id} className="w-40 flex-none text-center">
-                    <p className="truncate font-semibold">{a.name}</p>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="text-gray-700">
-                No se encontraron artistas similares por tags.
-              </p>
-            )}
-          </section>
+          <ArtistBio details={details} genres={genres} bio={bio} />
+          {/* Álbumes */}
+          <LatestAlbums albums={albums} artistSlug={slug} />
+          {/* Artistas */}
+          <RelatedArtists artists={relatedArtists} />
         </div>
 
         {/* Columna derecha */}

@@ -8,7 +8,7 @@ import { ReviewService } from "@/services/review.service";
 import { Scores } from "@/components/reviews/Scores";
 import { FavoriteButton } from "@/components/favorites/FavoriteButton";
 import { AddToListDialog } from "@/components/lists/AddToListDialog";
-import { fold, slugify } from "@/helpers/normalization";
+import { deslugify, fold, slugify } from "@/helpers/normalization";
 import { AlbumTracklist } from "@/components/album/AlbumTracklist";
 import { Hero } from "@/components/images/Hero";
 import { CustomBreadcrumb } from "@/components/ui/CustomBreadcrumb";
@@ -20,8 +20,8 @@ export default async function AlbumPage({
 }) {
   const { artist: artistSlug, album: albumSlug } = await rawParams;
 
-  const artistName = decodeURIComponent(artistSlug.replace(/-/g, " "));
-  const albumName = decodeURIComponent(albumSlug.replace(/-/g, " "));
+  const artistName = deslugify(artistSlug);
+  const albumName = deslugify(albumSlug);
 
   const album = await fetchAlbumByName(albumName, artistName);
 
