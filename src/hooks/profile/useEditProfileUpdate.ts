@@ -76,13 +76,6 @@ export function useEditProfileUpdate() {
           setLoading(false);
           return null;
         }
-        if (exists.phoneExists) {
-          console.log("hola");
-          setFieldErrors({ phone: true });
-          setMessages(["El número de teléfono ya está registrado."]);
-          setLoading(false);
-          return null;
-        }
       }
 
       const updateObj: any = {
@@ -93,10 +86,6 @@ export function useEditProfileUpdate() {
           : undefined,
         country: dataToUpdate.country || null,
         city: dataToUpdate.city || null,
-        phone:
-          dataToUpdate.phonePrefix && dataToUpdate.phone
-            ? `${dataToUpdate.phonePrefix} ${dataToUpdate.phone}`.trim()
-            : null,
         social_genre: dataToUpdate.genre || null,
         spotify_link: dataToUpdate.spLink || null,
         youtube_link: dataToUpdate.ytLink || null,

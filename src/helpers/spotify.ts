@@ -10,7 +10,6 @@ export async function fetchArtistByName(name: string) {
 }
 
 export async function fetchAlbumByName(name: string, artist: string) {
-  console.log(`Fetching album: ${name}`);
   const res = await fetch(
     `${B}/spotify/album?name=${encodeURIComponent(
       name
@@ -26,7 +25,6 @@ export async function fetchSongByName(
   album?: string,
   artist?: string
 ) {
-  console.log(`Fetching song: ${name}, Album: ${album}, Artist: ${artist}`);
   const qs = new URLSearchParams({ name });
   if (album) qs.set("albumName", album);
   if (artist) qs.set("artistName", artist);

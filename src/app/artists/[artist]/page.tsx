@@ -21,18 +21,19 @@ import { SongstatsService } from "@/services/songstats.service";
 import { RelatedArtists } from "@/components/artist/RelatedArtists";
 import { LatestAlbums } from "@/components/artist/LatestAlbums";
 import { ArtistBio } from "@/components/artist/ArtistBio";
-import { mockArtistData } from "@/mocks/mockSongstats";
+import { mockArtistData, mockUser } from "@/mocks/mockSongstats";
 import { deslugify } from "@/helpers/normalization";
 import { LatestRelease } from "@/components/artist/LatestRelease";
 import { PopularSongs } from "@/components/artist/PopularSongs";
 import { NextEvent } from "@/components/artist/NextEvent";
+import { NearYou } from "@/components/artist/NearYou";
 
 export default async function ArtistPage({
   params,
 }: {
   params: Promise<{ artist: string }>;
 }) {
-  type EventData = {
+  type NextEventData = {
     title: string | null;
     date: string | null;
     link: string | null;
@@ -64,7 +65,7 @@ export default async function ArtistPage({
   const genres = info?.genres || [];
   const relatedArtists = info?.related_artists || [];
 
-  let nextEvent: EventData | null = null;
+  let nextEvent: NextEventData | null = null;
 
   const events = await SongstatsService.getArtistEventInfo(artistData.id);
   if (events?.upcoming?.length) {
@@ -218,6 +219,7 @@ export default async function ArtistPage({
           {/* Canciones populares */}
           <PopularSongs topTracks={topTracks} />
           <NextEvent event={nextEvent ?? null} />
+          <NearYou user={mockUser} events={events?.upcoming ?? []} />
         </div>
       </div>
     </div>

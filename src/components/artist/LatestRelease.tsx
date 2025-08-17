@@ -24,7 +24,6 @@ export const LatestRelease: React.FC<LatestReleaseProps> = ({ release }) => {
       </section>
     );
   }
-  console.log(release);
 
   const isSingle = release.album_group === "single";
   const artistSlug = slugify(release.artists[0]?.name);

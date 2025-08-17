@@ -31,7 +31,6 @@ export default async function SongPage({
   const artistName = deslugify(artistSlug);
   const albumName = deslugify(albumSlug);
   const songName = deslugify(songSlug);
-  console.log("Song name:", songName);
 
   const track = await fetchSongByName(songName, albumName, artistName);
   // const info = await SongstatsService.getTrackInfo(track.id);

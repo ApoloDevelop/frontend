@@ -24,8 +24,6 @@ export async function fetchMusicBrainzMatch(
     `spotifyId=${encodeURIComponent(spotifyId)}` +
     `&name=${encodeURIComponent(name)}`;
 
-  console.log("Fetching MusicBrainz match:", url);
-
   const res = await fetch(url);
   if (!res.ok) {
     throw new Error("No se pudo emparejar artista en MusicBrainz");

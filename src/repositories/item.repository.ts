@@ -5,7 +5,6 @@ export class ItemRepository {
     name: string,
     ctx?: { artistName?: string; location?: string }
   ): Promise<{ itemId: number } | null> {
-    console.log("Finding item by type and name:", { type, name, ctx });
     const url = new URL(`${process.env.NEXT_PUBLIC_BACKEND_URL}/item/find`);
     url.searchParams.set("type", type);
     url.searchParams.set("name", name);

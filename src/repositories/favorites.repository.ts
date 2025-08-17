@@ -16,7 +16,6 @@ export class FavoriteRepository {
       url.searchParams.set("artistName", payload.artistName);
     if (payload.location) url.searchParams.set("location", payload.location);
 
-    console.log(url.toString());
     const res = await fetch(url.toString(), { cache: "no-store" });
     if (!res.ok) throw new Error("Error buscando el estado de favorito");
     const data = await res.json();

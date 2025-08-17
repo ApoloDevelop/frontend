@@ -31,3 +31,9 @@ export const mockArtistData = {
     },
   ],
 };
+
+export const mockUser = {
+  username: "williardo",
+  city: "Málaga",
+  country: "ES",
+};

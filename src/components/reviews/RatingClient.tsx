@@ -23,7 +23,6 @@ type ExtraProps =
 type RatingClientProps = BaseProps & ExtraProps;
 
 export function RatingClient(props: RatingClientProps) {
-  console.log(props);
   const [open, setOpen] = useState(!!props.defaultOpen);
 
   const needsArtist = props.type === "album" || props.type === "track";

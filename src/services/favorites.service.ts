@@ -10,7 +10,6 @@ type FavPayload = {
 
 export class FavoriteService {
   static async isFavorite(payload: FavPayload): Promise<boolean> {
-    console.log("Checking if favorite:", payload);
     return FavoriteRepository.isFavorite(payload);
   }
 
