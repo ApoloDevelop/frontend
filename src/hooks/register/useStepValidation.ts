@@ -1,4 +1,3 @@
-import { isValidPhoneNumber } from "libphonenumber-js";
 import { RegisterService } from "@/services/register.service";
 
 function isStrongPassword(password: string): boolean {
@@ -78,8 +77,7 @@ export function useStepValidation(
           const { emailExists, usernameExists } =
             await RegisterService.validateAndCheckIfExists(
               formData.email,
-              formData.username,
-              ""
+              formData.username
             );
 
           if (emailExists) {
@@ -107,33 +105,6 @@ export function useStepValidation(
           "Por favor, introduce una fecha de nacimiento válida."
         );
         errors.birthdate = true;
-      }
-
-      if (
-        formData.phonePrefix &&
-        (!formData.phone || formData.phone.trim() === "")
-      ) {
-        alertMessages.push(
-          "Por favor, introduce un número de teléfono válido."
-        );
-        errors.phone = true;
-      } else if (formData.phonePrefix && formData.phone) {
-        const cleanPrefix = formData.phonePrefix.replace(/\s+/g, "");
-        const cleanNumber = formData.phone.replace(/\s+/g, "");
-        const phoneNumber = `${cleanPrefix} ${cleanNumber}`;
-        if (!isValidPhoneNumber(phoneNumber)) {
-          alertMessages.push(
-            "Por favor, introduce un número de teléfono válido."
-          );
-          errors.phone = true;
-        } else {
-          const { phoneExists } =
-            await RegisterService.validateAndCheckIfExists("", "", phoneNumber);
-          if (phoneExists) {
-            alertMessages.push("El número de teléfono ya está registrado.");
-            errors.phone = true;
-          }
-        }
       }
       setIsLoading(false);
     }

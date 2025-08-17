@@ -20,7 +20,6 @@ import { AlertMessage } from "../ui/AlertMessage";
 import { EditPersonalDataForm } from "./EditPersonalDataForm";
 import { formatDate } from "@/helpers/date";
 import { normalize } from "@/helpers/normalization";
-import { getFullPhone } from "@/helpers/phone";
 import { EditSocialMediaForm } from "./EditSocialMediaForm";
 
 type Section = "profile" | "personal" | "social";
@@ -54,10 +53,6 @@ export function EditProfileModal({
     setCountry,
     city,
     setCity,
-    phonePrefix,
-    setPhonePrefix,
-    phone,
-    setPhone,
     genre,
     setGenre,
     spLink,
@@ -103,7 +98,6 @@ export function EditProfileModal({
     formatDate(birthdate) !== formatDate(user.birthdate) ||
     country !== user.country ||
     city !== user.city ||
-    getFullPhone(phone, phonePrefix) !== (user.phone || "") ||
     normalize(genre) !== normalize(user.social_genre) ||
     spLink !== (user.spotify_link || "") ||
     ytLink !== (user.youtube_link || "") ||
@@ -148,8 +142,6 @@ export function EditProfileModal({
         country,
         city,
         genre,
-        phonePrefix,
-        phone,
         spLink,
         ytLink,
         twLink,
@@ -233,10 +225,6 @@ export function EditProfileModal({
                   setCountry={setCountry}
                   city={city}
                   setCity={setCity}
-                  phonePrefix={phonePrefix}
-                  setPhonePrefix={setPhonePrefix}
-                  phone={phone}
-                  setPhone={setPhone}
                   genre={genre}
                   setGenre={setGenre}
                   fieldErrors={fieldErrors}

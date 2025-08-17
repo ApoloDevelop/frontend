@@ -1,5 +1,4 @@
 import { CountrySelect } from "@/components/register/CountrySelect";
-import { PhoneInput } from "@/components/register/PhoneInput";
 import { Input } from "../ui/input";
 import { GenreSelect } from "../register/GenreSelect";
 
@@ -10,10 +9,6 @@ interface EditPersonalDataFormProps {
   setCountry: (v: string) => void;
   city: string;
   setCity: (v: string) => void;
-  phonePrefix: string;
-  setPhonePrefix: (v: string) => void;
-  phone: string;
-  setPhone: (v: string) => void;
   genre: string | null;
   setGenre: (v: string | null) => void;
   fieldErrors: any;
@@ -26,10 +21,6 @@ export function EditPersonalDataForm({
   setCountry,
   city,
   setCity,
-  phonePrefix,
-  setPhonePrefix,
-  phone,
-  setPhone,
   genre,
   setGenre,
   fieldErrors,
@@ -85,24 +76,6 @@ export function EditPersonalDataForm({
           className="w-full mb-0"
           height={"30px"}
           borderRadius="0.5rem"
-        />
-      </div>
-      <div id="phone-input">
-        <label className="text-sm font-semibold mb-1 block">Teléfono</label>
-        <PhoneInput
-          prefix={phonePrefix}
-          number={phone}
-          onChange={(newPrefix, newNumber) => {
-            setPhonePrefix(newPrefix);
-            setPhone(newNumber);
-          }}
-          fieldError={fieldErrors.phone}
-          className="flex w-full mb-6 gap-2"
-          hidePlaceholder
-          hideFloatingLabel
-          height={"30px"}
-          borderRadius="0.5rem"
-          isEdit
         />
       </div>
     </div>

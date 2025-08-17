@@ -47,16 +47,27 @@ export function NextEvent({ event }: { event?: EventData | null }) {
           </div>
           <div className="text-gray-500 italic">{formattedDate}</div>
 
-          {event?.link && (
+          <div className="flex justify-between items-center mt-4">
+            {/* Ver más eventos */}
             <a
-              href={event.link}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-block mt-2 text-purple-600 hover:underline"
+              href="/events"
+              className="text-purple-600 hover:underline text-sm"
             >
-              Ver detalles
+              Ver más eventos
             </a>
-          )}
+
+            {/* Comprar entradas */}
+            {event?.link && (
+              <a
+                href={event.link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-black text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition"
+              >
+                Comprar entradas
+              </a>
+            )}
+          </div>
         </div>
       )}
     </section>

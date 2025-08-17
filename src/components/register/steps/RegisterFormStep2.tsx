@@ -2,7 +2,6 @@ import React from "react";
 import { FloatingInput } from "../FloatingInput";
 import { CountrySelect } from "../CountrySelect";
 import { GenreSelect } from "../GenreSelect";
-import { PhoneInput } from "../PhoneInput";
 
 interface RegisterFormStep2Props {
   formData: any;
@@ -10,7 +9,6 @@ interface RegisterFormStep2Props {
   handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onCountryChange: (selected: any) => void;
   onGenreChange: (val: string | null) => void;
-  onPhoneChange: (prefix: string, number: string) => void;
 }
 
 export const RegisterFormStep2: React.FC<RegisterFormStep2Props> = ({
@@ -19,7 +17,6 @@ export const RegisterFormStep2: React.FC<RegisterFormStep2Props> = ({
   handleChange,
   onCountryChange,
   onGenreChange,
-  onPhoneChange,
 }) => {
   return (
     <div className="w-full flex-shrink-0 h-auto">
@@ -58,14 +55,6 @@ export const RegisterFormStep2: React.FC<RegisterFormStep2Props> = ({
           value={formData.social_genre}
           onChange={onGenreChange}
           className="w-9/10 mb-6"
-        />
-
-        {/* Teléfono */}
-        <PhoneInput
-          prefix={formData.phonePrefix}
-          number={formData.phone}
-          onChange={onPhoneChange}
-          fieldError={fieldErrors.phone}
         />
       </form>
     </div>

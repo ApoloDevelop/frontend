@@ -6,7 +6,6 @@ import Flag from "react-world-flags";
 interface CountryOption {
   value: string;
   label: React.ReactNode;
-  dialCode: string;
 }
 
 interface CountrySelectProps {
@@ -24,14 +23,13 @@ const countryOptions = countries
     a.translations.spa.common.localeCompare(b.translations.spa.common, "es")
   )
   .map((country) => ({
-    value: country.translations.spa.common,
+    value: country.cca2,
     label: (
       <div className="flex items-center">
         <Flag code={country.cca2} className="w-5 h-5 mr-2" />
         {country.translations.spa.common}
       </div>
     ),
-    dialCode: country.idd.root + (country.idd.suffixes?.[0] || ""),
   }));
 
 export const CountrySelect: React.FC<CountrySelectProps> = ({

@@ -34,17 +34,9 @@ export class RegisterRepository {
     return await res.json();
   }
 
-  static async checkIfExists(
-    email: string,
-    username: string,
-    phone: string
-  ): Promise<any> {
+  static async checkIfExists(email: string, username: string): Promise<any> {
     const res = await fetch(
-      `${
-        process.env.NEXT_PUBLIC_BACKEND_URL
-      }/users/exists?email=${email}&username=${username}&phone=${encodeURIComponent(
-        phone
-      )}`
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/users/exists?email=${email}&username=${username}`
     );
 
     if (!res.ok) {

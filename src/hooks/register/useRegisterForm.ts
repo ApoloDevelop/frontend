@@ -13,8 +13,6 @@ export function useRegisterForm() {
     country: "",
     city: "",
     social_genre: "",
-    phone: "",
-    phonePrefix: "",
   });
   const [profileImage, setProfileImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(

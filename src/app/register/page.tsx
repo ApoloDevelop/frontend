@@ -192,13 +192,6 @@ export default function RegisterPage() {
                 onGenreChange={(val) =>
                   setFormData({ ...formData, social_genre: val ?? "" })
                 }
-                onPhoneChange={(prefix, number) =>
-                  setFormData({
-                    ...formData,
-                    phonePrefix: prefix,
-                    phone: number,
-                  })
-                }
               />
 
               <RegisterFormStep3

@@ -1,4 +1,3 @@
-import { splitPhone } from "@/helpers/phone";
 import { useState } from "react";
 
 export function useEditProfileForm(user: any) {
@@ -10,11 +9,6 @@ export function useEditProfileForm(user: any) {
   const [birthdate, setBirthdate] = useState(user?.birthdate || "");
   const [country, setCountry] = useState(user?.country || "");
   const [city, setCity] = useState(user?.city || "");
-  const { prefix: initialPrefix, number: initialNumber } = splitPhone(
-    user?.phone || ""
-  );
-  const [phonePrefix, setPhonePrefix] = useState(initialPrefix);
-  const [phone, setPhone] = useState(initialNumber);
   const [genre, setGenre] = useState<string | null>(user?.social_genre ?? null);
   const [spLink, setSpLink] = useState(user?.spotify_link || "");
   const [ytLink, setYtLink] = useState(user?.youtube_link || "");
@@ -31,9 +25,6 @@ export function useEditProfileForm(user: any) {
     setBirthdate(user.birthdate.slice(0, 10) || "");
     setCountry(user?.country || "");
     setCity(user?.city || "");
-    const { prefix, number } = splitPhone(user?.phone || "");
-    setPhonePrefix(prefix);
-    setPhone(number);
     setGenre(user?.social_genre || null);
     setSpLink(user?.spotify_link || "");
     setYtLink(user?.youtube_link || "");
@@ -68,10 +59,6 @@ export function useEditProfileForm(user: any) {
     setCountry,
     city,
     setCity,
-    phonePrefix,
-    setPhonePrefix,
-    phone,
-    setPhone,
     genre,
     setGenre,
     spLink,

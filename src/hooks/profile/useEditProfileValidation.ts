@@ -1,6 +1,5 @@
 import { isValidDate } from "@/helpers/date";
 import { isStrongPassword } from "@/helpers/password";
-import { isValidPhoneNumber } from "libphonenumber-js";
 
 type EditProfileFields = {
   username: string;
@@ -9,7 +8,6 @@ type EditProfileFields = {
   confirmPassword: string;
   bio: string;
   birthdate: string;
-  phone: string;
   spLink: string;
   igLink: string;
   twLink: string;
@@ -23,7 +21,6 @@ type EditProfileErrors = {
   confirmPassword?: boolean;
   bio?: boolean;
   birthdate?: boolean;
-  phone?: boolean;
   spLink?: boolean;
   igLink?: boolean;
   twLink?: boolean;
@@ -38,7 +35,6 @@ export function useEditProfileValidation() {
     confirmPassword,
     bio,
     birthdate,
-    phone,
     spLink,
     igLink,
     twLink,
@@ -97,11 +93,6 @@ export function useEditProfileValidation() {
     if (!isValidDate(birthdate)) {
       errors.birthdate = true;
       messages.push("La fecha de nacimiento no es válida.");
-    }
-
-    if (!isValidPhoneNumber(phone)) {
-      errors.phone = true;
-      messages.push("Por favor, introduce un número de teléfono válido.");
     }
 
     if (spLink && spLink.trim() !== "") {

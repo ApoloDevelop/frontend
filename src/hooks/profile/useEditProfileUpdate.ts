@@ -2,7 +2,6 @@ import { useState } from "react";
 import { UserService } from "@/services/user.service";
 import { RegisterRepository } from "@/repositories/register.repository";
 import { useEditProfileValidation } from "./useEditProfileValidation";
-import { isValidPhoneNumber } from "libphonenumber-js";
 
 export function useEditProfileUpdate() {
   const [loading, setLoading] = useState(false);
@@ -22,8 +21,6 @@ export function useEditProfileUpdate() {
       country: string;
       city: string;
       genre: string | null;
-      phonePrefix: string;
-      phone: string;
       spLink: string;
       ytLink: string;
       twLink: string;
@@ -44,7 +41,6 @@ export function useEditProfileUpdate() {
       confirmPassword: dataToUpdate.confirmPassword,
       bio: dataToUpdate.bio,
       birthdate: dataToUpdate.birthdate,
-      phone: `${dataToUpdate.phonePrefix} ${dataToUpdate.phone}`.trim(),
       spLink: dataToUpdate.spLink,
       igLink: dataToUpdate.igLink,
       twLink: dataToUpdate.twLink,
@@ -61,21 +57,11 @@ export function useEditProfileUpdate() {
     try {
       if (
         (dataToUpdate.email !== user.email && dataToUpdate.email) ||
-        (dataToUpdate.username !== user.username && dataToUpdate.username) ||
-        (`${dataToUpdate.phonePrefix} ${dataToUpdate.phone}`.trim() !==
-          (user.phone || "") &&
-          dataToUpdate.phonePrefix &&
-          dataToUpdate.phone)
+        (dataToUpdate.username !== user.username && dataToUpdate.username)
       ) {
         const exists = await RegisterRepository.checkIfExists(
           dataToUpdate.email !== user.email ? dataToUpdate.email : "",
-          dataToUpdate.username !== user.username ? dataToUpdate.username : "",
-          dataToUpdate.phonePrefix &&
-            dataToUpdate.phone &&
-            `${dataToUpdate.phonePrefix} ${dataToUpdate.phone}`.trim() !==
-              (user.phone || "")
-            ? `${dataToUpdate.phonePrefix} ${dataToUpdate.phone}`.trim()
-            : ""
+          dataToUpdate.username !== user.username ? dataToUpdate.username : ""
         );
 
         if (exists.emailExists) {
