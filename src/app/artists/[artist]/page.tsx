@@ -21,7 +21,7 @@ import { SongstatsService } from "@/services/songstats.service";
 import { RelatedArtists } from "@/components/artist/RelatedArtists";
 import { LatestAlbums } from "@/components/artist/LatestAlbums";
 import { ArtistBio } from "@/components/artist/ArtistBio";
-import { mockArtistData, mockUser } from "@/mocks/mockSongstats";
+import { mockArtistData, mockEvent, mockUser } from "@/mocks/mockSongstats";
 import { deslugify } from "@/helpers/normalization";
 import { LatestRelease } from "@/components/artist/LatestRelease";
 import { PopularSongs } from "@/components/artist/PopularSongs";
@@ -218,8 +218,8 @@ export default async function ArtistPage({
 
           {/* Canciones populares */}
           <PopularSongs topTracks={topTracks} />
-          <NextEvent event={nextEvent ?? null} />
-          <NearYou user={mockUser} events={events?.upcoming ?? []} />
+          <NextEvent event={mockEvent} slug={slug} />
+          <NearYou user={mockUser} events={mockEvent} />
         </div>
       </div>
     </div>

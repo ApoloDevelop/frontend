@@ -12,10 +12,9 @@ import { Button } from "../ui/button";
 import { ListService } from "@/services/lists.service";
 import { Input } from "../ui/input";
 import { ItemService } from "@/services/item.service";
-import { useAlert } from "@/hooks/register/useAlert";
-import { AlertMessage } from "../ui/AlertMessage";
 import { Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 type ItemType = "artist" | "album" | "track" | "venue";
 
@@ -32,11 +31,11 @@ interface CustomList {
 interface AddToListDialogProps {
   userId: number;
   itemType: ItemType;
-  name: string; // nombre del ítem (artista/álbum/canción/sala)
-  artistName?: string; // requerido para album/track
-  location?: string; // opcional para venue
+  name: string;
+  artistName?: string;
+  location?: string;
   height?: number;
-  className?: string; // para estilos personalizados
+  className?: string;
 }
 
 export function AddToListDialog({
@@ -48,14 +47,12 @@ export function AddToListDialog({
   height,
   className,
 }: AddToListDialogProps) {
-  console.log({ userId, itemType, name, artistName, location, height });
-  const { alertMsgs, setAlertMsgs, showAlert } = useAlert();
   const [open, setOpen] = useState(false);
   const [lists, setLists] = useState<CustomList[]>([]);
   const [loading, setLoading] = useState(false);
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [newListName, setNewListName] = useState("");
-  const [itemLists, setItemLists] = useState<number[]>([]); // IDs de las listas que contienen el ítem
+  const [itemLists, setItemLists] = useState<number[]>([]);
   const [removeDialogOpen, setRemoveDialogOpen] = useState(false);
   const [selectedListId, setSelectedListId] = useState<number | null>(null);
 
@@ -69,7 +66,6 @@ export function AddToListDialog({
       : "La sala";
 
   const resolveItem = async () => {
-    // Este método asume que ItemService soporta el contexto opcional { artistName, location }
     return ItemService.findItemByTypeAndName(itemType, name, {
       artistName,
       location,
@@ -86,21 +82,37 @@ export function AddToListDialog({
 
       await ListService.addItemToList(listId, item.itemId);
 
-      // Obtener el nombre de la lista
       const list = lists.find((l) => l.id === listId);
-      if (list) {
-        setAlertMsgs((prev) => [
-          ...prev,
-          `${niceType(itemType)} "${name}" se ha añadido a la lista "${
-            list.name
-          }".`,
-        ]);
-      }
+      const listName = list?.name ?? `Lista ${listId}`;
 
-      console.log(`Ítem añadido a la lista con ID ${listId}`);
-      setOpen(false); // Cerrar el diálogo
+      // Marca local
+      setItemLists((prev) =>
+        prev.includes(listId) ? prev : [...prev, listId]
+      );
+
+      toast.success("Añadido a la lista", {
+        description: `${niceType(
+          itemType
+        )} "${name}" se ha añadido a "${listName}".`,
+        action: {
+          label: "Deshacer",
+          onClick: async () => {
+            try {
+              await ListService.removeItemFromList(listId, item.itemId);
+              setItemLists((prev) => prev.filter((id) => id !== listId));
+              toast.success("Acción revertida");
+            } catch (e) {
+              console.error(e);
+              toast.error("No se pudo deshacer");
+            }
+          },
+        },
+      });
+
+      setOpen(false);
     } catch (error) {
       console.error("Error al añadir el ítem a la lista:", error);
+      toast.error("No se pudo añadir a la lista");
     }
   };
 
@@ -116,23 +128,37 @@ export function AddToListDialog({
       );
       setLists((prev) => [...prev, { ...newList, listItems: [] }]);
 
-      // Añadir el ítem a la nueva lista
       const item = await resolveItem();
       if (item) {
         await ListService.addItemToList(newList.id, item.itemId);
-        setAlertMsgs((prev) => [
-          ...prev,
-          `${niceType(
+        setItemLists((prev) => [...prev, newList.id]);
+
+        toast.success("Lista creada", {
+          description: `${niceType(
             itemType
-          )} "${name}" se ha añadido a la nueva lista "${newListName}".`,
-        ]);
+          )} "${name}" se añadió a "${newListName}".`,
+          action: {
+            label: "Deshacer",
+            onClick: async () => {
+              try {
+                await ListService.removeItemFromList(newList.id, item.itemId);
+                setItemLists((prev) => prev.filter((id) => id !== newList.id));
+                toast.success("Acción revertida");
+              } catch (e) {
+                console.error(e);
+                toast.error("No se pudo deshacer");
+              }
+            },
+          },
+        });
       }
 
-      setCreateDialogOpen(false); // Cerrar el diálogo
-      setOpen(false); // Cerrar el diálogo principal
-      setNewListName(""); // Limpiar el nombre de la lista
+      setCreateDialogOpen(false);
+      setOpen(false);
+      setNewListName("");
     } catch (error) {
       console.error("Error al crear la lista o añadir el ítem:", error);
+      toast.error("No se pudo crear la lista");
     } finally {
       setLoading(false);
     }
@@ -154,11 +180,36 @@ export function AddToListDialog({
       }
 
       await ListService.removeItemFromList(selectedListId, item.itemId);
-      console.log(`Ítem eliminado de la lista con ID ${selectedListId}`);
       setItemLists((prev) => prev.filter((id) => id !== selectedListId));
+
+      const list = lists.find((l) => l.id === selectedListId);
+      const listName = list?.name ?? `Lista ${selectedListId}`;
+
+      toast("Eliminado de la lista", {
+        description: `${niceType(
+          itemType
+        )} "${name}" se eliminó de "${listName}".`,
+        action: {
+          label: "Deshacer",
+          onClick: async () => {
+            try {
+              await ListService.addItemToList(selectedListId, item.itemId);
+              setItemLists((prev) =>
+                prev.includes(selectedListId) ? prev : [...prev, selectedListId]
+              );
+              toast.success("Acción revertida");
+            } catch (e) {
+              console.error(e);
+              toast.error("No se pudo deshacer");
+            }
+          },
+        },
+      });
+
       setRemoveDialogOpen(false);
     } catch (error) {
       console.error("Error al eliminar el ítem de la lista:", error);
+      toast.error("No se pudo eliminar de la lista");
     }
   };
 
@@ -168,15 +219,13 @@ export function AddToListDialog({
 
     (async () => {
       try {
-        // 1) Traer listas del usuario (filtradas por tipo)
         const fetchedLists = await ListService.getUserLists(userId, itemType);
-        const normalized = fetchedLists.map((list) => ({
+        const normalized = fetchedLists.map((list: any) => ({
           ...list,
-          listItems: (list as any).listItems ?? [],
+          listItems: list.listItems ?? [],
         })) as CustomList[];
         setLists(normalized);
 
-        // 2) Saber en qué listas está el ítem actual
         const item = await resolveItem();
         if (item) {
           const itemId = item.itemId;
@@ -189,6 +238,7 @@ export function AddToListDialog({
         }
       } catch (e) {
         console.error("Error al cargar listas/ítem:", e);
+        toast.error("No se pudieron cargar tus listas");
       } finally {
         setLoading(false);
       }
@@ -197,19 +247,12 @@ export function AddToListDialog({
 
   return (
     <>
-      {showAlert && alertMsgs.length > 0 && (
-        <AlertMessage
-          alertMsgs={alertMsgs}
-          showAlert={showAlert}
-          topSize="-4rem"
-        />
-      )}
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
           <Button
             type="button"
             className={cn(
-              "inline-flex items-center rounded-md disabled:opacity-60",
+              "inline-flex items-center gap-2 rounded-md disabled:opacity-60",
               height ? `h-${height}` : "",
               className
             )}
@@ -291,7 +334,7 @@ export function AddToListDialog({
               </Button>
               <Button
                 onClick={handleCreateListAndAddItem}
-                className=" text-white"
+                className="text-white"
               >
                 Crear
               </Button>

@@ -1,21 +1,20 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { Heart, Star } from "lucide-react";
+import { Heart } from "lucide-react";
 import { FavoriteService } from "@/services/favorites.service";
-import { useAlert } from "@/hooks/register/useAlert";
-import { AlertMessage } from "../ui/AlertMessage";
 import { Button } from "../ui/button";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 type FavType = "artist" | "album" | "track" | "venue";
 
 interface FavoriteButtonProps {
   type: FavType;
   name: string;
-  userId: number; //(fake: 1)
-  artistName?: string; // Optional, used for artist favorites
-  location?: string; // Optional, used for venue favorites
-  className?: string; // Optional, used for custom styling
+  userId: number;
+  artistName?: string;
+  location?: string;
+  className?: string;
 }
 
 export function FavoriteButton({
@@ -28,7 +27,6 @@ export function FavoriteButton({
 }: FavoriteButtonProps) {
   const [isFavorite, setIsFavorite] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
-  const { alertMsgs, setAlertMsgs, showAlert } = useAlert();
 
   useEffect(() => {
     let mounted = true;
@@ -56,8 +54,10 @@ export function FavoriteButton({
   const toggleFavorite = async () => {
     if (loading) return;
     setLoading(true);
+
     try {
       if (isFavorite) {
+        // Quitar de favoritos
         await FavoriteService.removeFavorite({
           type,
           name,
@@ -66,8 +66,34 @@ export function FavoriteButton({
           location,
         });
         setIsFavorite(false);
-        setAlertMsgs([`Has eliminado "${name}" de tus favoritos`]);
+
+        toast("Has eliminado de favoritos", {
+          description: `"${name}" se ha eliminado de tus favoritos.`,
+          action: {
+            label: "Deshacer",
+            onClick: async () => {
+              setLoading(true);
+              try {
+                await FavoriteService.addFavorite({
+                  type,
+                  name,
+                  userId,
+                  artistName,
+                  location,
+                });
+                setIsFavorite(true);
+                toast.success("Acción revertida");
+              } catch (e) {
+                console.error(e);
+                toast.error("No se pudo deshacer");
+              } finally {
+                setLoading(false);
+              }
+            },
+          },
+        });
       } else {
+        // Añadir a favoritos
         await FavoriteService.addFavorite({
           type,
           name,
@@ -76,42 +102,60 @@ export function FavoriteButton({
           location,
         });
         setIsFavorite(true);
-        setAlertMsgs([`Has añadido "${name}" a tus favoritos`]);
+
+        toast.success("Añadido a favoritos", {
+          description: `"${name}" se ha añadido a tus favoritos.`,
+          action: {
+            label: "Deshacer",
+            onClick: async () => {
+              setLoading(true);
+              try {
+                await FavoriteService.removeFavorite({
+                  type,
+                  name,
+                  userId,
+                  artistName,
+                  location,
+                });
+                setIsFavorite(false);
+                toast.success("Acción revertida");
+              } catch (e) {
+                console.error(e);
+                toast.error("No se pudo deshacer");
+              } finally {
+                setLoading(false);
+              }
+            },
+          },
+        });
       }
     } catch (err) {
       console.error("Error al cambiar favorito", err);
+      toast.error("No se pudo completar la acción");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <>
-      <AlertMessage
-        alertMsgs={alertMsgs}
-        showAlert={showAlert}
-        topSize="-8rem"
+    <Button
+      type="button"
+      onClick={toggleFavorite}
+      disabled={loading}
+      aria-pressed={isFavorite}
+      aria-label={isFavorite ? "Eliminar de favoritos" : "Añadir a favoritos"}
+      title={isFavorite ? "Eliminar de favoritos" : "Añadir a favoritos"}
+      className={cn(
+        "inline-flex items-center gap-2 rounded-md disabled:opacity-60",
+        className
+      )}
+    >
+      <Heart
+        size={18}
+        className={isFavorite ? "text-red-500" : "text-white"}
+        fill={isFavorite ? "currentColor" : "none"}
       />
-      <Button
-        type="button"
-        onClick={toggleFavorite}
-        disabled={loading}
-        aria-pressed={isFavorite}
-        aria-label={isFavorite ? "Eliminar de favoritos" : "Añadir a favoritos"}
-        title={isFavorite ? "Eliminar de favoritos" : "Añadir a favoritos"}
-        className={cn(
-          // mismo look & feel que tu AlbumPage
-          "inline-flex items-center rounded-md disabled:opacity-60",
-          className
-        )}
-      >
-        <Heart
-          size={18}
-          className={isFavorite ? "text-red-500" : "text-white"}
-          fill={isFavorite ? "currentColor" : "none"}
-        />
-        <span>{isFavorite ? "Favorito" : "Favorito"}</span>
-      </Button>
-    </>
+      <span>{isFavorite ? "Favorito" : "Favorito"}</span>
+    </Button>
   );
 }

@@ -22,9 +22,9 @@ export async function NearYou({
   user: {
     username: string | null | undefined;
     city: string | null | undefined;
-    country: string | null | undefined; // ISO-2 (ej. "ES")
+    country: string | null | undefined;
   };
-  events: SongstatsEvent[] | null | undefined; // normalmente events.upcoming
+  events: SongstatsEvent[] | null | undefined;
 }) {
   const profileEditHref = `/users/${user.username}`;
   if (!user.city || !user.country) {

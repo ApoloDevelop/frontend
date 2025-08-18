@@ -13,7 +13,13 @@ type EventData = {
   countryCode: string | null;
 };
 
-export function NextEvent({ event }: { event?: EventData | null }) {
+export function NextEvent({
+  event,
+  slug,
+}: {
+  event?: EventData | null;
+  slug: string;
+}) {
   const hasEvent = !!event && !!event.date;
 
   const place = [event?.city || "", event?.region ? `(${event.region})` : ""]
@@ -48,15 +54,13 @@ export function NextEvent({ event }: { event?: EventData | null }) {
           <div className="text-gray-500 italic">{formattedDate}</div>
 
           <div className="flex justify-between items-center mt-4">
-            {/* Ver más eventos */}
             <a
-              href="/events"
+              href={`/artists/${slug}/events`}
               className="text-purple-600 hover:underline text-sm"
             >
               Ver más eventos
             </a>
 
-            {/* Comprar entradas */}
             {event?.link && (
               <a
                 href={event.link}

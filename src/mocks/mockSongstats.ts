@@ -1,3 +1,6 @@
+import { link } from "fs";
+import { title } from "process";
+
 export const mockTrackData = {
   bpm: 120, // Valor mock
   key: "C Major", // Valor mock
@@ -36,4 +39,13 @@ export const mockUser = {
   username: "williardo",
   city: "Málaga",
   country: "ES",
+};
+
+export const mockEvent = {
+  title: "Concierto de Prueba",
+  date: "2023-10-01",
+  link: "https://example.com/concierto-prueba",
+  city: "Málaga",
+  region: "Andalucía",
+  countryCode: "ES",
 };

@@ -2,6 +2,7 @@ import { Scroll } from "lucide-react";
 import "./globals.css";
 import Header from "@/components/ui/Header";
 import ScrollTopOnRouteChange from "@/components/system/ScrollTopOnRouteChange";
+import Toaster from "@/components/ui/Toaster";
 
 export const metadata = {
   title: "Apolo",
@@ -19,6 +20,7 @@ export default function RootLayout({
         <Header />
         <ScrollTopOnRouteChange behavior="instant" />
         <main>{children}</main>
+        <Toaster />
       </body>
     </html>
   );
