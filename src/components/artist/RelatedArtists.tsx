@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
-import { slugify } from "@/helpers/normalization";
+import { slugify } from "@/utils/normalization";
 import { useRef } from "react";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa6";
 

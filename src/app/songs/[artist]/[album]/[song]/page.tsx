@@ -6,10 +6,10 @@ import { AddToListDialog } from "@/components/lists/AddToListDialog";
 import { RatingClient } from "@/components/reviews/RatingClient";
 import { Scores } from "@/components/reviews/Scores";
 import { CustomBreadcrumb } from "@/components/ui/CustomBreadcrumb";
-import { deslugify, slugify, wrapWord } from "@/helpers/normalization";
-import { msToMinSec } from "@/helpers/seconds";
-import { fetchSongByName } from "@/helpers/spotify";
-import { normalizeRole, roleLabelEs, sortCollabs } from "@/helpers/collabs";
+import { deslugify, slugify, wrapWord } from "@/utils/normalization";
+import { msToMinSec } from "@/utils/seconds";
+import { SpotifyService } from "@/services/spotify.service";
+import { normalizeRole, roleLabelEs, sortCollabs } from "@/utils/collabs";
 import { SongstatsService } from "@/services/songstats.service";
 import Image from "next/image";
 import Link from "next/link";
@@ -32,14 +32,18 @@ export default async function SongPage({
   const albumName = deslugify(albumSlug);
   const songName = deslugify(songSlug);
 
-  const track = await fetchSongByName(songName, albumName, artistName);
-  // const info = await SongstatsService.getTrackInfo(track.id);
-  const info = mockTrackData;
-  // const lyrics = await GeniusService.getLyricsByTrack(songName, artistName);
-  const lyrics = {
-    lyrics:
-      "Esta es una letra de ejemplo para la canción. \nEsta es la segunda línea de la letra. \nEsta es la tercera línea de la letra. \nEsta es una letra de ejemplo para la canción. \nEsta es la segunda línea de la letra. \nEsta es la tercera línea de la letra. \nEsta es una letra de ejemplo para la canción. \nEsta es la segunda línea de la letra. \nEsta es la tercera línea de la letra.", // Valor mock
-  };
+  const track = await SpotifyService.fetchSongByName(
+    songName,
+    albumName,
+    artistName
+  );
+  const info = await SongstatsService.getTrackInfo(track.id);
+  // const info = mockTrackData;
+  const lyrics = await GeniusService.getLyricsByTrack(songName, artistName);
+  // const lyrics = {
+  //   lyrics:
+  //     "Esta es una letra de ejemplo para la canción. \nEsta es la segunda línea de la letra. \nEsta es la tercera línea de la letra. \nEsta es una letra de ejemplo para la canción. \nEsta es la segunda línea de la letra. \nEsta es la tercera línea de la letra. \nEsta es una letra de ejemplo para la canción. \nEsta es la segunda línea de la letra. \nEsta es la tercera línea de la letra.", // Valor mock
+  // };
 
   const cover = track.album?.images?.[0]?.url || "/default-cover.png";
   const durationMs = track.duration_ms ?? 0;

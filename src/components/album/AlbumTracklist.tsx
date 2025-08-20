@@ -1,6 +1,6 @@
 "use client";
-import { slugify } from "@/helpers/normalization";
-import { msToMinSec } from "@/helpers/seconds";
+import { slugify } from "@/utils/normalization";
+import { msToMinSec } from "@/utils/seconds";
 import { useRouter } from "next/navigation";
 
 interface AlbumTracklistProps {

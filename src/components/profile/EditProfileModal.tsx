@@ -18,8 +18,8 @@ import { EditUserDataForm } from "./EditUserDataForm";
 import { EditProfileModalSidebar } from "./EditProfileModalSidebar";
 import { AlertMessage } from "../ui/AlertMessage";
 import { EditPersonalDataForm } from "./EditPersonalDataForm";
-import { formatDate } from "@/helpers/date";
-import { normalize } from "@/helpers/normalization";
+import { formatDate } from "@/utils/date";
+import { normalize } from "@/utils/normalization";
 import { EditSocialMediaForm } from "./EditSocialMediaForm";
 
 type Section = "profile" | "personal" | "social";

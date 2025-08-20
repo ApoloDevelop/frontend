@@ -1,5 +1,5 @@
-import { isValidDate } from "@/helpers/date";
-import { isStrongPassword } from "@/helpers/password";
+import { isValidDate } from "@/utils/date";
+import { isStrongPassword } from "@/utils/password";
 
 type EditProfileFields = {
   username: string;

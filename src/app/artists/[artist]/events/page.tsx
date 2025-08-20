@@ -1,8 +1,9 @@
 import Image from "next/image";
-import { deslugify } from "@/helpers/normalization";
-import { fetchArtistByName } from "@/helpers/spotify";
+import { deslugify } from "@/utils/normalization";
+import { SpotifyService } from "@/services/spotify.service";
 import { SongstatsService, ArtistEvent } from "@/services/songstats.service";
 import EventsTabs from "@/components/artist/events/EventsTabs";
+import { mockEvent } from "@/mocks/mockSongstats";
 
 export default async function ArtistEventsPage({
   params: rawParams,
@@ -12,7 +13,7 @@ export default async function ArtistEventsPage({
   const { artist: slug } = await rawParams;
   const artistName = decodeURIComponent(deslugify(slug));
 
-  const artistData = await fetchArtistByName(artistName);
+  const artistData = await SpotifyService.fetchArtistByName(artistName);
   if (!artistData) {
     return (
       <div className="container mx-auto py-20 text-center">
@@ -21,7 +22,8 @@ export default async function ArtistEventsPage({
     );
   }
 
-  const eventsInfo = await SongstatsService.getArtistEventInfo(artistData.id);
+  // const eventsInfo = await SongstatsService.getArtistEventInfo(artistData.id);
+  const eventsInfo = mockEvent; // Mock data for testing
 
   const safeUpcoming: ArtistEvent[] = (eventsInfo?.upcoming ?? []).filter(
     (e) => !!e?.date

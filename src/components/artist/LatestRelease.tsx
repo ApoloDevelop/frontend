@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import dayjs from "dayjs";
-import { slugify } from "@/helpers/normalization";
+import { slugify } from "@/utils/normalization";
 
 interface LatestReleaseProps {
   release: {

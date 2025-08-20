@@ -48,4 +48,30 @@ export const mockEvent = {
   city: "Málaga",
   region: "Andalucía",
   countryCode: "ES",
+  lat: 36.7213,
+  lng: -4.4214,
+  upcoming: [
+    {
+      title: "Concierto de Prueba",
+      date: "2023-10-01",
+      link: "https://example.com/concierto-prueba",
+      city: "Málaga",
+      region: "Andalucía",
+      countryCode: "ES",
+      lat: 36.7213,
+      lng: -4.4214,
+    },
+  ],
+  past: [
+    {
+      title: "Concierto Pasado",
+      date: "2023-09-01",
+      link: "https://example.com/concierto-pasado",
+      city: "Málaga",
+      region: "Andalucía",
+      countryCode: "ES",
+      lat: 36.7213,
+      lng: -4.4214,
+    },
+  ],
 };

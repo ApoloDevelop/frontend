@@ -1,6 +1,6 @@
 "use client";
 
-import { slugify } from "@/helpers/normalization";
+import { slugify } from "@/utils/normalization";
 import Image from "next/image";
 import Link from "next/link";
 

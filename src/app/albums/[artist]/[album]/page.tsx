@@ -1,14 +1,14 @@
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { fetchAlbumByName, fetchAlbumTracks } from "@/helpers/spotify";
+import { SpotifyService } from "@/services/spotify.service";
 import SpotifyLogo from "@/components/icons/SpotifyLogo";
 import { RatingClient } from "@/components/reviews/RatingClient";
 import { ReviewService } from "@/services/review.service";
 import { Scores } from "@/components/reviews/Scores";
 import { FavoriteButton } from "@/components/favorites/FavoriteButton";
 import { AddToListDialog } from "@/components/lists/AddToListDialog";
-import { deslugify, fold, slugify } from "@/helpers/normalization";
+import { deslugify, fold, slugify } from "@/utils/normalization";
 import { AlbumTracklist } from "@/components/album/AlbumTracklist";
 import { Hero } from "@/components/images/Hero";
 import { CustomBreadcrumb } from "@/components/ui/CustomBreadcrumb";
@@ -23,7 +23,7 @@ export default async function AlbumPage({
   const artistName = deslugify(artistSlug);
   const albumName = deslugify(albumSlug);
 
-  const album = await fetchAlbumByName(albumName, artistName);
+  const album = await SpotifyService.fetchAlbumByName(albumName, artistName);
 
   if (
     !album ||
@@ -32,7 +32,7 @@ export default async function AlbumPage({
     return notFound();
   }
 
-  const tracks = await fetchAlbumTracks(album.id);
+  const tracks = await SpotifyService.fetchAlbumTracks(album.id);
   const stats = await ReviewService.getAlbumReviewStats(album.name, artistName);
 
   const cover = album.images?.[0]?.url || "/default-cover.png";

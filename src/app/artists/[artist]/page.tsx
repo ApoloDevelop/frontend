@@ -1,16 +1,11 @@
 import Image from "next/image";
 import dayjs from "dayjs";
-import {
-  fetchArtistByName,
-  fetchArtistAlbums,
-  fetchArtistTopTracks,
-  fetchArtistReleases,
-} from "@/helpers/spotify";
+import { SpotifyService } from "@/services/spotify.service";
 import {
   ArtistDetails,
   fetchArtistDetails,
   fetchMusicBrainzMatch,
-} from "@/helpers/musicbrainz";
+} from "@/utils/musicbrainz";
 import { RatingClient } from "@/components/reviews/RatingClient";
 import { Scores } from "@/components/reviews/Scores";
 import { ReviewService } from "@/services/review.service";
@@ -22,31 +17,23 @@ import { RelatedArtists } from "@/components/artist/RelatedArtists";
 import { LatestAlbums } from "@/components/artist/LatestAlbums";
 import { ArtistBio } from "@/components/artist/ArtistBio";
 import { mockArtistData, mockEvent, mockUser } from "@/mocks/mockSongstats";
-import { deslugify } from "@/helpers/normalization";
+import { deslugify } from "@/utils/normalization";
 import { LatestRelease } from "@/components/artist/LatestRelease";
 import { PopularSongs } from "@/components/artist/PopularSongs";
-import { NextEvent } from "@/components/artist/NextEvent";
-import { NearYou } from "@/components/artist/NearYou";
+import { Suspense } from "react";
+import { EventsSidebarSkeleton } from "@/components/skeletons/EventsSidebarSkeleton";
+import EventsSidebar from "@/components/artist/EventsSidebar";
 
 export default async function ArtistPage({
   params,
 }: {
   params: Promise<{ artist: string }>;
 }) {
-  type NextEventData = {
-    title: string | null;
-    date: string | null;
-    link: string | null;
-    city: string | null;
-    region: string | null;
-    countryCode: string | null;
-  };
-
   const { artist: slug } = await params;
   const raw = deslugify(slug);
   const decoded = decodeURIComponent(raw);
   const artistName = decoded;
-  const artistData = await fetchArtistByName(artistName);
+  const artistData = await SpotifyService.fetchArtistByName(artistName);
   if (!artistData)
     return <div className="text-center py-20">Artista no encontrado.</div>;
 
@@ -65,30 +52,12 @@ export default async function ArtistPage({
   const genres = info?.genres || [];
   const relatedArtists = info?.related_artists || [];
 
-  let nextEvent: NextEventData | null = null;
-
-  const events = await SongstatsService.getArtistEventInfo(artistData.id);
-  if (events?.upcoming?.length) {
-    // ordenar por fecha ascendente y quedarnos con el próximo >= hoy
-    const today = new Date();
-    const sorted = events.upcoming
-      .filter((e) => e?.date)
-      .sort(
-        (a, b) =>
-          new Date(a.date as string).getTime() -
-          new Date(b.date as string).getTime()
-      );
-
-    nextEvent =
-      sorted.find((e) => new Date(e.date as string) >= today) ??
-      sorted[0] ??
-      null;
-  }
+  const user = mockUser;
 
   const [albums, topTracks, releases] = await Promise.all([
-    fetchArtistAlbums(artistData.id),
-    fetchArtistTopTracks(artistData.id),
-    fetchArtistReleases(artistData.id),
+    SpotifyService.fetchArtistAlbums(artistData.id),
+    SpotifyService.fetchArtistTopTracks(artistData.id),
+    SpotifyService.fetchArtistReleases(artistData.id),
   ]);
 
   let averages: { verified: number | null; unverified: number | null } = {
@@ -218,8 +187,9 @@ export default async function ArtistPage({
 
           {/* Canciones populares */}
           <PopularSongs topTracks={topTracks} />
-          <NextEvent event={mockEvent} slug={slug} />
-          <NearYou user={mockUser} events={mockEvent} />
+          <Suspense fallback={<EventsSidebarSkeleton />}>
+            <EventsSidebar artistId={artistData.id} slug={slug} user={user} />
+          </Suspense>
         </div>
       </div>
     </div>

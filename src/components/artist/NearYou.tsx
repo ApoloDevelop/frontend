@@ -1,7 +1,7 @@
 // components/artist/NearYou.tsx
 import dayjs from "dayjs";
 import Link from "next/link";
-import { pickNearest, LatLng } from "@/helpers/distances";
+import { pickNearest, LatLng } from "@/utils/distances";
 import { GeoService } from "@/services/geo.service";
 
 type SongstatsEvent = {
