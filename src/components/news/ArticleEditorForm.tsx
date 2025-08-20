@@ -3,21 +3,110 @@
 
 import { useState, useMemo } from "react";
 import Image from "next/image";
+import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { ArticlesService } from "@/services/articles.service";
 
+// Cargar ReactQuill SOLO en cliente (evita SSR con React 19)
+const ReactQuill = dynamic(() => import("react-quill-new"), { ssr: false });
+
 export function ArticleEditorForm({ authorId }: { authorId: number }) {
   const router = useRouter();
+
   const [title, setTitle] = useState("");
   const [imageUrl, setImageUrl] = useState("");
-  const [content, setContent] = useState("");
+  const [content, setContent] = useState(""); // HTML
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const isValid = useMemo(
-    () => title.trim() && content.trim(),
-    [title, content]
-  );
+  // Validación simple para evitar HTML vacío tipo <p><br></p>
+  const stripHtml = (html: string) =>
+    html
+      .replace(/<[^>]+>/g, "")
+      .replace(/&nbsp;/g, " ")
+      .trim();
+
+  const isValid = useMemo(() => {
+    const hasTitle = title.trim().length > 0;
+    const hasBody = stripHtml(content).length > 0;
+    return hasTitle && hasBody;
+  }, [title, content]);
+
+  // Subida de imagen al backend e inserción en el editor
+  function imageHandler(this: any) {
+    const quill = this.quill as any; // instancia de Quill
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/*";
+    input.click();
+
+    input.onchange = async () => {
+      const file = input.files?.[0];
+      if (!file) return;
+
+      try {
+        setError(null);
+        const form = new FormData();
+        form.append("file", file);
+
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/uploads/images`,
+          { method: "POST", body: form }
+        );
+        if (!res.ok) throw new Error("Error al subir la imagen");
+        const { url } = await res.json();
+
+        const range = quill.getSelection(true);
+        quill.insertEmbed(range?.index ?? 0, "image", url, "user");
+        quill.setSelection((range?.index ?? 0) + 1);
+      } catch (e: any) {
+        setError(e?.message ?? "No se pudo subir la imagen.");
+      }
+    };
+  }
+
+  // Toolbar + handlers
+  const quillModules = {
+    toolbar: {
+      container: [
+        [{ font: [] }],
+        [{ header: [1, 2, 3, 4, false] }],
+        ["bold", "italic", "underline", "strike"],
+        [{ color: [] }, { background: [] }],
+        [{ script: "sub" }, { script: "super" }],
+        [{ list: "ordered" }, { list: "bullet" }],
+        [{ indent: "-1" }, { indent: "+1" }],
+        [{ align: [] }],
+        ["blockquote", "code-block"],
+        ["link", "image", "video", "formula"],
+      ],
+      handlers: {
+        image: imageHandler,
+      },
+    },
+    clipboard: { matchVisual: false },
+  };
+
+  const quillFormats = [
+    "font",
+    "header",
+    "bold",
+    "italic",
+    "underline",
+    "strike",
+    "color",
+    "background",
+    "script",
+    "list",
+    "indent",
+    "align",
+    "blockquote",
+    "code-block",
+    "link",
+    "image",
+    "video",
+    "formula",
+  ];
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -28,7 +117,7 @@ export function ArticleEditorForm({ authorId }: { authorId: number }) {
     try {
       const created = await ArticlesService.create({
         title: title.trim(),
-        content: content.trim(),
+        content: content,
         author_id: authorId,
         image_url: imageUrl.trim() || null,
       });
@@ -72,7 +161,6 @@ export function ArticleEditorForm({ authorId }: { authorId: number }) {
         {imageUrl ? (
           <div className="mt-3">
             <div className="relative aspect-[16/9] w-full overflow-hidden rounded-xl bg-gray-100">
-              {/* preview segura */}
               <Image
                 src={imageUrl}
                 alt="Vista previa"
@@ -88,20 +176,24 @@ export function ArticleEditorForm({ authorId }: { authorId: number }) {
       </div>
 
       <div className="space-y-1">
-        <label htmlFor="content" className="block text-sm font-medium">
+        <label className="block text-sm font-medium">
           Cuerpo del artículo *
         </label>
-        <textarea
-          id="content"
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-          className="w-full rounded-lg border px-3 py-2 min-h-[240px]"
-          placeholder="Cuenta la historia…"
-          required
-        />
+        <div className="quill-root relative rounded-lg border overflow-visible">
+          <ReactQuill
+            className="quill"
+            theme="snow"
+            value={content}
+            onChange={setContent}
+            modules={quillModules}
+            formats={quillFormats}
+            placeholder="Cuenta la historia…"
+            bounds=".quill-root"
+          />
+        </div>
         <p className="text-xs text-gray-500">
-          Usa saltos de línea. (Markdown/WYSIWYG opcional en siguientes
-          iteraciones)
+          Da formato (encabezados, negrita, listas, enlaces, imágenes…). Se
+          guardará como HTML.
         </p>
       </div>
 

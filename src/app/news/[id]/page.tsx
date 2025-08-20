@@ -75,11 +75,12 @@ export default async function ArticlePage({
       <div className="grid grid-cols-12 gap-6 px-4 pb-16">
         <main className="col-span-12 lg:col-span-8 space-y-8">
           {/* Contenido */}
-          <article className="prose max-w-none prose-p:leading-relaxed prose-headings:scroll-mt-24 prose-img:rounded-xl">
+          <article className="prose max-w-none prose-p:leading-relaxed prose-headings:scroll-mt-24 prose-img:rounded-xl ql-view">
             {/* Si tu contenido llega con saltos de línea, esto lo respeta */}
-            <p className="whitespace-pre-line text-lg text-gray-800">
-              {article.content}
-            </p>
+            <div
+              // Si ya saneas en el backend, puedes inyectar directamente:
+              dangerouslySetInnerHTML={{ __html: article.content }}
+            />
           </article>
 
           {/* Tags (placeholder hasta exponerlos en la API) */}

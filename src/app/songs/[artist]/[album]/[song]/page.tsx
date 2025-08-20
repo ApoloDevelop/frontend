@@ -37,13 +37,13 @@ export default async function SongPage({
     albumName,
     artistName
   );
-  const info = await SongstatsService.getTrackInfo(track.id);
-  // const info = mockTrackData;
-  const lyrics = await GeniusService.getLyricsByTrack(songName, artistName);
-  // const lyrics = {
-  //   lyrics:
-  //     "Esta es una letra de ejemplo para la canción. \nEsta es la segunda línea de la letra. \nEsta es la tercera línea de la letra. \nEsta es una letra de ejemplo para la canción. \nEsta es la segunda línea de la letra. \nEsta es la tercera línea de la letra. \nEsta es una letra de ejemplo para la canción. \nEsta es la segunda línea de la letra. \nEsta es la tercera línea de la letra.", // Valor mock
-  // };
+  // const info = await SongstatsService.getTrackInfo(track.id);
+  const info = mockTrackData;
+  // const lyrics = await GeniusService.getLyricsByTrack(songName, artistName);
+  const lyrics = {
+    lyrics:
+      "Esta es una letra de ejemplo para la canción. \nEsta es la segunda línea de la letra. \nEsta es la tercera línea de la letra. \nEsta es una letra de ejemplo para la canción. \nEsta es la segunda línea de la letra. \nEsta es la tercera línea de la letra. \nEsta es una letra de ejemplo para la canción. \nEsta es la segunda línea de la letra. \nEsta es la tercera línea de la letra.", // Valor mock
+  };
 
   const cover = track.album?.images?.[0]?.url || "/default-cover.png";
   const durationMs = track.duration_ms ?? 0;

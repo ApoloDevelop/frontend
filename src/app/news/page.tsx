@@ -5,6 +5,7 @@ import dayjs from "dayjs";
 import "dayjs/locale/es";
 import { ArticlesService } from "@/services/articles.service";
 import { getCurrentUser } from "@/lib/auth";
+import { Button } from "@/components/ui/button";
 
 dayjs.locale("es");
 
@@ -28,12 +29,9 @@ export default async function NewsPage({
         <p className="text-gray-600">Aún no hay artículos publicados.</p>
         {user?.role_id === 3 && (
           <div className="mt-6">
-            <Link
-              href="/news/new"
-              className="inline-flex items-center rounded-xl px-4 py-2 bg-purple-700 text-white hover:bg-purple-600 transition"
-            >
-              Añadir artículo
-            </Link>
+            <Button>
+              <Link href="/news/article">Añadir artículo</Link>
+            </Button>
           </div>
         )}
       </div>
@@ -48,12 +46,9 @@ export default async function NewsPage({
       <div className="flex items-center justify-between mt-6 mb-4">
         <h1 className="text-3xl font-bold">Noticias</h1>
         {user?.role_id === 3 && (
-          <Link
-            href="/news/article"
-            className="inline-flex items-center rounded-xl px-4 py-2 bg-purple-700 text-white hover:bg-purple-600 transition"
-          >
-            Añadir artículo
-          </Link>
+          <Button>
+            <Link href="/news/article">Añadir artículo</Link>
+          </Button>
         )}
       </div>
 
