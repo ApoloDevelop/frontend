@@ -259,13 +259,6 @@
   overflow-y: auto;
 }
 
-.ql-view li[data-list="bullet"] {
-  list-style-type: disc;
-}
-.ql-view li[data-list="ordered"] {
-  list-style-type: decimal;
-}
-
 /* Oculta spans de UI que Quill mete para bullets en algunos casos */
 .ql-view .ql-ui {
   display: none;
@@ -336,6 +329,95 @@
   aspect-ratio: 16/9;
   height: auto;
   border: 0;
+}
+
+/* === Listas anidadas de Quill en la VISTA (.ql-view) === */
+
+/* Ordenadas con contadores (1., a., i.) */
+.ql-view ol {
+  counter-reset: list-0;
+  margin: 0 0 1rem;
+  padding-left: 1.5rem;
+}
+.ql-view ol > li {
+  list-style: none;
+  position: relative;
+  padding-left: 1.25em;
+  counter-increment: list-0;
+}
+.ql-view ol > li::before {
+  content: counter(list-0, decimal) ". ";
+  position: absolute;
+  left: 0;
+}
+
+/* nivel 1 → a., reinicia al cambiar de nivel */
+.ql-view ol > li.ql-indent-1 {
+  counter-increment: list-0 0 list-1 1;
+  margin-left: 1.5rem;
+}
+.ql-view ol > li.ql-indent-1::before {
+  content: counter(list-1, lower-alpha) ". ";
+}
+.ql-view ol > li:not(.ql-indent-1) {
+  counter-reset: list-1;
+}
+
+/* nivel 2 → i. */
+.ql-view ol > li.ql-indent-2 {
+  counter-increment: list-0 0 list-2 1;
+  margin-left: 3rem;
+}
+.ql-view ol > li.ql-indent-2::before {
+  content: counter(list-2, lower-roman) ". ";
+}
+.ql-view ol > li:not(.ql-indent-2) {
+  counter-reset: list-2;
+}
+
+/* nivel 3 → otra vez letras (ajusta si quieres) */
+.ql-view ol > li.ql-indent-3 {
+  counter-increment: list-0 0 list-3 1;
+  margin-left: 4.5rem;
+}
+.ql-view ol > li.ql-indent-3::before {
+  content: counter(list-3, lower-alpha) ". ";
+}
+.ql-view ol > li:not(.ql-indent-3) {
+  counter-reset: list-3;
+}
+
+/* Viñetas (•, ◦, ▪) */
+.ql-view ul {
+  margin: 0 0 1rem;
+  padding-left: 1.5rem;
+}
+.ql-view ul > li {
+  list-style: none;
+  position: relative;
+  padding-left: 1.25em;
+}
+.ql-view ul > li::before {
+  content: "•";
+  position: absolute;
+  left: 0;
+}
+.ql-view ul > li.ql-indent-1 {
+  margin-left: 1.5rem;
+}
+.ql-view ul > li.ql-indent-1::before {
+  content: "◦";
+}
+.ql-view ul > li.ql-indent-2 {
+  margin-left: 3rem;
+}
+.ql-view ul > li.ql-indent-2::before {
+  content: "▪";
+}
+
+/* (Opcional) espacio entre items */
+.ql-view li {
+  margin: 0.2rem 0;
 }
 
 @layer base {

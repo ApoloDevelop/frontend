@@ -18,6 +18,7 @@ import { RegisterFormStep1 } from "@/components/register/steps/RegisterFormStep1
 import { RegisterFormStep2 } from "@/components/register/steps/RegisterFormStep2";
 import { RegisterFormStep3 } from "@/components/register/steps/RegisterFormStep3";
 import { AlertMessage } from "@/components/ui/AlertMessage";
+import { CloudinaryService } from "@/services/cloudinary.service";
 
 export default function RegisterPage() {
   // Constants definition
@@ -117,7 +118,7 @@ export default function RegisterPage() {
       let profilePicUrl = DEFAULT_AVATAR_URL;
 
       if (profileImage) {
-        profilePicUrl = await RegisterService.uploadProfileImage(profileImage);
+        profilePicUrl = await CloudinaryService.uploadImage(profileImage);
       }
 
       const data = await RegisterService.createAccount(formData, profilePicUrl);

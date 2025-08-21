@@ -6,6 +6,8 @@ import Image from "next/image";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { ArticlesService } from "@/services/articles.service";
+import { CloudinaryService } from "@/services/cloudinary.service";
+import { HeroImageUploader } from "./HeroImageUploader";
 
 // Cargar ReactQuill SOLO en cliente (evita SSR con React 19)
 const ReactQuill = dynamic(() => import("react-quill-new"), { ssr: false });
@@ -34,7 +36,7 @@ export function ArticleEditorForm({ authorId }: { authorId: number }) {
 
   // Subida de imagen al backend e inserción en el editor
   function imageHandler(this: any) {
-    const quill = this.quill as any; // instancia de Quill
+    const quill = this.quill as any;
     const input = document.createElement("input");
     input.type = "file";
     input.accept = "image/*";
@@ -46,16 +48,7 @@ export function ArticleEditorForm({ authorId }: { authorId: number }) {
 
       try {
         setError(null);
-        const form = new FormData();
-        form.append("file", file);
-
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}/uploads/images`,
-          { method: "POST", body: form }
-        );
-        if (!res.ok) throw new Error("Error al subir la imagen");
-        const { url } = await res.json();
-
+        const url = await CloudinaryService.uploadImage(file);
         const range = quill.getSelection(true);
         quill.insertEmbed(range?.index ?? 0, "image", url, "user");
         quill.setSelection((range?.index ?? 0) + 1);
@@ -146,34 +139,11 @@ export function ArticleEditorForm({ authorId }: { authorId: number }) {
         />
       </div>
 
-      <div className="space-y-1">
-        <label htmlFor="image" className="block text-sm font-medium">
-          Imagen de cabecera (URL)
-        </label>
-        <input
-          id="image"
-          type="url"
-          value={imageUrl}
-          onChange={(e) => setImageUrl(e.target.value)}
-          className="w-full rounded-lg border px-3 py-2"
-          placeholder="https://…"
-        />
-        {imageUrl ? (
-          <div className="mt-3">
-            <div className="relative aspect-[16/9] w-full overflow-hidden rounded-xl bg-gray-100">
-              <Image
-                src={imageUrl}
-                alt="Vista previa"
-                fill
-                className="object-cover"
-                onError={() => {
-                  /* opcional: set fallback */
-                }}
-              />
-            </div>
-          </div>
-        ) : null}
-      </div>
+      <HeroImageUploader
+        value={imageUrl}
+        onChange={setImageUrl}
+        targetWidth={1600} // ajusta a tu layout (1600x900)
+      />
 
       <div className="space-y-1">
         <label className="block text-sm font-medium">

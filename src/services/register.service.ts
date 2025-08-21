@@ -1,10 +1,6 @@
 import { RegisterRepository } from "@/repositories/register.repository";
 
 export class RegisterService {
-  static async uploadProfileImage(file: File): Promise<string> {
-    return await RegisterRepository.uploadImage(file);
-  }
-
   static async createAccount(
     formData: any,
     profilePicUrl: string
