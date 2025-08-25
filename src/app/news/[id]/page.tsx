@@ -98,7 +98,7 @@ export default async function ArticlePage({
           {/* Comentarios (estructura lista + form de ejemplo no funcional) */}
           <section className="pt-6 border-t">
             <h2 className="text-xl font-semibold mb-3">Comentarios</h2>
-            <CommentsSection articleId={articleId} currentUserId={1} />
+            <CommentsSection articleId={articleId} currentUserId={2} />
           </section>
         </main>
 
