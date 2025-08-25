@@ -5,6 +5,7 @@ import dayjs from "dayjs";
 import "dayjs/locale/es";
 import { notFound } from "next/navigation";
 import { ArticlesService } from "@/services/articles.service";
+import CommentsSection from "@/components/news/CommentsSection";
 
 dayjs.locale("es");
 
@@ -97,27 +98,7 @@ export default async function ArticlePage({
           {/* Comentarios (estructura lista + form de ejemplo no funcional) */}
           <section className="pt-6 border-t">
             <h2 className="text-xl font-semibold mb-3">Comentarios</h2>
-            <div className="rounded-xl border p-4 bg-white">
-              <p className="text-gray-600">
-                La sección de comentarios se conectará en cuanto expongamos los
-                endpoints de <code>comment</code>.
-              </p>
-              <form className="mt-4 space-y-3">
-                <textarea
-                  className="w-full rounded-lg border p-3"
-                  rows={4}
-                  placeholder="Escribe un comentario…"
-                  disabled
-                />
-                <button
-                  type="button"
-                  disabled
-                  className="inline-flex items-center rounded-lg bg-gray-300 px-4 py-2 cursor-not-allowed"
-                >
-                  Publicar (próximamente)
-                </button>
-              </form>
-            </div>
+            <CommentsSection articleId={articleId} currentUserId={1} />
           </section>
         </main>
 
