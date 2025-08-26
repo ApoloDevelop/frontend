@@ -1,4 +1,5 @@
 import { SpotifyRepository } from "@/repositories/spotify.repository";
+import { PageRes, SearchType } from "@/types/spotify";
 
 export class SpotifyService {
   static async fetchArtistByName(name: string) {
@@ -63,6 +64,19 @@ export class SpotifyService {
       return await SpotifyRepository.fetchAlbumTracks(albumId);
     } catch (error) {
       console.error("Error al obtener las pistas del álbum:", error);
+      throw error;
+    }
+  }
+
+  static async search<T = any>(
+    q: string,
+    type: SearchType,
+    opts?: { limit?: number; offset?: number; market?: string }
+  ): Promise<PageRes<T> | null> {
+    try {
+      return await SpotifyRepository.search<T>(q, type, opts);
+    } catch (error) {
+      console.error("Error en la búsqueda:", error);
       throw error;
     }
   }

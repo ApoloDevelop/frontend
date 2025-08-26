@@ -8,15 +8,12 @@ import { Menu, X, User } from "lucide-react";
 const navLinks = [
   { href: "/", label: "Inicio" },
   { href: "/news", label: "Noticias" },
-  { href: "/community", label: "Comunidad" },
   { href: "/explore", label: "Explorar" },
-  { href: "/newsletter", label: "Newsletter" },
 ];
 
 export default function Header() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
-  const [lang, setLang] = useState<"ES" | "EN">("ES");
 
   // Cerrar con ESC
   useEffect(() => {

@@ -1,3 +1,5 @@
+import { PageRes, SearchType } from "@/types/spotify";
+
 const B = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 export class SpotifyRepository {
@@ -57,5 +59,49 @@ export class SpotifyRepository {
     const res = await fetch(`${B}/spotify/album/tracks?albumId=${albumId}`);
     if (!res.ok) throw new Error("Error al buscar pistas del álbum");
     return res.json();
+  }
+
+  static async search<T = any>(
+    q: string,
+    type: SearchType,
+    opts?: { limit?: number; offset?: number; market?: string }
+  ): Promise<PageRes<T> | null> {
+    const limit = String(opts?.limit ?? 12);
+    const offset = String(opts?.offset ?? 0);
+    const market = opts?.market ?? "ES";
+
+    const qs = new URLSearchParams({
+      q,
+      type,
+      limit,
+      offset,
+      market,
+    });
+
+    const res = await fetch(`${B}/spotify/search?${qs.toString()}`, {
+      cache: "no-store",
+    });
+    if (res.status === 404) return null;
+    if (!res.ok) throw new Error("Error en búsqueda");
+    return res.json();
+  }
+
+  static searchArtists(
+    q: string,
+    opts?: { limit?: number; offset?: number; market?: string; exact?: boolean }
+  ) {
+    return this.search(q, "artist", opts);
+  }
+  static searchAlbums(
+    q: string,
+    opts?: { limit?: number; offset?: number; market?: string; exact?: boolean }
+  ) {
+    return this.search(q, "album", opts);
+  }
+  static searchTracks(
+    q: string,
+    opts?: { limit?: number; offset?: number; market?: string; exact?: boolean }
+  ) {
+    return this.search(q, "track", opts);
   }
 }
