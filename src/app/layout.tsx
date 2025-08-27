@@ -1,6 +1,6 @@
 import { Scroll } from "lucide-react";
 import "./globals.css";
-import Header from "@/components/ui/Header";
+import Header from "@/components/header/Header";
 import ScrollTopOnRouteChange from "@/components/system/ScrollTopOnRouteChange";
 import Toaster from "@/components/ui/Toaster";
 

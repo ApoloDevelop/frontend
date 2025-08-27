@@ -86,22 +86,19 @@ export class SpotifyRepository {
     return res.json();
   }
 
-  static searchArtists(
+  static async searchAll(
     q: string,
-    opts?: { limit?: number; offset?: number; market?: string; exact?: boolean }
+    opts?: { limit?: number; market?: string; exact?: boolean }
   ) {
-    return this.search(q, "artist", opts);
-  }
-  static searchAlbums(
-    q: string,
-    opts?: { limit?: number; offset?: number; market?: string; exact?: boolean }
-  ) {
-    return this.search(q, "album", opts);
-  }
-  static searchTracks(
-    q: string,
-    opts?: { limit?: number; offset?: number; market?: string; exact?: boolean }
-  ) {
-    return this.search(q, "track", opts);
+    const [artists, albums, tracks] = await Promise.all([
+      this.search(q, "artist", opts),
+      this.search(q, "album", opts),
+      this.search(q, "track", opts),
+    ]);
+    return {
+      artists: artists?.items ?? [],
+      albums: albums?.items ?? [],
+      tracks: tracks?.items ?? [],
+    };
   }
 }

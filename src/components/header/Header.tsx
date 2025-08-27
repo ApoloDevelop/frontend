@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Menu, X, User } from "lucide-react";
+import { GlobalSearch } from "./GlobalSearch";
 
 const navLinks = [
   { href: "/", label: "Inicio" },
@@ -79,6 +80,7 @@ export default function Header() {
             <div className="pr-3 sm:pr-4 flex items-center">
               {/* Desktop actions */}
               <div className="hidden md:flex items-center gap-2">
+                <GlobalSearch />
                 {/* Sustituye por tu lógica real de sesión */}
                 <Link
                   href="/login"
