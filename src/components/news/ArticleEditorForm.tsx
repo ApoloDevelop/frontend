@@ -8,8 +8,9 @@ import { useRouter } from "next/navigation";
 import { ArticlesService } from "@/services/articles.service";
 import { CloudinaryService } from "@/services/cloudinary.service";
 import { HeroImageUploader } from "./HeroImageUploader";
+import { TagDraft } from "@/types/article";
+import { TagPicker } from "./TagPicker";
 
-// Cargar ReactQuill SOLO en cliente (evita SSR con React 19)
 const ReactQuill = dynamic(() => import("react-quill-new"), { ssr: false });
 
 export function ArticleEditorForm({ authorId }: { authorId: number }) {
@@ -18,8 +19,12 @@ export function ArticleEditorForm({ authorId }: { authorId: number }) {
   const [title, setTitle] = useState("");
   const [imageUrl, setImageUrl] = useState("");
   const [content, setContent] = useState(""); // HTML
+
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const [tags, setTags] = useState<TagDraft[]>([]);
+  const [pickerOpen, setPickerOpen] = useState(false);
 
   // Validación simple para evitar HTML vacío tipo <p><br></p>
   const stripHtml = (html: string) =>
@@ -56,6 +61,26 @@ export function ArticleEditorForm({ authorId }: { authorId: number }) {
         setError(e?.message ?? "No se pudo subir la imagen.");
       }
     };
+  }
+
+  function addTag(t: TagDraft) {
+    // evita duplicados exactos (mismo type, name, artistName)
+    setTags((prev) => {
+      const exist = prev.some(
+        (x) =>
+          x.type === t.type &&
+          x.name.toLowerCase() === t.name.toLowerCase() &&
+          (x.artistName ?? "").toLowerCase() ===
+            (t.artistName ?? "").toLowerCase()
+      );
+      if (exist) return prev;
+      console.log("Adding tag:", t);
+      return [...prev, t];
+    });
+  }
+
+  function removeTag(idx: number) {
+    setTags((prev) => prev.filter((_, i) => i !== idx));
   }
 
   // Toolbar + handlers
@@ -108,11 +133,13 @@ export function ArticleEditorForm({ authorId }: { authorId: number }) {
     setError(null);
 
     try {
+      console.log("Submitting article with tags:", tags);
       const created = await ArticlesService.create({
         title: title.trim(),
         content: content,
         author_id: authorId,
         image_url: imageUrl.trim() || null,
+        tags,
       });
       router.push(`/news/${created.id}`);
     } catch (err: any) {
@@ -173,6 +200,51 @@ export function ArticleEditorForm({ authorId }: { authorId: number }) {
         </div>
       )}
 
+      {/* TAGS */}
+      <div className="space-y-2">
+        <label className="block text-sm font-medium">Tags (opcional)</label>
+        <div className="flex flex-wrap gap-2">
+          {tags.map((t, i) => (
+            <span
+              key={`${t.type}-${t.name}-${t.artistName ?? ""}-${i}`}
+              className="inline-flex items-center gap-2 rounded-full border px-3 py-1 text-sm"
+              title={
+                t.artistName
+                  ? `${t.type} · ${t.name} · ${t.artistName}`
+                  : `${t.type} · ${t.name}`
+              }
+            >
+              <span className="capitalize">{t.type}</span>
+              <span>·</span>
+              <span className="font-medium">{t.name}</span>
+              {t.artistName ? (
+                <span className="text-gray-500">({t.artistName})</span>
+              ) : null}
+              <button
+                type="button"
+                className="ml-1 rounded-full px-2 py-0.5 hover:bg-black/5"
+                onClick={() => removeTag(i)}
+                aria-label="Eliminar tag"
+              >
+                ×
+              </button>
+            </span>
+          ))}
+
+          <button
+            type="button"
+            className="inline-flex items-center gap-2 text-sm rounded-xl border px-4 py-0.5 cursor-pointer hover:bg-black/5"
+            onClick={() => setPickerOpen(true)}
+          >
+            + Añadir tags
+          </button>
+        </div>
+        <p className="text-xs text-gray-500">
+          Puedes etiquetar por artista, álbum o canción. Ayuda a la búsqueda y a
+          enlazar contenido en Apolo.
+        </p>
+      </div>
+
       <div className="flex items-center gap-3">
         <button
           type="submit"
@@ -189,6 +261,11 @@ export function ArticleEditorForm({ authorId }: { authorId: number }) {
           Cancelar
         </button>
       </div>
+      <TagPicker
+        open={pickerOpen}
+        onClose={() => setPickerOpen(false)}
+        onAdd={addTag}
+      />
     </form>
   );
 }

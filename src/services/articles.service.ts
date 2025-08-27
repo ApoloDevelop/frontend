@@ -18,6 +18,7 @@ export class ArticlesService {
   }
 
   static create(payload: CreateArticleInput): Promise<Article> {
+    console.log("Creating article with payload:", payload);
     return ArticlesRepository.create(payload);
   }
 
@@ -27,5 +28,9 @@ export class ArticlesService {
 
   static remove(id: number): Promise<{ ok: boolean }> {
     return ArticlesRepository.remove(id);
+  }
+
+  static async getRelated(id: number, limit = 3) {
+    return ArticlesRepository.getRelated(id, limit);
   }
 }

@@ -6,6 +6,14 @@ export type Article = {
   author_id: number;
   published_date: string;
   image_url: string | null;
+  tags?: Array<{
+    id: number; // ← id del tag (tabla tag)
+    name: string;
+    type: TagType;
+    artistName?: string;
+    albumName?: string;
+    // opcionalmente podrías añadir artistName si lo expones más adelante
+  }>;
   views: number | null;
 };
 
@@ -27,6 +35,7 @@ export type CreateArticleInput = {
   content: string;
   author_id: number;
   image_url?: string | null;
+  tags?: TagDraft[];
 };
 
 export type UpdateArticleInput = Partial<{
@@ -34,3 +43,13 @@ export type UpdateArticleInput = Partial<{
   content: string;
   image_url: string | null;
 }>;
+
+export type TagType = "artist" | "album" | "track";
+export type TagDraft = {
+  type: TagType;
+  // nombre principal (artist.name | album.name | track.name)
+  name: string;
+  // contexto opcional para item service
+  artistName?: string;
+  albumName?: string;
+};
