@@ -1,7 +1,7 @@
 /* components/ReviewsModal.tsx */
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Dialog,
   DialogOverlay,
@@ -28,6 +28,8 @@ interface ReviewsModalProps {
   currentUserId?: number | null;
 }
 
+const PAGE_SIZE = 10;
+
 export function ReviewsModal({
   open,
   onOpenChange,
@@ -43,70 +45,120 @@ export function ReviewsModal({
   );
   const [maxCount, setMaxCount] = useState<number>(1);
 
-  // Filtro por barra clicada (1..10, usando el mismo redondeo del histograma)
+  // filtro por barra (1..10, redondeo igual que histograma)
   const [filterScore, setFilterScore] = useState<number | null>(null);
   const handleBarClick = (bucket: number) =>
     setFilterScore((prev) => (prev === bucket ? null : bucket));
 
-  // Ordenación
+  // ordenación
   const [sortMode, setSortMode] = useState<SortMode>("recent_desc");
 
+  // paginación real (cursor)
+  const [nextCursor, setNextCursor] = useState<number | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const sentinelRef = useRef<HTMLDivElement>(null);
+
+  const recomputeHistogram = (list: ReviewCardData[]) => {
+    const counts = Array.from({ length: 10 }, (_, i) => ({
+      name: String(i + 1),
+      count: 0,
+    }));
+    list.forEach((r) => {
+      const idx = Math.min(Math.max(Math.round(r.score), 1), 10) - 1;
+      counts[idx].count += 1;
+    });
+    setHistogram(counts);
+    setMaxCount(Math.max(1, ...counts.map((c) => c.count)));
+  };
+
+  const loadPage = async (cursor?: number) => {
+    if (isLoading) return;
+    setIsLoading(true);
+    try {
+      const page = await ReviewService.getReviewsByItem(
+        itemId,
+        verified,
+        currentUserId ?? undefined,
+        PAGE_SIZE,
+        cursor
+      );
+      // page: { items: ReviewCardData[], nextCursor: number | null }
+      setReviews((prev) => {
+        const merged = cursor ? [...prev, ...page.items] : page.items;
+        recomputeHistogram(merged);
+        return merged;
+      });
+      setNextCursor(page.nextCursor);
+    } catch (e) {
+      console.error("Error al cargar reseñas:", e);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // carga inicial / cuando cambian dependencias
   useEffect(() => {
     if (!open) return;
-
-    ReviewService.getReviewsByItem(itemId, verified, currentUserId ?? undefined)
-      .then((data: ReviewCardData[]) => {
-        setReviews(data);
-
-        const counts = Array.from({ length: 10 }, (_, i) => ({
-          name: String(i + 1),
-          count: 0,
-        }));
-        data.forEach((r) => {
-          const idx = Math.min(Math.max(Math.round(r.score), 1), 10) - 1;
-          counts[idx].count += 1;
-        });
-        setHistogram(counts);
-        setMaxCount(Math.max(1, ...counts.map((c) => c.count)));
-      })
-      .catch((err) => console.error("Error al obtener las reseñas:", err));
+    setReviews([]);
+    setNextCursor(null);
+    setFilterScore(null);
+    loadPage(undefined);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, itemId, verified, currentUserId]);
+
+  // infinite scroll: observar el sentinel DENTRO del contenedor con scroll
+  useEffect(() => {
+    const rootEl = scrollRef.current;
+    const target = sentinelRef.current;
+    if (!rootEl || !target) return;
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+        if (entry.isIntersecting && nextCursor && !isLoading) {
+          loadPage(nextCursor);
+        }
+      },
+      { root: rootEl, rootMargin: "0px 0px 300px 0px", threshold: 0.1 }
+    );
+
+    io.observe(target);
+    return () => io.disconnect();
+  }, [nextCursor, isLoading]); // loadPage ya cierra sobre itemId/verified/currentUserId
 
   const yTicks = Array.from({ length: maxCount + 1 }, (_, i) => i);
 
-  // Aplica filtros
+  // filtro
   const filtered =
     filterScore == null
       ? reviews
       : reviews.filter((r) => Math.round(r.score) === filterScore);
 
-  // Aplica ordenación
+  // orden
   const sorted = [...filtered].sort((a, b) => {
     switch (sortMode) {
       case "up_desc": {
-        // Mejor valoradas primero (más upvotes)
         if (b.upvotes !== a.upvotes) return b.upvotes - a.upvotes;
-        if (a.downvotes !== b.downvotes) return a.downvotes - b.downvotes; // menos downvotes mejor
+        if (a.downvotes !== b.downvotes) return a.downvotes - b.downvotes;
         return (
           new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
         );
       }
       case "up_asc": {
-        // Peor valoradas primero (menos upvotes)
         if (a.upvotes !== b.upvotes) return a.upvotes - b.upvotes;
-        if (b.downvotes !== a.downvotes) return b.downvotes - a.downvotes; // más downvotes peor
+        if (b.downvotes !== a.downvotes) return b.downvotes - a.downvotes;
         return (
           new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
         );
       }
       case "recent_asc":
-        // Más antiguas primero
         return (
           new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
         );
       case "recent_desc":
       default:
-        // Más recientes primero
         return (
           new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
         );
@@ -117,7 +169,7 @@ export function ReviewsModal({
     if (!currentUserId) return;
     const prev = reviews;
 
-    // Optimista
+    // optimista
     setReviews((prevList) =>
       prevList.map((r) => {
         if (r.id !== reviewId) return r;
@@ -146,24 +198,10 @@ export function ReviewsModal({
 
     try {
       await ReviewService.voteReview(reviewId, value, currentUserId);
-      const fresh = await ReviewService.getReviewsByItem(
-        itemId,
-        verified,
-        currentUserId
-      );
-      setReviews(fresh);
+      // si quieres consolidar desde servidor: await loadPage(undefined) (pero perderías el scroll)
     } catch (e) {
       console.error("vote failed:", e);
-      try {
-        const fresh = await ReviewService.getReviewsByItem(
-          itemId,
-          verified,
-          currentUserId
-        );
-        setReviews(fresh);
-      } catch {
-        setReviews(prev);
-      }
+      setReviews(prev); // revert
     }
   };
 
@@ -205,7 +243,7 @@ export function ReviewsModal({
             <ChartLegend />
             <Bar
               dataKey="count"
-              name="Puntuaciones"
+              name="Puntuaciones (pulsa para filtrar)"
               legendType="star"
               barSize={18}
             >
@@ -243,7 +281,6 @@ export function ReviewsModal({
             )}
           </div>
 
-          {/* Selector de orden */}
           <div className="flex items-center gap-2 text-sm">
             <label htmlFor="order" className="text-muted-foreground">
               Orden:
@@ -262,8 +299,11 @@ export function ReviewsModal({
           </div>
         </div>
 
-        {/* Lista (filtrada + ordenada) */}
-        <div className="grow overflow-y-auto space-y-3 sm:space-y-4 pr-1">
+        {/* Lista con scroll + sentinel (paginación real) */}
+        <div
+          ref={scrollRef}
+          className="grow overflow-y-auto space-y-3 sm:space-y-4 pr-1"
+        >
           {sorted.map((review) => {
             const net = review.upvotes - review.downvotes;
             const netClass =
@@ -297,7 +337,7 @@ export function ReviewsModal({
                         </span>
                       </CardTitle>
                       {review.title && (
-                        <div className="mt-1 text-sm sm:text-[0.95rem] text-muted-foreground">
+                        <div className="mt-1 text-sm sm:text-[0.95rem] text-gray-700 italic">
                           {review.title}
                         </div>
                       )}
@@ -350,7 +390,24 @@ export function ReviewsModal({
             );
           })}
 
-          {sorted.length === 0 && (
+          {/* Sentinel */}
+          <div ref={sentinelRef} />
+
+          {/* Estado de carga */}
+          {isLoading && (
+            <div className="py-3 text-center text-sm text-muted-foreground">
+              Cargando…
+            </div>
+          )}
+
+          {/* Fin de lista */}
+          {!isLoading && nextCursor === null && reviews.length > 0 && (
+            <div className="py-3 text-center text-sm text-muted-foreground">
+              No hay más reseñas
+            </div>
+          )}
+
+          {reviews.length === 0 && !isLoading && (
             <div className="text-sm text-muted-foreground px-1 py-2">
               {filterScore == null
                 ? "No hay reseñas todavía."

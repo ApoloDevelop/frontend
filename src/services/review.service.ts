@@ -25,9 +25,17 @@ export class ReviewService {
   static async getReviewsByItem(
     itemId: number,
     verified: boolean,
-    userId?: number
+    userId?: number,
+    take?: number,
+    cursor?: number
   ) {
-    return await ReviewRepository.getReviewsByItem(itemId, verified, userId);
+    return await ReviewRepository.getReviewsByItem(
+      itemId,
+      verified,
+      userId,
+      take,
+      cursor
+    );
   }
 
   static async voteReview(reviewId: number, value: 1 | -1, userId: number) {

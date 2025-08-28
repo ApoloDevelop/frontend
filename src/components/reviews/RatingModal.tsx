@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -6,8 +6,9 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { DialogClose } from "@radix-ui/react-dialog";
 
-type RateableType = "artist" | "album" | "track" | "venue";
+type RateableType = "artist" | "album" | "track";
 
 export function RatingModal({
   open,
@@ -31,11 +32,29 @@ export function RatingModal({
     artist: "Puntúa a",
     album: "Puntúa el álbum",
     track: "Puntúa la canción",
-    venue: "Puntúa la sala",
   };
 
+  const resetForm = () => {
+    setScore(0);
+    setComment("");
+    setTitle("");
+    setHovered(null);
+  };
+
+  useEffect(() => {
+    if (!open) resetForm();
+  }, [open]);
+
   return (
-    <Dialog open={open} onOpenChange={onClose}>
+    <Dialog
+      open={open}
+      onOpenChange={(isOpen) => {
+        if (!isOpen) {
+          resetForm();
+          onClose();
+        }
+      }}
+    >
       <DialogContent>
         <DialogHeader>
           <DialogTitle>
@@ -79,17 +98,31 @@ export function RatingModal({
             className="w-full border rounded p-2"
             rows={3}
           />
-          <Button
-            onClick={() => {
-              if (score > 0) {
-                onSubmit(score, comment, title);
-                window.location.reload(); // Refrescar la página
-              }
-            }}
-            disabled={score === 0}
-          >
-            Enviar valoración
-          </Button>
+
+          <div className="flex w-full justify-end gap-2">
+            {/* Botón Cancelar que cierra y limpia */}
+            <DialogClose asChild>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={resetForm} // 🔄
+              >
+                Cancelar
+              </Button>
+            </DialogClose>
+
+            <Button
+              onClick={() => {
+                if (score > 0) {
+                  onSubmit(score, comment, title);
+                  window.location.reload(); // si quieres, puedes quitar esto y hacer refetch elegante
+                }
+              }}
+              disabled={score === 0}
+            >
+              Enviar valoración
+            </Button>
+          </div>
         </div>
       </DialogContent>
     </Dialog>
