@@ -106,6 +106,7 @@ export function Scores({
         name={name}
         averageScore={showingVerified ? verified : unverified}
         verified={showingVerified}
+        currentUserId={1}
       />
     </>
   );

@@ -15,19 +15,20 @@ import { ChartContainer, ChartTooltip, ChartLegend } from "../ui/chart";
 import { BarChart, Bar, XAxis, YAxis } from "recharts";
 import { Avatar, AvatarImage, AvatarFallback } from "../ui/avatar";
 import { Card, CardHeader, CardTitle, CardContent } from "../ui/card";
+import { ThumbsUp, ThumbsDown } from "lucide-react";
 import { ReviewService } from "@/services/review.service";
 
-interface Review {
+// ===== Tipos (ajusta si ya tienes tus DTOs) =====
+type ReviewCardData = {
   id: number;
   score: number;
-  title?: string;
-  text?: string;
-  user: {
-    id: number;
-    username: string;
-    profile_pic?: string;
-  };
-}
+  title?: string | null;
+  text?: string | null;
+  upvotes: number;
+  downvotes: number;
+  myVote: -1 | 0 | 1;
+  user: { id: number; username: string; profile_pic?: string | null };
+};
 
 interface ReviewsModalProps {
   open: boolean;
@@ -36,6 +37,7 @@ interface ReviewsModalProps {
   name: string;
   averageScore: number | null;
   verified: boolean;
+  currentUserId?: number | null;
 }
 
 export function ReviewsModal({
@@ -45,8 +47,9 @@ export function ReviewsModal({
   name,
   averageScore,
   verified,
+  currentUserId,
 }: ReviewsModalProps) {
-  const [reviews, setReviews] = useState<Review[]>([]);
+  const [reviews, setReviews] = useState<ReviewCardData[]>([]);
   const [histogram, setHistogram] = useState<{ name: string; count: number }[]>(
     []
   );
@@ -55,8 +58,8 @@ export function ReviewsModal({
   useEffect(() => {
     if (!open) return;
 
-    ReviewService.getReviewsByItem(itemId, verified)
-      .then((data: Review[]) => {
+    ReviewService.getReviewsByItem(itemId, verified, currentUserId ?? 1)
+      .then((data: ReviewCardData[]) => {
         setReviews(data);
 
         const counts = Array.from({ length: 10 }, (_, i) => ({
@@ -68,15 +71,61 @@ export function ReviewsModal({
           counts[idx].count += 1;
         });
         setHistogram(counts);
-
-        const m = Math.max(0, ...counts.map((c) => c.count));
-        setMaxCount(Math.max(1, m)); // evita dominio [0,0]
+        setMaxCount(Math.max(1, ...counts.map((c) => c.count)));
       })
       .catch((err) => console.error("Error al obtener las reseñas:", err));
   }, [open, itemId, verified]);
 
-  // ticks enteros de 0..maxCount
   const yTicks = Array.from({ length: maxCount + 1 }, (_, i) => i);
+
+  const handleVote = async (reviewId: number, value: 1 | -1) => {
+    if (!currentUserId) return; // opcional: exigir login
+    const prev = reviews;
+
+    // optimista
+    setReviews((prev) =>
+      prev.map((r) => {
+        if (r.id !== reviewId) return r;
+        let up = r.upvotes,
+          down = r.downvotes,
+          my = r.myVote;
+        if (my === value) {
+          if (value === 1) up--;
+          else down--;
+          my = 0;
+        } else {
+          if (my === 1) up--;
+          if (my === -1) down--;
+          if (value === 1) up++;
+          else down++;
+          my = value;
+        }
+        return {
+          ...r,
+          upvotes: Math.max(0, up),
+          downvotes: Math.max(0, down),
+          myVote: my as -1 | 0 | 1,
+        };
+      })
+    );
+
+    try {
+      await ReviewService.voteReview(reviewId, value, currentUserId);
+    } catch (e) {
+      console.error("vote failed:", e);
+      // revertir o re-sincronizar
+      try {
+        const fresh = await ReviewService.getReviewsByItem(
+          itemId,
+          verified,
+          currentUserId
+        );
+        setReviews(fresh);
+      } catch {
+        setReviews(prev); // revert
+      }
+    }
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -127,44 +176,96 @@ export function ReviewsModal({
           </BarChart>
         </ChartContainer>
 
-        {/* SOLO esto hace scroll */}
+        {/* SOLO reseñas hacen scroll */}
         <div className="grow overflow-y-auto space-y-3 sm:space-y-4 pr-1">
-          {reviews.map((review) => (
-            <Card key={review.id}>
-              <CardHeader className="flex items-start sm:items-center gap-3 sm:gap-4">
-                <Avatar className="h-10 w-10 sm:h-12 sm:w-12">
-                  {review.user.profile_pic ? (
-                    <AvatarImage
-                      src={review.user.profile_pic}
-                      alt={review.user.username}
-                    />
-                  ) : (
-                    <AvatarFallback>
-                      {review.user.username.charAt(0)}
-                    </AvatarFallback>
-                  )}
-                </Avatar>
-                <div className="min-w-0">
-                  <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
-                    <span className="truncate">{review.user.username}</span>
-                    <span className="shrink-0 font-mono bg-gray-100 px-2 py-0.5 rounded">
-                      {review.score}
-                    </span>
-                  </CardTitle>
-                  {review.title && (
-                    <div className="mt-1 text-sm sm:text-[0.95rem] text-gray-700 font-medium truncate">
-                      {review.title}
+          {reviews.map((review) => {
+            const net = review.upvotes - review.downvotes;
+            const netClass =
+              net > 0
+                ? "text-green-600"
+                : net < 0
+                ? "text-red-600"
+                : "text-muted-foreground";
+
+            return (
+              <Card key={review.id}>
+                {/* Cabecera: izquierda info usuario, derecha suma neta */}
+                <CardHeader className="flex justify-between items-start sm:items-center gap-3 sm:gap-4">
+                  <div className="flex items-start sm:items-center gap-3 sm:gap-4">
+                    <Avatar className="h-10 w-10 sm:h-12 sm:w-12">
+                      {review.user.profile_pic ? (
+                        <AvatarImage
+                          src={review.user.profile_pic}
+                          alt={review.user.username}
+                        />
+                      ) : (
+                        <AvatarFallback>
+                          {review.user.username.charAt(0)}
+                        </AvatarFallback>
+                      )}
+                    </Avatar>
+                    <div className="min-w-0">
+                      <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                        <span className="truncate">{review.user.username}</span>
+                        <span className="shrink-0 font-mono bg-gray-100 px-2 py-0.5 rounded">
+                          {review.score}
+                        </span>
+                      </CardTitle>
+                      {review.title && (
+                        <div className="mt-1 text-sm sm:text-[0.95rem] text-gray-800 italic">
+                          {review.title}
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>
-              </CardHeader>
-              {review.text && (
-                <CardContent className="pt-0 sm:pt-2 text-sm sm:text-base">
-                  {review.text}
-                </CardContent>
-              )}
-            </Card>
-          ))}
+                  </div>
+
+                  {/* Suma neta con signo */}
+                  <div
+                    className={`text-sm sm:text-base font-semibold ${netClass}`}
+                  >
+                    {net > 0 ? `+${net}` : `${net}`}
+                  </div>
+                </CardHeader>
+
+                {review.text && (
+                  <CardContent className="pt-0 sm:pt-2 text-sm sm:text-base">
+                    {review.text}
+
+                    {/* Botones pulgar 👍 👎 */}
+                    <div className="mt-3 flex items-center gap-3">
+                      <button
+                        onClick={() => handleVote(review.id, 1)}
+                        aria-pressed={review.myVote === 1}
+                        className={`inline-flex items-center justify-center rounded-full border px-2.5 py-1.5 transition
+                          ${
+                            review.myVote === 1
+                              ? "bg-green-50 border-green-500 text-green-700"
+                              : "border-transparent hover:bg-green-50 text-green-600"
+                          }`}
+                        title="Estoy de acuerdo"
+                      >
+                        <ThumbsUp className="h-4 w-4" />
+                      </button>
+
+                      <button
+                        onClick={() => handleVote(review.id, -1)}
+                        aria-pressed={review.myVote === -1}
+                        className={`inline-flex items-center justify-center rounded-full border px-2.5 py-1.5 transition
+                          ${
+                            review.myVote === -1
+                              ? "bg-red-50 border-red-500 text-red-700"
+                              : "border-transparent hover:bg-red-50 text-red-600"
+                          }`}
+                        title="No estoy de acuerdo"
+                      >
+                        <ThumbsDown className="h-4 w-4" />
+                      </button>
+                    </div>
+                  </CardContent>
+                )}
+              </Card>
+            );
+          })}
         </div>
 
         {/* Botón fijo */}

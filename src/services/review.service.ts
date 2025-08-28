@@ -22,7 +22,15 @@ export class ReviewService {
     return ReviewRepository.getAlbumReviewStats(albumName, artistName);
   }
 
-  static async getReviewsByItem(itemId: number, verified: boolean) {
-    return await ReviewRepository.getReviewsByItem(itemId, verified);
+  static async getReviewsByItem(
+    itemId: number,
+    verified: boolean,
+    userId?: number
+  ) {
+    return await ReviewRepository.getReviewsByItem(itemId, verified, userId);
+  }
+
+  static async voteReview(reviewId: number, value: 1 | -1, userId: number) {
+    return await ReviewRepository.voteReview(reviewId, value, userId);
   }
 }
