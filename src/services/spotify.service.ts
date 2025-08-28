@@ -80,4 +80,13 @@ export class SpotifyService {
       throw error;
     }
   }
+
+  static async fetchPlaylist(id: string) {
+    try {
+      return await SpotifyRepository.fetchPlaylist(id);
+    } catch (error) {
+      console.error("Error al obtener la playlist:", error);
+      throw error;
+    }
+  }
 }

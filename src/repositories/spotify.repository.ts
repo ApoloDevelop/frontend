@@ -101,4 +101,12 @@ export class SpotifyRepository {
       tracks: tracks?.items ?? [],
     };
   }
+
+  static async fetchPlaylist(id: string) {
+    const res = await fetch(`${B}/spotify/playlist?id=${id}`, {
+      cache: "no-store",
+    });
+    if (!res.ok) throw new Error("Error al obtener la playlist");
+    return res.json();
+  }
 }
