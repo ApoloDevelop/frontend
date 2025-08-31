@@ -105,9 +105,52 @@ export default async function ArticlePage({
             <div dangerouslySetInnerHTML={{ __html: article.content }} />
           </article>
 
-          {/* Tags */}
+          {/* Comentarios */}
           <section className="pt-6 border-t">
-            <h2 className="text-xl font-semibold mb-3">Etiquetas</h2>
+            <h2 className="text-xl font-semibold mb-3">Comentarios</h2>
+            <CommentsSection articleId={articleId} currentUserId={2} />
+          </section>
+        </main>
+
+        {/* Sidebar */}
+        <aside className="col-span-12 lg:col-span-4 space-y-6">
+          <div className="rounded-2xl border p-5 bg-white">
+            <h3 className="text-lg font-semibold mb-2">Relacionado</h3>
+            {related.length === 0 ? (
+              <p className="text-gray-600 text-sm">
+                No hay artículos relacionados.
+              </p>
+            ) : (
+              <ul className="space-y-4">
+                {related.map((r) => (
+                  <li key={r.id} className="flex gap-3">
+                    <Link href={`/news/${r.id}`} className="shrink-0">
+                      <Image
+                        src={r.image_url || "/default-cover.png"}
+                        alt=""
+                        width={80}
+                        height={80}
+                        className="rounded-lg object-cover"
+                      />
+                    </Link>
+                    <div className="min-w-0">
+                      <Link
+                        href={`/news/${r.id}`}
+                        className="font-medium hover:underline line-clamp-2"
+                      >
+                        {r.title}
+                      </Link>
+                      <div className="text-xs text-gray-500 mt-1">
+                        {dayjs(r.published_date).format("D MMM YYYY")}
+                      </div>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+          <div className="rounded-2xl border p-5 bg-white">
+            <h3 className="text-lg font-semibold mb-2">Etiquetas</h3>
             <div className="flex flex-wrap gap-2">
               {(article.tags ?? []).length === 0 && (
                 <span className="px-3 py-1 rounded-full bg-black/5 text-sm">
@@ -156,51 +199,6 @@ export default async function ArticlePage({
                 );
               })}
             </div>
-          </section>
-
-          {/* Comentarios */}
-          <section className="pt-6 border-t">
-            <h2 className="text-xl font-semibold mb-3">Comentarios</h2>
-            <CommentsSection articleId={articleId} currentUserId={2} />
-          </section>
-        </main>
-
-        {/* Sidebar */}
-        <aside className="col-span-12 lg:col-span-4 space-y-6">
-          <div className="rounded-2xl border p-5 bg-white">
-            <h3 className="text-lg font-semibold mb-2">Relacionado</h3>
-            {related.length === 0 ? (
-              <p className="text-gray-600 text-sm">
-                No hay artículos relacionados.
-              </p>
-            ) : (
-              <ul className="space-y-4">
-                {related.map((r) => (
-                  <li key={r.id} className="flex gap-3">
-                    <Link href={`/news/${r.id}`} className="shrink-0">
-                      <Image
-                        src={r.image_url || "/default-cover.png"}
-                        alt=""
-                        width={80}
-                        height={80}
-                        className="rounded-lg object-cover"
-                      />
-                    </Link>
-                    <div className="min-w-0">
-                      <Link
-                        href={`/news/${r.id}`}
-                        className="font-medium hover:underline line-clamp-2"
-                      >
-                        {r.title}
-                      </Link>
-                      <div className="text-xs text-gray-500 mt-1">
-                        {dayjs(r.published_date).format("D MMM YYYY")}
-                      </div>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            )}
           </div>
         </aside>
       </div>
