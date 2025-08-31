@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Menu, X, User } from "lucide-react";
 import { GlobalSearch } from "./GlobalSearch";
+import { useAuthUser } from "@/hooks/home/useAuthUser";
 
 const navLinks = [
   { href: "/", label: "Inicio" },
@@ -15,6 +16,7 @@ const navLinks = [
 export default function Header() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const { user } = useAuthUser();
 
   // Cerrar con ESC
   useEffect(() => {
@@ -81,14 +83,23 @@ export default function Header() {
               {/* Desktop actions */}
               <div className="hidden md:flex items-center gap-2">
                 <GlobalSearch />
-                {/* Sustituye por tu lógica real de sesión */}
-                <Link
-                  href="/login"
-                  className="inline-flex items-center gap-2 rounded-md bg-black text-white px-3 py-2 text-sm hover:bg-purple-700 transition"
-                >
-                  <User className="h-4 w-4" />
-                  Acceder
-                </Link>
+                {user ? (
+                  <Link
+                    href={`/users/${user.username}`}
+                    className="inline-flex items-center gap-2 rounded-md bg-black text-white px-3 py-2 text-sm hover:bg-purple-700 transition"
+                  >
+                    <User className="h-4 w-4" />
+                    Mi perfil
+                  </Link>
+                ) : (
+                  <Link
+                    href="/login"
+                    className="inline-flex items-center gap-2 rounded-md bg-black text-white px-3 py-2 text-sm hover:bg-purple-700 transition"
+                  >
+                    <User className="h-4 w-4" />
+                    Acceder
+                  </Link>
+                )}
               </div>
 
               {/* Botón hamburguesa (mobile) pegado a la derecha */}
@@ -165,15 +176,25 @@ export default function Header() {
 
         {/* Acciones del drawer */}
         <div className="mt-auto px-3 py-4 border-t space-y-2">
-          {/* Sustituye por tu lógica real de sesión */}
-          <Link
-            href="/login"
-            onClick={() => setOpen(false)}
-            className="w-full inline-flex items-center justify-center gap-2 rounded-md bg-black text-white px-3 py-2 text-sm hover:bg-purple-700 transition"
-          >
-            <User className="h-4 w-4" />
-            Acceder
-          </Link>
+          {user ? (
+            <Link
+              href={`/users/${user.username}`}
+              onClick={() => setOpen(false)}
+              className="w-full inline-flex items-center justify-center gap-2 rounded-md bg-black text-white px-3 py-2 text-sm hover:bg-purple-700 transition"
+            >
+              <User className="h-4 w-4" />
+              Mi perfil
+            </Link>
+          ) : (
+            <Link
+              href="/login"
+              onClick={() => setOpen(false)}
+              className="w-full inline-flex items-center justify-center gap-2 rounded-md bg-black text-white px-3 py-2 text-sm hover:bg-purple-700 transition"
+            >
+              <User className="h-4 w-4" />
+              Acceder
+            </Link>
+          )}
         </div>
       </aside>
     </>

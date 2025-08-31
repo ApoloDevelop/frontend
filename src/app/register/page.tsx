@@ -19,8 +19,12 @@ import { RegisterFormStep2 } from "@/components/register/steps/RegisterFormStep2
 import { RegisterFormStep3 } from "@/components/register/steps/RegisterFormStep3";
 import { AlertMessage } from "@/components/ui/AlertMessage";
 import { CloudinaryService } from "@/services/cloudinary.service";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import { isAuthenticated, setSession } from "@/lib/auth";
 
 export default function RegisterPage() {
+  const router = useRouter();
   // Constants definition
   const {
     step,
@@ -111,6 +115,10 @@ export default function RegisterPage() {
     }
   };
 
+  useEffect(() => {
+    if (isAuthenticated()) router.replace("/");
+  }, [router]);
+
   const handleCreateAccount = async () => {
     setIsLoading(true);
 
@@ -123,8 +131,8 @@ export default function RegisterPage() {
 
       const data = await RegisterService.createAccount(formData, profilePicUrl);
 
-      setAlertMsgs(["¡Cuenta creada con éxito!"]);
-      console.log("Usuario creado:", data);
+      setSession(data.token, data.user);
+      router.replace("/"); // home
     } catch (error: any) {
       console.error(error);
       setAlertMsgs([error.message || "Error al crear la cuenta"]);
