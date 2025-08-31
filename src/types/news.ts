@@ -32,3 +32,34 @@ export interface ArticleEditorPermissions {
   isEditor: boolean;
   isAdmin: boolean;
 }
+
+// Tipos para el detalle de artículo
+export interface ArticleDetailAuthor {
+  username: string;
+  fullname: string;
+}
+
+export interface ArticleDetailTag {
+  id: number;
+  type: "artist" | "album" | "track";
+  name: string;
+  artistName?: string;
+  albumName?: string;
+}
+
+export interface ArticleDetailData {
+  id: number;
+  title: string;
+  content: string;
+  author_id: number;
+  published_date: string;
+  image_url?: string | null;
+  tags?: ArticleDetailTag[];
+}
+
+export interface RelatedArticleData {
+  id: number;
+  title: string;
+  image_url?: string | null;
+  published_date: string;
+}
