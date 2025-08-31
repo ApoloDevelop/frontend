@@ -7,6 +7,10 @@ import { notFound } from "next/navigation";
 import { ArticlesService } from "@/services/articles.service";
 import CommentsSection from "@/components/news/CommentsSection";
 import { slugify } from "@/utils/normalization";
+import { UserService } from "@/services/user.service";
+import { Button } from "@/components/ui/button";
+import { getCurrentUser } from "@/lib/auth"; // ⬅️ NUEVO
+import { DeleteArticleButton } from "@/components/news/DeleteArticleButton";
 
 dayjs.locale("es");
 
@@ -31,9 +35,19 @@ export default async function ArticlePage({
   );
   const cover = article.image_url || "/default-cover.png";
 
+  const author = await UserService.getUserById(article.author_id);
+
+  // ⬅️ Permisos de edición
+  const user = await getCurrentUser();
+  const canEdit =
+    !!user &&
+    (user.role_id === 1 ||
+      user.role_id === 2 ||
+      (user.role_id === 3 && user.id === article.author_id));
+
   return (
     <div className="container mx-auto">
-      {/* HERO con blur sutil */}
+      {/* HERO */}
       <div className="relative h-56 sm:h-72 md:h-80 w-full mb-6">
         <Image
           src={cover}
@@ -49,43 +63,46 @@ export default async function ArticlePage({
         <div className="ml-0 sm:ml-6 mt-2 sm:mt-0 flex-1">
           <h1 className="text-4xl font-bold">{article.title}</h1>
           <div className="mt-2 flex flex-wrap items-center gap-3 text-gray-600">
-            <time dateTime={article.published_date}>
+            <time dateTime={article.published_date} className="italic">
               {dayjs(article.published_date).format("D MMM YYYY")}
             </time>
             <span aria-hidden>•</span>
             <span>
               Por{" "}
-              <span className="font-semibold">Autor #{article.author_id}</span>
+              <Link
+                href={`/users/${encodeURIComponent(author.username)}`}
+                className="font-semibold hover:underline"
+              >
+                {author.fullname}
+              </Link>
             </span>
-            {typeof article.views === "number" && (
-              <>
-                <span aria-hidden>•</span>
-                <span>{article.views} visitas</span>
-              </>
-            )}
           </div>
         </div>
 
-        <div className="ml-0 sm:ml-auto mt-3 sm:mt-2 flex flex-wrap items-center gap-2 pr-4">
-          <Link
-            href="/news"
-            className="rounded-xl border px-4 py-2 hover:bg-black/5 transition"
-          >
-            Volver a noticias
-          </Link>
+        {/* Botonera derecha */}
+        <div className="ml-auto flex gap-2">
+          {canEdit && (
+            <>
+              <Button asChild variant="secondary">
+                <Link href={`/news/article?edit=${article.id}`}>
+                  Editar artículo
+                </Link>
+              </Button>
+
+              <DeleteArticleButton id={article.id} />
+            </>
+          )}
+          <Button asChild>
+            <Link href="/news">Volver a noticias</Link>
+          </Button>
         </div>
       </header>
 
-      {/* Contenido  Sidebar */}
+      {/* Contenido + Sidebar */}
       <div className="grid grid-cols-12 gap-6 px-4 pb-16">
         <main className="col-span-12 lg:col-span-8 space-y-8">
-          {/* Contenido */}
           <article className="prose max-w-none prose-p:leading-relaxed prose-headings:scroll-mt-24 prose-img:rounded-xl ql-view">
-            {/* Si tu contenido llega con saltos de línea, esto lo respeta */}
-            <div
-              // Si ya saneas en el backend, puedes inyectar directamente:
-              dangerouslySetInnerHTML={{ __html: article.content }}
-            />
+            <div dangerouslySetInnerHTML={{ __html: article.content }} />
           </article>
 
           {/* Tags */}
@@ -113,14 +130,15 @@ export default async function ArticlePage({
                     : t.type === "album"
                     ? t.artistName
                       ? `/albums/${slugify(t.artistName)}/${slugify(t.name)}`
-                      : `/news?tag=${t.id}` // fallback si faltara artistName (caso raro)
+                      : `/news?tag=${t.id}`
                     : t.type === "track"
                     ? t.artistName && t.albumName
                       ? `/songs/${slugify(t.artistName)}/${slugify(
                           t.albumName
                         )}/${slugify(t.name)}`
-                      : `/news?tag=${t.id}` // fallback si faltaran datos
+                      : `/news?tag=${t.id}`
                     : `/news?tag=${t.id}`;
+
                 return (
                   <Link
                     key={t.id}
@@ -140,7 +158,7 @@ export default async function ArticlePage({
             </div>
           </section>
 
-          {/* Comentarios (estructura lista  form de ejemplo no funcional) */}
+          {/* Comentarios */}
           <section className="pt-6 border-t">
             <h2 className="text-xl font-semibold mb-3">Comentarios</h2>
             <CommentsSection articleId={articleId} currentUserId={2} />

@@ -1,5 +1,6 @@
 // src/lib/auth.ts
-export type SessionUser = { id: number; role_id: number; name?: string };
+
+import { ApiUser, AuthUser, SessionUser } from "@/types/auth";
 
 export const TOKEN_KEY = "token"; // localStorage
 export const TOKEN_COOKIE = "apolo_token"; // cookie (para SSR)
@@ -8,6 +9,28 @@ export const USER_KEY = "user";
 const B = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 const isServer = typeof window === "undefined";
+
+export function normalizeUser(u: ApiUser): AuthUser {
+  const id = Number(u.id);
+  const role_id = Number(u.role_id ?? u.role_id ?? 0);
+
+  const username = (u.username ?? "").toString();
+  // si no viene username, intenta derivar de name (fallback seguro)
+  const safeUsername =
+    username || (u.fullname ?? "").toString() || `user-${id}`;
+
+  const fullname = (u.fullname ?? null) as string | null;
+  const display =
+    fullname && fullname.trim().length > 0 ? fullname : safeUsername;
+
+  return {
+    id,
+    role_id,
+    username: safeUsername,
+    fullname,
+    name: display,
+  };
+}
 
 /** Lee una cookie en cliente */
 function getCookie(name: string): string | null {
@@ -41,12 +64,9 @@ export function getToken(): string | null {
 }
 
 /** Guarda sesión en cliente (LS + cookie para SSR) */
-export function setSession(token: string, user?: any) {
-  if (isServer) return;
+export function setSession(token: string, user?: AuthUser) {
   localStorage.setItem(TOKEN_KEY, token);
-  // 1 día (ajusta a lo que firmas en el backend)
-  setCookie(TOKEN_COOKIE, token, 60 * 60 * 24);
-  if (user) localStorage.setItem(USER_KEY, JSON.stringify(user));
+  localStorage.setItem(USER_KEY, JSON.stringify(user));
 }
 
 /** Limpia sesión en cliente */
@@ -54,13 +74,13 @@ export function clearSession() {
   if (isServer) return;
   localStorage.removeItem(TOKEN_KEY);
   localStorage.removeItem(USER_KEY);
-  deleteCookie(TOKEN_COOKIE);
+  deleteCookie(TOKEN_COOKIE); // apolo_token
+  deleteCookie(TOKEN_KEY); // token (legacy)
 }
 
 export function getStoredUser<T = any>(): T | null {
-  if (isServer) return null;
-  const raw = localStorage.getItem(USER_KEY);
   try {
+    const raw = localStorage.getItem(USER_KEY);
     return raw ? (JSON.parse(raw) as T) : null;
   } catch {
     return null;
@@ -72,16 +92,13 @@ export function isAuthenticated() {
 }
 
 /** Obtiene el usuario actual llamando al backend con el token */
-export async function getCurrentUser(): Promise<SessionUser | null> {
-  // --- Rama SERVER: lee cookie con next/headers y llama al backend
+export async function getCurrentUser(): Promise<AuthUser | null> {
+  // --- SERVER
   if (isServer) {
-    // import dinámico para no romper el bundle del cliente
     const { cookies } = await import("next/headers");
-    const token =
-      (await cookies()).get(TOKEN_COOKIE)?.value ||
-      (await cookies()).get(TOKEN_KEY)?.value;
+    const c = cookies();
+    const token = (await c).get(TOKEN_COOKIE)?.value ?? null; // 🚫 quita el fallback a TOKEN_KEY
     if (!token) return null;
-
     try {
       const res = await fetch(`${B}/auth/profile`, {
         method: "GET",
@@ -90,20 +107,14 @@ export async function getCurrentUser(): Promise<SessionUser | null> {
       });
       if (!res.ok) return null;
       const u = await res.json();
-      return {
-        id: u.id,
-        role_id: u.role_id,
-        name: u.fullname ?? u.username ?? undefined,
-      };
+      return normalizeUser(u as ApiUser);
     } catch {
       return null;
     }
   }
-
-  // --- Rama CLIENTE: usa localStorage/cookie y llama al backend
+  // --- CLIENT
   const token = getToken();
   if (!token) return null;
-
   try {
     const res = await fetch(`${B}/auth/profile`, {
       method: "GET",
@@ -112,11 +123,8 @@ export async function getCurrentUser(): Promise<SessionUser | null> {
     });
     if (!res.ok) return null;
     const u = await res.json();
-    return {
-      id: u.id,
-      role_id: u.role_id,
-      name: u.fullname ?? u.username ?? undefined,
-    };
+    const norm = normalizeUser(u as ApiUser);
+    return norm;
   } catch {
     return null;
   }

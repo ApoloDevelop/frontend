@@ -42,6 +42,7 @@ export type UpdateArticleInput = Partial<{
   title: string;
   content: string;
   image_url: string | null;
+  tags?: TagDraft[];
 }>;
 
 export type TagType = "artist" | "album" | "track";
@@ -52,4 +53,11 @@ export type TagDraft = {
   // contexto opcional para item service
   artistName?: string;
   albumName?: string;
+};
+
+export type InitialData = {
+  title: string;
+  image_url?: string | null;
+  content: string; // HTML
+  tags?: TagDraft[];
 };

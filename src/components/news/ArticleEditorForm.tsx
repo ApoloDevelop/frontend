@@ -1,30 +1,50 @@
 // src/components/news/ArticleEditorForm.tsx
 "use client";
 
-import { useState, useMemo } from "react";
-import Image from "next/image";
+import { useEffect, useMemo, useState } from "react";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { ArticlesService } from "@/services/articles.service";
 import { CloudinaryService } from "@/services/cloudinary.service";
 import { HeroImageUploader } from "./HeroImageUploader";
-import { TagDraft } from "@/types/article";
+import type { InitialData, TagDraft } from "@/types/article";
 import { TagPicker } from "./TagPicker";
+import { toPayloadTags } from "@/utils/articles";
+import { Button } from "../ui/button";
 
 const ReactQuill = dynamic(() => import("react-quill-new"), { ssr: false });
 
-export function ArticleEditorForm({ authorId }: { authorId: number }) {
+export function ArticleEditorForm({
+  authorId,
+  editId,
+  initial,
+}: {
+  authorId: number;
+  editId?: number;
+  initial?: InitialData;
+}) {
   const router = useRouter();
 
-  const [title, setTitle] = useState("");
-  const [imageUrl, setImageUrl] = useState("");
-  const [content, setContent] = useState(""); // HTML
+  const [title, setTitle] = useState(initial?.title ?? "");
+  const [imageUrl, setImageUrl] = useState(initial?.image_url ?? "");
+  const [content, setContent] = useState(initial?.content ?? ""); // HTML
 
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const [tags, setTags] = useState<TagDraft[]>([]);
+  // Para crear
+  const [tags, setTags] = useState<TagDraft[]>(initial?.tags ?? []);
   const [pickerOpen, setPickerOpen] = useState(false);
+
+  // Si cambia initial (navegación entre artículos), refrescamos estados
+  useEffect(() => {
+    if (initial) {
+      setTitle(initial.title ?? "");
+      setImageUrl(initial.image_url ?? "");
+      setContent(initial.content ?? "");
+      setTags(toPayloadTags(initial.tags ?? []));
+    }
+  }, [initial]);
 
   // Validación simple para evitar HTML vacío tipo <p><br></p>
   const stripHtml = (html: string) =>
@@ -64,7 +84,6 @@ export function ArticleEditorForm({ authorId }: { authorId: number }) {
   }
 
   function addTag(t: TagDraft) {
-    // evita duplicados exactos (mismo type, name, artistName)
     setTags((prev) => {
       const exist = prev.some(
         (x) =>
@@ -74,7 +93,6 @@ export function ArticleEditorForm({ authorId }: { authorId: number }) {
             (t.artistName ?? "").toLowerCase()
       );
       if (exist) return prev;
-      console.log("Adding tag:", t);
       return [...prev, t];
     });
   }
@@ -98,9 +116,7 @@ export function ArticleEditorForm({ authorId }: { authorId: number }) {
         ["blockquote", "code-block"],
         ["link", "image", "video", "formula"],
       ],
-      handlers: {
-        image: imageHandler,
-      },
+      handlers: { image: imageHandler },
     },
     clipboard: { matchVisual: false },
   };
@@ -132,28 +148,42 @@ export function ArticleEditorForm({ authorId }: { authorId: number }) {
     setSubmitting(true);
     setError(null);
 
+    const cleanTags = toPayloadTags(tags);
+
     try {
-      console.log("Submitting article with tags:", tags);
-      const created = await ArticlesService.create({
-        title: title.trim(),
-        content: content,
-        author_id: authorId,
-        image_url: imageUrl.trim() || null,
-        tags,
-      });
-      router.push(`/news/${created.id}`);
+      if (editId) {
+        await ArticlesService.update(editId, {
+          title: title.trim(),
+          content: content,
+          image_url: imageUrl.trim() || null,
+          tags: cleanTags,
+        });
+        router.push(`/news/${editId}`);
+        router.refresh();
+      } else {
+        const created = await ArticlesService.create({
+          title: title.trim(),
+          content: content,
+          author_id: authorId,
+          image_url: imageUrl.trim() || null,
+          tags: cleanTags,
+        });
+        router.push(`/news/${created.id}`);
+      }
     } catch (err: any) {
-      setError(err?.message || "Error al crear el artículo");
+      setError(err?.message || "Error al guardar el artículo");
     } finally {
       setSubmitting(false);
     }
   }
 
+  const isEdit = !!editId;
+
   return (
     <form onSubmit={onSubmit} className="space-y-5" aria-live="polite">
       <div className="space-y-1">
         <label htmlFor="title" className="block text-sm font-medium">
-          Título *
+          {isEdit ? "Título" : "Título *"}
         </label>
         <input
           id="title"
@@ -169,12 +199,12 @@ export function ArticleEditorForm({ authorId }: { authorId: number }) {
       <HeroImageUploader
         value={imageUrl}
         onChange={setImageUrl}
-        targetWidth={1600} // ajusta a tu layout (1600x900)
+        targetWidth={1600}
       />
 
       <div className="space-y-1">
         <label className="block text-sm font-medium">
-          Cuerpo del artículo *
+          {isEdit ? "Cuerpo del artículo" : "Cuerpo del artículo *"}
         </label>
         <div className="quill-root relative rounded-lg border overflow-visible">
           <ReactQuill
@@ -202,7 +232,9 @@ export function ArticleEditorForm({ authorId }: { authorId: number }) {
 
       {/* TAGS */}
       <div className="space-y-2">
-        <label className="block text-sm font-medium">Tags (opcional)</label>
+        <label className="block text-sm font-medium">
+          Tags {editId ? "" : "(opcional)"}
+        </label>
         <div className="flex flex-wrap gap-2">
           {tags.map((t, i) => (
             <span
@@ -240,27 +272,35 @@ export function ArticleEditorForm({ authorId }: { authorId: number }) {
           </button>
         </div>
         <p className="text-xs text-gray-500">
-          Puedes etiquetar por artista, álbum o canción. Ayuda a la búsqueda y a
-          enlazar contenido en Apolo.
+          Etiqueta por artista, álbum o canción para enlazar contenido en Apolo.
         </p>
       </div>
 
       <div className="flex items-center gap-3">
-        <button
+        <Button
           type="submit"
           disabled={!isValid || submitting}
-          className="inline-flex items-center rounded-xl px-4 py-2 bg-purple-700 text-white hover:bg-purple-600 disabled:opacity-50 transition"
+          className="inline-flex cursor-pointer items-center rounded-xl px-4 py-2 disabled:opacity-50 transition"
         >
-          {submitting ? "Publicando…" : "Publicar"}
-        </button>
-        <button
+          {submitting
+            ? isEdit
+              ? "Guardando…"
+              : "Publicando…"
+            : isEdit
+            ? "Guardar cambios"
+            : "Publicar"}
+        </Button>
+        <Button
           type="button"
-          onClick={() => router.push("/news")}
-          className="inline-flex items-center rounded-xl px-4 py-2 border hover:bg-black/5 transition"
+          onClick={() =>
+            isEdit ? router.push(`/news/${editId}`) : router.push("/news")
+          }
+          className="inline-flex cursor-pointer items-center rounded-xl px-4 py-2 border hover:bg-red-500 transition"
         >
           Cancelar
-        </button>
+        </Button>
       </div>
+
       <TagPicker
         open={pickerOpen}
         onClose={() => setPickerOpen(false)}

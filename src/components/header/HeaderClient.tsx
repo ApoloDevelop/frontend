@@ -7,6 +7,7 @@ import { Menu, X, User, ChevronDown, LogOut, Power } from "lucide-react";
 import { GlobalSearch } from "./GlobalSearch";
 import { useAuthUser } from "@/hooks/home/useAuthUser";
 import { clearSession } from "@/lib/auth";
+import { AuthUser } from "@/types/auth";
 
 const navLinks = [
   { href: "/", label: "Inicio" },
@@ -14,12 +15,16 @@ const navLinks = [
   { href: "/explore", label: "Explorar" },
 ];
 
-export default function Header() {
+export function HeaderClient({
+  initialUser,
+}: {
+  initialUser: AuthUser | null;
+}) {
   const pathname = usePathname();
   const router = useRouter();
-  const [open, setOpen] = useState(false); // drawer móvil
-  const [menuOpen, setMenuOpen] = useState(false); // dropdown perfil (desktop)
-  const { user } = useAuthUser();
+  const [open, setOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const { user } = useAuthUser(initialUser); // 👈 hidrata con snapshot del servidor
 
   const btnRef = useRef<HTMLButtonElement | null>(null);
   const menuRef = useRef<HTMLDivElement | null>(null);
@@ -77,9 +82,8 @@ export default function Header() {
     clearSession(); // o: localStorage.removeItem("token"); localStorage.removeItem("user");
     setMenuOpen(false);
     setOpen(false);
-    if (typeof window !== "undefined") {
-      window.location.replace("/");
-    }
+    router.replace("/login");
+    router.refresh();
   };
 
   return (

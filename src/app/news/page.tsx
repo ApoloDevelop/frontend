@@ -28,6 +28,7 @@ export default async function NewsPage({
 }) {
   const { offset } = await searchParams;
   const user = await getCurrentUser();
+  const canWrite = !!user && [1, 2, 3].includes(Number(user.role_id));
 
   const offRaw = Number.isFinite(Number(offset)) ? Number(offset) : 0;
   const off = normalizeOffset(offRaw);
@@ -40,7 +41,7 @@ export default async function NewsPage({
       <div className="container mx-auto px-4 py-20 text-center">
         <h1 className="text-3xl font-bold mb-2">Noticias</h1>
         <p className="text-gray-600">Aún no hay artículos publicados.</p>
-        {user && [1, 2, 3].includes(user.role_id) && (
+        {canWrite && (
           <div className="mt-6">
             <Button>
               <Link href="/news/article">Añadir artículo</Link>
@@ -64,7 +65,7 @@ export default async function NewsPage({
       {/* Cabecera + CTA writer */}
       <div className="flex items-center justify-between mt-6 mb-4">
         <h1 className="text-3xl font-bold">Noticias</h1>
-        {user && [1, 2, 3].includes(user.role_id) && (
+        {canWrite && (
           <Button>
             <Link href="/news/article">Añadir artículo</Link>
           </Button>
@@ -97,14 +98,6 @@ export default async function NewsPage({
                     <time dateTime={featured.published_date}>
                       {dayjs(featured.published_date).format("D MMM YYYY")}
                     </time>
-                    <span aria-hidden>•</span>
-                    <span>Autor #{featured.author_id}</span>
-                    {typeof featured.views === "number" && (
-                      <>
-                        <span aria-hidden>•</span>
-                        <span>{featured.views} visitas</span>
-                      </>
-                    )}
                   </div>
                 </div>
               </div>
@@ -140,8 +133,6 @@ export default async function NewsPage({
                       <time dateTime={a.published_date}>
                         {dayjs(a.published_date).format("D MMM YYYY")}
                       </time>
-                      <span aria-hidden>•</span>
-                      <span>Autor #{a.author_id}</span>
                     </div>
                   </div>
                 </Link>
