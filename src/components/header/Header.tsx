@@ -1,11 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
-import { Menu, X, User } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
+import { Menu, X, User, ChevronDown, LogOut, Power } from "lucide-react";
 import { GlobalSearch } from "./GlobalSearch";
 import { useAuthUser } from "@/hooks/home/useAuthUser";
+import { clearSession } from "@/lib/auth";
 
 const navLinks = [
   { href: "/", label: "Inicio" },
@@ -15,17 +16,43 @@ const navLinks = [
 
 export default function Header() {
   const pathname = usePathname();
-  const [open, setOpen] = useState(false);
+  const router = useRouter();
+  const [open, setOpen] = useState(false); // drawer móvil
+  const [menuOpen, setMenuOpen] = useState(false); // dropdown perfil (desktop)
   const { user } = useAuthUser();
+
+  const btnRef = useRef<HTMLButtonElement | null>(null);
+  const menuRef = useRef<HTMLDivElement | null>(null);
 
   // Cerrar con ESC
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
-      if (e.key === "Escape") setOpen(false);
+      if (e.key === "Escape") {
+        setOpen(false);
+        setMenuOpen(false);
+      }
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, []);
+
+  // Cerrar dropdown al hacer click fuera
+  useEffect(() => {
+    function onClick(e: MouseEvent) {
+      const t = e.target as Node;
+      if (
+        menuOpen &&
+        menuRef.current &&
+        !menuRef.current.contains(t) &&
+        btnRef.current &&
+        !btnRef.current.contains(t)
+      ) {
+        setMenuOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", onClick);
+    return () => document.removeEventListener("mousedown", onClick);
+  }, [menuOpen]);
 
   // Bloquear scroll cuando el menú móvil está abierto
   useEffect(() => {
@@ -40,20 +67,29 @@ export default function Header() {
   // Cerrar al navegar a otra ruta
   useEffect(() => {
     setOpen(false);
+    setMenuOpen(false);
   }, [pathname]);
 
   const isActive = (href: string) =>
     href === "/" ? pathname === "/" : pathname?.startsWith(href);
 
+  const handleLogout = () => {
+    clearSession(); // o: localStorage.removeItem("token"); localStorage.removeItem("user");
+    setMenuOpen(false);
+    setOpen(false);
+    if (typeof window !== "undefined") {
+      window.location.replace("/");
+    }
+  };
+
   return (
     <>
       {/* HEADER full-bleed */}
       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur supports-[backdrop-filter]:bg-white/60 border-b border-gray-100">
-        {/* Full width sin container para poder pegar a las esquinas */}
         <div className="w-full">
-          <div className="h-14 sm:h-16 grid grid-cols-[auto_1fr_auto] items-center">
-            {/* Brand a la ESQUINA IZQUIERDA */}
-            <div className="pl-3 sm:pl-4">
+          <div className="h-14 sm:h-16 grid grid-cols-[auto_1fr_auto] md:grid-cols-[1fr_auto_1fr] items-center">
+            {/* Brand IZQUIERDA */}
+            <div className="pl-3 sm:pl-4 justify-self-start">
               <Link
                 href="/"
                 className="block font-extrabold text-xl sm:text-2xl tracking-tight"
@@ -63,8 +99,8 @@ export default function Header() {
               </Link>
             </div>
 
-            {/* Nav centrado (solo desktop) */}
-            <nav className="hidden md:flex justify-center gap-6">
+            {/* Nav centrado (desktop) */}
+            <nav className="hidden md:flex justify-center gap-6 justify-self-center">
               {navLinks.map((l) => (
                 <Link
                   key={l.href}
@@ -78,20 +114,13 @@ export default function Header() {
               ))}
             </nav>
 
-            {/* Acciones a la ESQUINA DERECHA */}
-            <div className="pr-3 sm:pr-4 flex items-center">
+            {/* Acciones DERECHA */}
+            <div className="pr-3 sm:pr-4 flex items-center justify-self-end">
               {/* Desktop actions */}
               <div className="hidden md:flex items-center gap-2">
                 <GlobalSearch />
-                {user ? (
-                  <Link
-                    href={`/users/${user.username}`}
-                    className="inline-flex items-center gap-2 rounded-md bg-black text-white px-3 py-2 text-sm hover:bg-purple-700 transition"
-                  >
-                    <User className="h-4 w-4" />
-                    Mi perfil
-                  </Link>
-                ) : (
+
+                {!user && (
                   <Link
                     href="/login"
                     className="inline-flex items-center gap-2 rounded-md bg-black text-white px-3 py-2 text-sm hover:bg-purple-700 transition"
@@ -100,9 +129,54 @@ export default function Header() {
                     Acceder
                   </Link>
                 )}
+
+                {user && (
+                  <div className="relative">
+                    <button
+                      ref={btnRef}
+                      type="button"
+                      onClick={() => setMenuOpen((v) => !v)}
+                      aria-haspopup="menu"
+                      aria-expanded={menuOpen}
+                      className={`inline-flex items-center gap-2 rounded-md px-3 py-2 text-sm transition
+                                  bg-black text-white hover:bg-purple-700 cursor-pointer`}
+                    >
+                      <User className="h-4 w-4" />
+                      Mi perfil
+                      <ChevronDown className="h-4 w-4 opacity-80" />
+                    </button>
+
+                    {menuOpen && (
+                      <div
+                        ref={menuRef}
+                        role="menu"
+                        className="absolute right-0 mt-2 w-44 rounded-md border border-gray-200 bg-white shadow-lg ring-1 ring-black/5 overflow-hidden"
+                      >
+                        <Link
+                          href={`/users/${user.username}`}
+                          onClick={() => setMenuOpen(false)}
+                          role="menuitem"
+                          className="flex items-center gap-2 px-3 py-2 text-sm text-gray-800 hover:bg-gray-50"
+                        >
+                          <User className="h-4 w-4" />
+                          Mi perfil
+                        </Link>
+                        <button
+                          type="button"
+                          onClick={handleLogout}
+                          role="menuitem"
+                          className="flex w-full items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50 cursor-pointer"
+                        >
+                          <LogOut className="h-4 w-4" />
+                          Cerrar sesión
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
 
-              {/* Botón hamburguesa (mobile) pegado a la derecha */}
+              {/* Botón hamburguesa (mobile) */}
               <button
                 type="button"
                 className="md:hidden ml-auto inline-flex items-center justify-center rounded-md p-2 hover:bg-gray-100"
@@ -118,7 +192,7 @@ export default function Header() {
         </div>
       </header>
 
-      {/* OVERLAY (fuera del header, opaco) */}
+      {/* OVERLAY (mobile) */}
       {open && (
         <div
           className="fixed inset-0 z-[60] md:hidden bg-black/40"
@@ -127,7 +201,7 @@ export default function Header() {
         />
       )}
 
-      {/* DRAWER (fuera del header, fondo sólido sin blur) */}
+      {/* DRAWER (mobile) */}
       <aside
         id="mobile-drawer"
         className={`fixed top-0 left-0 z-[70] h-full w-80 max-w-[85vw] md:hidden
@@ -137,7 +211,7 @@ export default function Header() {
         aria-modal="true"
         aria-label="Menú de navegación"
       >
-        {/* Cabecera del drawer con extremos pegados */}
+        {/* Cabecera del drawer */}
         <div className="flex items-center justify-between px-3 py-3 border-b">
           <Link
             href="/"
@@ -176,16 +250,7 @@ export default function Header() {
 
         {/* Acciones del drawer */}
         <div className="mt-auto px-3 py-4 border-t space-y-2">
-          {user ? (
-            <Link
-              href={`/users/${user.username}`}
-              onClick={() => setOpen(false)}
-              className="w-full inline-flex items-center justify-center gap-2 rounded-md bg-black text-white px-3 py-2 text-sm hover:bg-purple-700 transition"
-            >
-              <User className="h-4 w-4" />
-              Mi perfil
-            </Link>
-          ) : (
+          {!user && (
             <Link
               href="/login"
               onClick={() => setOpen(false)}
@@ -194,6 +259,28 @@ export default function Header() {
               <User className="h-4 w-4" />
               Acceder
             </Link>
+          )}
+
+          {user && (
+            <>
+              <Link
+                href={`/users/${user.username}`}
+                onClick={() => setOpen(false)}
+                className="w-full inline-flex items-center justify-center gap-2 rounded-md bg-black text-white px-3 py-2 text-sm hover:bg-purple-700 transition"
+              >
+                <User className="h-4 w-4" />
+                Mi perfil
+              </Link>
+
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="w-full inline-flex items-center justify-center gap-2 rounded-md border border-red-200 text-red-700 px-3 py-2 text-sm hover:bg-red-50 transition"
+              >
+                <Power className="h-4 w-4" />
+                Cerrar sesión
+              </button>
+            </>
           )}
         </div>
       </aside>

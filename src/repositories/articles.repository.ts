@@ -6,6 +6,7 @@ import type {
   ListParams,
   ListResponse,
 } from "@/types/article";
+import { authHeaders } from "@/utils/auth";
 
 const B = process.env.NEXT_PUBLIC_BACKEND_URL;
 
@@ -34,7 +35,7 @@ export class ArticlesRepository {
   static async create(payload: CreateArticleInput) {
     const res = await fetch(`${B}/articles`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: authHeaders(),
       body: JSON.stringify(payload),
     });
     if (!res.ok) throw new Error("Error al crear el artículo");
@@ -44,7 +45,7 @@ export class ArticlesRepository {
   static async update(id: number, payload: UpdateArticleInput) {
     const res = await fetch(`${B}/articles/${id}`, {
       method: "PATCH",
-      headers: { "Content-Type": "application/json" },
+      headers: authHeaders(),
       body: JSON.stringify(payload),
     });
     if (!res.ok) {
@@ -55,7 +56,10 @@ export class ArticlesRepository {
   }
 
   static async remove(id: number) {
-    const res = await fetch(`${B}/articles/${id}`, { method: "DELETE" });
+    const res = await fetch(`${B}/articles/${id}`, {
+      method: "DELETE",
+      headers: authHeaders(),
+    });
     if (!res.ok) {
       if (res.status === 404) throw new Error("Artículo no encontrado");
       throw new Error("Error al borrar el artículo");

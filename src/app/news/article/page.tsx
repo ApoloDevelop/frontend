@@ -5,8 +5,8 @@ import { ArticleEditorForm } from "@/components/news/ArticleEditorForm";
 
 export default async function NewArticlePage() {
   const user = await getCurrentUser();
-  if (!user || user.role_id !== 3) {
-    redirect("/news"); // protección básica
+  if (!user || ![1, 2, 3].includes(user.role_id)) {
+    redirect("/news");
   }
 
   return (

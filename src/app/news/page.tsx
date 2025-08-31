@@ -40,7 +40,7 @@ export default async function NewsPage({
       <div className="container mx-auto px-4 py-20 text-center">
         <h1 className="text-3xl font-bold mb-2">Noticias</h1>
         <p className="text-gray-600">Aún no hay artículos publicados.</p>
-        {user?.role_id === 3 && (
+        {user && [1, 2, 3].includes(user.role_id) && (
           <div className="mt-6">
             <Button>
               <Link href="/news/article">Añadir artículo</Link>
@@ -64,7 +64,7 @@ export default async function NewsPage({
       {/* Cabecera + CTA writer */}
       <div className="flex items-center justify-between mt-6 mb-4">
         <h1 className="text-3xl font-bold">Noticias</h1>
-        {user?.role_id === 3 && (
+        {user && [1, 2, 3].includes(user.role_id) && (
           <Button>
             <Link href="/news/article">Añadir artículo</Link>
           </Button>
