@@ -3,16 +3,17 @@
 import { useEffect, useRef, useState } from "react";
 import { CommentsService } from "@/services/comments.service";
 import type { Comment } from "@/types/comment";
+import type { AuthUser } from "@/types/auth";
 import CommentItem from "./CommentItem";
 import { useRouter } from "next/navigation";
 import { Button } from "../ui/button";
 
 type Props = {
   articleId: number;
-  currentUserId?: number | null;
+  currentUser?: AuthUser | null;
 };
 
-export default function CommentsSection({ articleId, currentUserId }: Props) {
+export default function CommentsSection({ articleId, currentUser }: Props) {
   const router = useRouter();
   const [list, setList] = useState<Comment[]>([]);
   const [loading, setLoading] = useState(true);
@@ -41,7 +42,17 @@ export default function CommentsSection({ articleId, currentUserId }: Props) {
     })();
   }, [articleId]);
 
-  const canPost = !!currentUserId;
+  const canPost = !!currentUser;
+  const currentUserId = currentUser?.id || null;
+
+  // Helper function to check if user can delete a comment
+  const canDeleteComment = (commentUserId: number) => {
+    if (!currentUser) return false;
+    // User can delete if they own the comment OR if they have role 1 or 2
+    return (
+      currentUser.id === commentUserId || [1, 2].includes(currentUser.role_id)
+    );
+  };
 
   async function handlePost(parent_id?: number | null) {
     const content = parent_id
@@ -168,7 +179,7 @@ export default function CommentsSection({ articleId, currentUserId }: Props) {
               currentUserId={currentUserId}
               onReply={canPost ? () => setReplyTo(c.id) : undefined}
               onDelete={
-                currentUserId === c.user_id
+                canDeleteComment(c.user_id)
                   ? () => handleDelete(c.id)
                   : undefined
               }
@@ -183,7 +194,7 @@ export default function CommentsSection({ articleId, currentUserId }: Props) {
                       c={r}
                       currentUserId={currentUserId}
                       onDelete={
-                        currentUserId === r.user_id
+                        canDeleteComment(r.user_id)
                           ? () => handleDelete(r.id)
                           : undefined
                       }

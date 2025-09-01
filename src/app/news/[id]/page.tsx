@@ -34,7 +34,7 @@ export default async function ArticlePage({
         <ArticleMainContent
           content={article.content}
           articleId={articleId}
-          currentUserId={user?.id ?? 0}
+          currentUser={user}
         />
 
         <ArticleSidebar relatedArticles={related} tags={article.tags || []} />
