@@ -3,7 +3,7 @@ import { FavoriteRepository } from "@/repositories/favorites.repository";
 type FavPayload = {
   type: "artist" | "album" | "track" | "venue";
   name: string;
-  userId: number;
+  userId?: number;
   artistName?: string;
   location?: string;
 };

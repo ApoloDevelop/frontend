@@ -1,10 +1,11 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import { Heart } from "lucide-react";
-import { FavoriteService } from "@/services/favorites.service";
+import React from "react";
 import { Button } from "../ui/button";
 import { cn } from "@/lib/utils";
-import { toast } from "sonner";
+import { useFavoriteStatus } from "@/hooks/favorites/useFavoriteStatus";
+import { useFavoriteActions } from "@/hooks/favorites/useFavoriteActions";
+import { FavoriteIcon } from "./FavoriteIcon";
+import { FavoriteLabel } from "./FavoriteLabel";
 
 type FavType = "artist" | "album" | "track" | "venue";
 
@@ -15,6 +16,11 @@ interface FavoriteButtonProps {
   artistName?: string;
   location?: string;
   className?: string;
+  customLabels?: {
+    favorite: string;
+    notFavorite: string;
+  };
+  iconSize?: number;
 }
 
 export function FavoriteButton({
@@ -24,118 +30,28 @@ export function FavoriteButton({
   artistName,
   location,
   className,
+  customLabels,
+  iconSize = 18,
 }: FavoriteButtonProps) {
-  const [isFavorite, setIsFavorite] = useState<boolean>(false);
-  const [loading, setLoading] = useState<boolean>(true);
+  // Custom hooks
+  const { isFavorite, setIsFavorite, loading, setLoading } = useFavoriteStatus({
+    type,
+    name,
+    userId,
+    artistName,
+    location,
+  });
 
-  useEffect(() => {
-    let mounted = true;
-    (async () => {
-      try {
-        const fav = await FavoriteService.isFavorite({
-          type,
-          name,
-          userId,
-          artistName,
-          location,
-        });
-        if (mounted) setIsFavorite(fav);
-      } catch (err) {
-        console.error("Error al obtener favorito", err);
-      } finally {
-        if (mounted) setLoading(false);
-      }
-    })();
-    return () => {
-      mounted = false;
-    };
-  }, [type, name, userId, artistName, location]);
-
-  const toggleFavorite = async () => {
-    if (loading) return;
-    setLoading(true);
-
-    try {
-      if (isFavorite) {
-        // Quitar de favoritos
-        await FavoriteService.removeFavorite({
-          type,
-          name,
-          userId,
-          artistName,
-          location,
-        });
-        setIsFavorite(false);
-
-        toast("Has eliminado de favoritos", {
-          description: `"${name}" se ha eliminado de tus favoritos.`,
-          action: {
-            label: "Deshacer",
-            onClick: async () => {
-              setLoading(true);
-              try {
-                await FavoriteService.addFavorite({
-                  type,
-                  name,
-                  userId,
-                  artistName,
-                  location,
-                });
-                setIsFavorite(true);
-                toast.success("Acción revertida");
-              } catch (e) {
-                console.error(e);
-                toast.error("No se pudo deshacer");
-              } finally {
-                setLoading(false);
-              }
-            },
-          },
-        });
-      } else {
-        // Añadir a favoritos
-        await FavoriteService.addFavorite({
-          type,
-          name,
-          userId,
-          artistName,
-          location,
-        });
-        setIsFavorite(true);
-
-        toast.success("Añadido a favoritos", {
-          description: `"${name}" se ha añadido a tus favoritos.`,
-          action: {
-            label: "Deshacer",
-            onClick: async () => {
-              setLoading(true);
-              try {
-                await FavoriteService.removeFavorite({
-                  type,
-                  name,
-                  userId,
-                  artistName,
-                  location,
-                });
-                setIsFavorite(false);
-                toast.success("Acción revertida");
-              } catch (e) {
-                console.error(e);
-                toast.error("No se pudo deshacer");
-              } finally {
-                setLoading(false);
-              }
-            },
-          },
-        });
-      }
-    } catch (err) {
-      console.error("Error al cambiar favorito", err);
-      toast.error("No se pudo completar la acción");
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { toggleFavorite } = useFavoriteActions({
+    type,
+    name,
+    userId,
+    artistName,
+    location,
+    isFavorite,
+    setIsFavorite,
+    setLoading,
+  });
 
   return (
     <Button
@@ -150,12 +66,8 @@ export function FavoriteButton({
         className
       )}
     >
-      <Heart
-        size={18}
-        className={isFavorite ? "text-red-500" : "text-white"}
-        fill={isFavorite ? "currentColor" : "none"}
-      />
-      <span>{isFavorite ? "Favorito" : "Favorito"}</span>
+      <FavoriteIcon isFavorite={isFavorite} size={iconSize} />
+      <FavoriteLabel isFavorite={isFavorite} customLabels={customLabels} />
     </Button>
   );
 }

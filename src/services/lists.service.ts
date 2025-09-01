@@ -2,18 +2,16 @@ import { ListRepository } from "@/repositories/lists.repository";
 
 export class ListService {
   static async getUserLists(
-    userId: number,
     itemType?: string
   ): Promise<{ id: number; name: string }[]> {
-    return await ListRepository.getUserLists(userId, itemType);
+    return await ListRepository.getUserLists(itemType);
   }
 
   static async createList(
-    userId: number,
     name: string,
     itemType?: string
   ): Promise<{ id: number; name: string }> {
-    return await ListRepository.createList(userId, name, itemType);
+    return await ListRepository.createList(name, itemType);
   }
 
   static async addItemToList(listId: number, itemId: number): Promise<void> {

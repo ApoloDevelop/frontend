@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React from "react";
 import {
   Dialog,
   DialogTrigger,
@@ -9,24 +9,16 @@ import {
   DialogClose,
 } from "@/components/ui/dialog";
 import { Button } from "../ui/button";
-import { ListService } from "@/services/lists.service";
-import { Input } from "../ui/input";
-import { ItemService } from "@/services/item.service";
 import { Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { toast } from "sonner";
+import { useDialogStates } from "@/hooks/lists/useDialogStates";
+import { useListDialog } from "@/hooks/lists/useListDialog";
+import { useListActions } from "@/hooks/lists/useListActions";
+import { CreateListDialog } from "./CreateListDialog";
+import { RemoveFromListDialog } from "./RemoveFromListDialog";
+import { ListContent } from "./ListContent";
 
 type ItemType = "artist" | "album" | "track" | "venue";
-
-interface ListItem {
-  itemId: number;
-}
-
-interface CustomList {
-  id: number;
-  name: string;
-  listItems: ListItem[];
-}
 
 interface AddToListDialogProps {
   userId: number;
@@ -47,203 +39,71 @@ export function AddToListDialog({
   height,
   className,
 }: AddToListDialogProps) {
-  const [open, setOpen] = useState(false);
-  const [lists, setLists] = useState<CustomList[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [createDialogOpen, setCreateDialogOpen] = useState(false);
-  const [newListName, setNewListName] = useState("");
-  const [itemLists, setItemLists] = useState<number[]>([]);
-  const [removeDialogOpen, setRemoveDialogOpen] = useState(false);
-  const [selectedListId, setSelectedListId] = useState<number | null>(null);
+  // Dialog states hook
+  const {
+    open,
+    createDialogOpen,
+    removeDialogOpen,
+    selectedListId,
+    newListName,
+    loading,
+    setOpen,
+    setNewListName,
+    openRemoveDialog,
+    closeRemoveDialog,
+    openCreateDialog,
+    closeCreateDialog,
+    setLoading,
+  } = useDialogStates();
 
-  const niceType = (t: ItemType) =>
-    t === "artist"
-      ? "El/la artista"
-      : t === "album"
-      ? "El álbum"
-      : t === "track"
-      ? "La canción"
-      : "La sala";
-
-  const resolveItem = async () => {
-    return ItemService.findItemByTypeAndName(itemType, name, {
+  // List data hook
+  const { lists, setLists, itemLists, setItemLists, niceType, resolveItem } =
+    useListDialog({
+      userId,
+      itemType,
+      name,
       artistName,
       location,
+      open,
     });
-  };
 
-  const handleAddItemToList = async (listId: number) => {
+  // List actions hook
+  const {
+    handleAddItemToList,
+    handleRemoveItemFromList,
+    handleCreateListAndAddItem,
+  } = useListActions({
+    lists,
+    setLists,
+    itemLists,
+    setItemLists,
+    resolveItem,
+    niceType,
+    itemType,
+    name,
+    setOpen,
+  });
+
+  const handleCreateList = async (listName: string): Promise<boolean> => {
+    setLoading(true);
     try {
-      const item = await resolveItem();
-      if (!item) {
-        console.error("No se encontró el ítem");
-        return;
+      const success = await handleCreateListAndAddItem(listName);
+      if (success) {
+        closeCreateDialog();
+        return true;
       }
-
-      await ListService.addItemToList(listId, item.itemId);
-
-      const list = lists.find((l) => l.id === listId);
-      const listName = list?.name ?? `Lista ${listId}`;
-
-      // Marca local
-      setItemLists((prev) =>
-        prev.includes(listId) ? prev : [...prev, listId]
-      );
-
-      toast.success("Añadido a la lista", {
-        description: `${niceType(
-          itemType
-        )} "${name}" se ha añadido a "${listName}".`,
-        action: {
-          label: "Deshacer",
-          onClick: async () => {
-            try {
-              await ListService.removeItemFromList(listId, item.itemId);
-              setItemLists((prev) => prev.filter((id) => id !== listId));
-              toast.success("Acción revertida");
-            } catch (e) {
-              console.error(e);
-              toast.error("No se pudo deshacer");
-            }
-          },
-        },
-      });
-
-      setOpen(false);
-    } catch (error) {
-      console.error("Error al añadir el ítem a la lista:", error);
-      toast.error("No se pudo añadir a la lista");
-    }
-  };
-
-  const handleCreateListAndAddItem = async () => {
-    if (!newListName) return;
-
-    try {
-      setLoading(true);
-      const newList = await ListService.createList(
-        userId,
-        newListName,
-        itemType
-      );
-      setLists((prev) => [...prev, { ...newList, listItems: [] }]);
-
-      const item = await resolveItem();
-      if (item) {
-        await ListService.addItemToList(newList.id, item.itemId);
-        setItemLists((prev) => [...prev, newList.id]);
-
-        toast.success("Lista creada", {
-          description: `${niceType(
-            itemType
-          )} "${name}" se añadió a "${newListName}".`,
-          action: {
-            label: "Deshacer",
-            onClick: async () => {
-              try {
-                await ListService.removeItemFromList(newList.id, item.itemId);
-                setItemLists((prev) => prev.filter((id) => id !== newList.id));
-                toast.success("Acción revertida");
-              } catch (e) {
-                console.error(e);
-                toast.error("No se pudo deshacer");
-              }
-            },
-          },
-        });
-      }
-
-      setCreateDialogOpen(false);
-      setOpen(false);
-      setNewListName("");
-    } catch (error) {
-      console.error("Error al crear la lista o añadir el ítem:", error);
-      toast.error("No se pudo crear la lista");
+      return false;
     } finally {
       setLoading(false);
     }
   };
 
-  const handleRemoveItemDialog = (listId: number) => {
-    setSelectedListId(listId);
-    setRemoveDialogOpen(true);
-  };
-
-  const handleRemoveItemFromList = async () => {
-    if (!selectedListId) return;
-
-    try {
-      const item = await resolveItem();
-      if (!item) {
-        console.error("No se encontró el ítem");
-        return;
-      }
-
-      await ListService.removeItemFromList(selectedListId, item.itemId);
-      setItemLists((prev) => prev.filter((id) => id !== selectedListId));
-
-      const list = lists.find((l) => l.id === selectedListId);
-      const listName = list?.name ?? `Lista ${selectedListId}`;
-
-      toast("Eliminado de la lista", {
-        description: `${niceType(
-          itemType
-        )} "${name}" se eliminó de "${listName}".`,
-        action: {
-          label: "Deshacer",
-          onClick: async () => {
-            try {
-              await ListService.addItemToList(selectedListId, item.itemId);
-              setItemLists((prev) =>
-                prev.includes(selectedListId) ? prev : [...prev, selectedListId]
-              );
-              toast.success("Acción revertida");
-            } catch (e) {
-              console.error(e);
-              toast.error("No se pudo deshacer");
-            }
-          },
-        },
-      });
-
-      setRemoveDialogOpen(false);
-    } catch (error) {
-      console.error("Error al eliminar el ítem de la lista:", error);
-      toast.error("No se pudo eliminar de la lista");
+  const handleRemoveConfirm = async () => {
+    if (selectedListId) {
+      await handleRemoveItemFromList(selectedListId);
+      closeRemoveDialog();
     }
   };
-
-  useEffect(() => {
-    if (!open) return;
-    setLoading(true);
-
-    (async () => {
-      try {
-        const fetchedLists = await ListService.getUserLists(userId, itemType);
-        const normalized = fetchedLists.map((list: any) => ({
-          ...list,
-          listItems: list.listItems ?? [],
-        })) as CustomList[];
-        setLists(normalized);
-
-        const item = await resolveItem();
-        if (item) {
-          const itemId = item.itemId;
-          const listsWithItem = normalized
-            .filter((l) => l.listItems.some((i) => i.itemId === itemId))
-            .map((l) => l.id);
-          setItemLists(listsWithItem);
-        } else {
-          setItemLists([]);
-        }
-      } catch (e) {
-        console.error("Error al cargar listas/ítem:", e);
-        toast.error("No se pudieron cargar tus listas");
-      } finally {
-        setLoading(false);
-      }
-    })();
-  }, [open, userId, itemType, name, artistName, location]);
 
   return (
     <>
@@ -268,40 +128,14 @@ export function AddToListDialog({
             <DialogTitle>Añadir a una lista</DialogTitle>
           </DialogHeader>
 
-          {loading ? (
-            <p>Cargando listas…</p>
-          ) : (
-            <ul className="max-h-60 overflow-y-auto divide-y">
-              <li
-                className="py-2 px-4 border rounded bg-pink-100 hover:bg-blue-200 cursor-pointer transition font-semibold"
-                onClick={() => setCreateDialogOpen(true)}
-              >
-                + Crear nueva lista
-              </li>
-              {lists.length > 0 ? (
-                lists.map((l) => (
-                  <li
-                    key={l.id}
-                    className={`py-2 px-4 border rounded hover:bg-gray-200 cursor-pointer transition ${
-                      itemLists.includes(l.id) ? "bg-green-100" : ""
-                    }`}
-                    onClick={() =>
-                      itemLists.includes(l.id)
-                        ? handleRemoveItemDialog(l.id)
-                        : handleAddItemToList(l.id)
-                    }
-                  >
-                    {l.name}
-                    {itemLists.includes(l.id) && (
-                      <span className="ml-2 text-green-600 font-bold">✔</span>
-                    )}
-                  </li>
-                ))
-              ) : (
-                <p className="py-2 px-4 text-gray-500">No tienes listas aún.</p>
-              )}
-            </ul>
-          )}
+          <ListContent
+            lists={lists}
+            itemLists={itemLists}
+            loading={loading}
+            onAddToList={handleAddItemToList}
+            onRemoveFromList={openRemoveDialog}
+            onCreateNew={openCreateDialog}
+          />
 
           <DialogClose asChild>
             <Button className="mt-4 px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 transition text-black">
@@ -311,60 +145,21 @@ export function AddToListDialog({
         </DialogContent>
       </Dialog>
 
-      <Dialog open={createDialogOpen} onOpenChange={setCreateDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Crear nueva lista</DialogTitle>
-          </DialogHeader>
-          <div className="flex flex-col gap-4">
-            <Input
-              type="text"
-              placeholder="Nombre de la lista"
-              value={newListName}
-              onChange={(e) => setNewListName(e.target.value)}
-              className="border rounded px-2 py-1"
-            />
+      <CreateListDialog
+        open={createDialogOpen}
+        onOpenChange={closeCreateDialog}
+        newListName={newListName}
+        setNewListName={setNewListName}
+        onCreateList={handleCreateList}
+        loading={loading}
+      />
 
-            <div className="flex justify-end gap-2">
-              <Button
-                onClick={() => setCreateDialogOpen(false)}
-                className="bg-gray-200 hover:bg-gray-300 text-black"
-              >
-                Cancelar
-              </Button>
-              <Button
-                onClick={handleCreateListAndAddItem}
-                className="text-white"
-              >
-                Crear
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      <Dialog open={removeDialogOpen} onOpenChange={setRemoveDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Eliminar de la lista</DialogTitle>
-          </DialogHeader>
-          <p>¿Estás seguro de que deseas eliminar este ítem de la lista?</p>
-          <div className="flex justify-end gap-2 mt-4">
-            <Button
-              onClick={() => setRemoveDialogOpen(false)}
-              className="bg-gray-200 hover:bg-gray-300 text-black"
-            >
-              Cancelar
-            </Button>
-            <Button
-              onClick={handleRemoveItemFromList}
-              className="bg-red-500 hover:bg-red-600 text-white"
-            >
-              Eliminar
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
+      <RemoveFromListDialog
+        open={removeDialogOpen}
+        onOpenChange={closeRemoveDialog}
+        onConfirm={handleRemoveConfirm}
+        loading={loading}
+      />
     </>
   );
 }
