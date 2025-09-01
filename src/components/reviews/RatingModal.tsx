@@ -1,12 +1,14 @@
-import { useEffect, useState } from "react";
+"use client";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { DialogClose } from "@radix-ui/react-dialog";
+import { useRatingForm } from "@/hooks/reviews/useRatingForm";
+import { StarRating } from "./StarRating";
+import { CommentForm } from "./CommentForm";
+import { ModalActions } from "./ModalActions";
 
 type RateableType = "artist" | "album" | "track" | "venue";
 
@@ -31,27 +33,29 @@ export function RatingModal({
   initialComment?: string;
   hasExisting?: boolean;
 }) {
-  const [score, setScore] = useState(0);
-  const [comment, setComment] = useState("");
-  const [title, setTitle] = useState("");
-  const [hovered, setHovered] = useState<number | null>(null);
-
-  useEffect(() => {
-    if (open) {
-      setScore(initialScore ?? 0);
-      setTitle(initialTitle ?? "");
-      setComment(initialComment ?? "");
-      setHovered(null);
-    } else {
-      setScore(0);
-      setTitle("");
-      setComment("");
-      setHovered(null);
-    }
-  }, [open, initialScore, initialTitle, initialComment]);
+  const {
+    score,
+    setScore,
+    comment,
+    setComment,
+    title,
+    setTitle,
+    hovered,
+    setHovered,
+  } = useRatingForm({
+    open,
+    initialScore,
+    initialTitle,
+    initialComment,
+  });
 
   const heading = hasExisting ? `Tu reseña de ${name}` : `Puntúa a ${name}`;
-  const cta = hasExisting ? "Actualizar reseña" : "Guardar";
+
+  const handleSubmit = () => {
+    if (score > 0) {
+      onSubmit(score, comment, title);
+    }
+  };
 
   return (
     <Dialog
@@ -66,60 +70,29 @@ export function RatingModal({
         </DialogHeader>
 
         <div className="flex flex-col items-center gap-4">
-          {/* Estrellas 1..10 */}
-          <div className="flex gap-1">
-            {Array.from({ length: 10 }).map((_, i) => (
-              <button
-                key={i}
-                type="button"
-                onClick={() => setScore(i + 1)}
-                onMouseEnter={() => setHovered(i + 1)}
-                onMouseLeave={() => setHovered(null)}
-                aria-label={`Puntuar ${i + 1}`}
-                className={`text-3xl transition-colors ${
-                  (hovered !== null ? i < hovered : i < score)
-                    ? "text-yellow-400"
-                    : "text-gray-300"
-                } cursor-pointer`}
-              >
-                ★
-              </button>
-            ))}
-          </div>
+          <StarRating
+            score={score}
+            hovered={hovered}
+            onScoreChange={setScore}
+            onHover={setHovered}
+          />
 
           {score > 0 && (
             <p className="text-lg font-semibold">Tu nota: {score}</p>
           )}
 
-          <input
-            type="text"
-            placeholder="Título (opcional)"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            className="w-full border rounded p-2"
-          />
-          <textarea
-            placeholder="Comentario (opcional)"
-            value={comment}
-            onChange={(e) => setComment(e.target.value)}
-            className="w-full border rounded p-2"
-            rows={3}
+          <CommentForm
+            title={title}
+            comment={comment}
+            onTitleChange={setTitle}
+            onCommentChange={setComment}
           />
 
-          <div className="flex w-full justify-end gap-2">
-            <DialogClose asChild>
-              <Button type="button" variant="outline">
-                Cancelar
-              </Button>
-            </DialogClose>
-
-            <Button
-              onClick={() => score > 0 && onSubmit(score, comment, title)}
-              disabled={score === 0}
-            >
-              {cta}
-            </Button>
-          </div>
+          <ModalActions
+            score={score}
+            hasExisting={hasExisting}
+            onSubmit={handleSubmit}
+          />
         </div>
       </DialogContent>
     </Dialog>

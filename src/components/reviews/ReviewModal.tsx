@@ -75,13 +75,6 @@ export function ReviewsModal({
     setMaxCount(Math.max(1, ...counts.map((c) => c.count)));
   };
 
-  function mergeDedupe(prev: ReviewCardData[], next: ReviewCardData[]) {
-    const map = new Map<number, ReviewCardData>();
-    for (const r of prev) map.set(r.id, r);
-    for (const r of next) map.set(r.id, r);
-    return Array.from(map.values());
-  }
-
   const loadPage = async (cursor?: number) => {
     if (isLoading) return;
     setIsLoading(true);
@@ -406,32 +399,36 @@ export function ReviewsModal({
                 {myReview.text && (
                   <CardContent className="pt-0 sm:pt-2 text-sm sm:text-base">
                     {myReview.text}
-                    <div className="mt-3 flex items-center gap-3">
-                      <button
-                        onClick={() => handleVote(myReview.id, 1)}
-                        aria-pressed={myReview.myVote === 1}
-                        className={`inline-flex items-center justify-center rounded-full border px-2.5 py-1.5 transition ${
-                          myReview.myVote === 1
-                            ? "bg-green-50 border-green-500 text-green-700"
-                            : "border-transparent hover:bg-green-50 text-green-600"
-                        }`}
-                        title="Estoy de acuerdo"
-                      >
-                        <ThumbsUp className="h-4 w-4" />
-                      </button>
-                      <button
-                        onClick={() => handleVote(myReview.id, -1)}
-                        aria-pressed={myReview.myVote === -1}
-                        className={`inline-flex items-center justify-center rounded-full border px-2.5 py-1.5 transition ${
-                          myReview.myVote === -1
-                            ? "bg-red-50 border-red-500 text-red-700"
-                            : "border-transparent hover:bg-red-50 text-red-600"
-                        }`}
-                        title="No estoy de acuerdo"
-                      >
-                        <ThumbsDown className="h-4 w-4" />
-                      </button>
-                    </div>
+
+                    {/* ⬇️ Ocultar botones si no hay usuario */}
+                    {currentUserId && (
+                      <div className="mt-3 flex items-center gap-3">
+                        <button
+                          onClick={() => handleVote(myReview.id, 1)}
+                          aria-pressed={myReview.myVote === 1}
+                          className={`inline-flex items-center justify-center rounded-full border px-2.5 py-1.5 transition ${
+                            myReview.myVote === 1
+                              ? "bg-green-50 border-green-500 text-green-700"
+                              : "border-transparent hover:bg-green-50 text-green-600"
+                          }`}
+                          title="Estoy de acuerdo"
+                        >
+                          <ThumbsUp className="h-4 w-4" />
+                        </button>
+                        <button
+                          onClick={() => handleVote(myReview.id, -1)}
+                          aria-pressed={myReview.myVote === -1}
+                          className={`inline-flex items-center justify-center rounded-full border px-2.5 py-1.5 transition ${
+                            myReview.myVote === -1
+                              ? "bg-red-50 border-red-500 text-red-700"
+                              : "border-transparent hover:bg-red-50 text-red-600"
+                          }`}
+                          title="No estoy de acuerdo"
+                        >
+                          <ThumbsDown className="h-4 w-4" />
+                        </button>
+                      </div>
+                    )}
                   </CardContent>
                 )}
               </Card>
@@ -514,32 +511,36 @@ export function ReviewsModal({
                 {review.text && (
                   <CardContent className="pt-0 sm:pt-2 text-sm sm:text-base">
                     {review.text}
-                    <div className="mt-3 flex items-center gap-3">
-                      <button
-                        onClick={() => handleVote(review.id, 1)}
-                        aria-pressed={review.myVote === 1}
-                        className={`inline-flex items-center justify-center rounded-full border px-2.5 py-1.5 transition ${
-                          review.myVote === 1
-                            ? "bg-green-50 border-green-500 text-green-700"
-                            : "border-transparent hover:bg-green-50 text-green-600"
-                        }`}
-                        title="Estoy de acuerdo"
-                      >
-                        <ThumbsUp className="h-4 w-4" />
-                      </button>
-                      <button
-                        onClick={() => handleVote(review.id, -1)}
-                        aria-pressed={review.myVote === -1}
-                        className={`inline-flex items-center justify-center rounded-full border px-2.5 py-1.5 transition ${
-                          review.myVote === -1
-                            ? "bg-red-50 border-red-500 text-red-700"
-                            : "border-transparent hover:bg-red-50 text-red-600"
-                        }`}
-                        title="No estoy de acuerdo"
-                      >
-                        <ThumbsDown className="h-4 w-4" />
-                      </button>
-                    </div>
+
+                    {/* ⬇️ Ocultar botones si no hay usuario */}
+                    {currentUserId && (
+                      <div className="mt-3 flex items-center gap-3">
+                        <button
+                          onClick={() => handleVote(review.id, 1)}
+                          aria-pressed={review.myVote === 1}
+                          className={`inline-flex items-center justify-center rounded-full border px-2.5 py-1.5 transition ${
+                            review.myVote === 1
+                              ? "bg-green-50 border-green-500 text-green-700"
+                              : "border-transparent hover:bg-green-50 text-green-600"
+                          }`}
+                          title="Estoy de acuerdo"
+                        >
+                          <ThumbsUp className="h-4 w-4" />
+                        </button>
+                        <button
+                          onClick={() => handleVote(review.id, -1)}
+                          aria-pressed={review.myVote === -1}
+                          className={`inline-flex items-center justify-center rounded-full border px-2.5 py-1.5 transition ${
+                            review.myVote === -1
+                              ? "bg-red-50 border-red-500 text-red-700"
+                              : "border-transparent hover:bg-red-50 text-red-600"
+                          }`}
+                          title="No estoy de acuerdo"
+                        >
+                          <ThumbsDown className="h-4 w-4" />
+                        </button>
+                      </div>
+                    )}
                   </CardContent>
                 )}
               </Card>

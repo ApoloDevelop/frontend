@@ -49,7 +49,7 @@ export default async function EventsSidebar({
   return (
     <>
       <NextEvent event={nextEvent} slug={slug} />
-      <NearYou user={user} events={nextEvent} />
+      <NearYou user={user} events={events?.upcoming ?? []} />
     </>
   );
 }
