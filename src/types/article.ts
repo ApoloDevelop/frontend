@@ -20,6 +20,7 @@ export type Article = {
 export type ListParams = {
   offset?: number;
   limit?: number;
+  q?: string;
 };
 
 export type ListResponse<T> = {

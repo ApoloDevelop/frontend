@@ -23,6 +23,9 @@ import { PopularSongs } from "@/components/artist/PopularSongs";
 import { Suspense } from "react";
 import { EventsSidebarSkeleton } from "@/components/skeletons/EventsSidebarSkeleton";
 import EventsSidebar from "@/components/artist/EventsSidebar";
+import { useReviewPermissions } from "@/hooks/reviews/useReviewPermissions";
+import Rating from "@/components/reviews/Rating";
+import { getCurrentUser } from "@/lib/auth";
 
 export default async function ArtistPage({
   params,
@@ -103,6 +106,8 @@ export default async function ArtistPage({
         new Date(b.release_date).getTime() - new Date(a.release_date).getTime()
     )[0];
 
+  const authUser = await getCurrentUser();
+
   return (
     <div className="container mx-auto">
       <div
@@ -135,7 +140,11 @@ export default async function ArtistPage({
           <div className="flex items-center gap-4 flex-wrap">
             <h1 className="text-5xl font-bold text-black">{artistData.name}</h1>
             <div className="inline-block mt-2">
-              <RatingClient name={artistData.name} type="artist" userId={1} />
+              <Rating
+                name={artistData.name}
+                type="artist"
+                itemId={item?.itemId ?? null}
+              />
             </div>
           </div>
           <p className="text-lg text-gray-600">
@@ -148,12 +157,20 @@ export default async function ArtistPage({
         </div>
 
         <div className="ml-0 sm:ml-auto mt-3 sm:mt-2 flex flex-wrap items-center gap-2">
-          <FavoriteButton type="artist" name={artistData.name} userId={1} />
-          <AddToListDialog
-            userId={1}
-            itemType="artist"
-            name={artistData.name}
-          />
+          {authUser && (
+            <>
+              <FavoriteButton
+                type="artist"
+                name={artistData.name}
+                userId={authUser.id}
+              />
+              <AddToListDialog
+                userId={authUser.id}
+                itemType="artist"
+                name={artistData.name}
+              />
+            </>
+          )}
         </div>
       </div>
       {/* Contenido principal */}
@@ -170,6 +187,10 @@ export default async function ArtistPage({
               itemId={item?.itemId ?? null}
               name={artistData.name}
               variant="inline"
+              currentUserId={authUser?.id ?? null}
+              canModerate={
+                authUser ? [1, 2].includes(Number(authUser.role_id)) : false
+              }
             />
           </section>
           {/* Biografía */}

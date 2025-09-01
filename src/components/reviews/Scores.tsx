@@ -14,6 +14,8 @@ export function Scores({
   unverifiedCount,
   itemId,
   name,
+  currentUserId,
+  canModerate = false,
   variant = "inline",
   className,
 }: {
@@ -23,6 +25,8 @@ export function Scores({
   unverifiedCount: number;
   itemId: number | null;
   name: string;
+  currentUserId: number | null;
+  canModerate?: boolean;
   variant?: Variant;
   className?: string;
 }) {
@@ -44,7 +48,7 @@ export function Scores({
           size={84}
         />
         <button
-          className="text-sm text-purple-700 hover:underline disabled:text-gray-400"
+          className="text-sm text-purple-700 hover:underline disabled:text-gray-400 cursor-pointer"
           onClick={() => {
             setShowingVerified(true);
             setModalOpen(true);
@@ -67,7 +71,7 @@ export function Scores({
           size={84}
         />
         <button
-          className="text-sm text-purple-700 hover:underline disabled:text-gray-400"
+          className="text-sm text-purple-700 hover:underline disabled:text-gray-400 cursor-pointer"
           onClick={() => {
             setShowingVerified(false);
             setModalOpen(true);
@@ -106,7 +110,8 @@ export function Scores({
         name={name}
         averageScore={showingVerified ? verified : unverified}
         verified={showingVerified}
-        currentUserId={1}
+        currentUserId={currentUserId ?? null}
+        canModerate={canModerate}
       />
     </>
   );

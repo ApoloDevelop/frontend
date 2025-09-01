@@ -1,3 +1,4 @@
+// src/hooks/news.ts
 import { ArticlesService } from "@/services/articles.service";
 import { NewsPageData } from "@/types/news";
 
@@ -13,14 +14,28 @@ function normalizeOffset(off: number) {
 }
 
 export function useNewsPage() {
-  const getNewsData = async (offset?: string): Promise<NewsPageData> => {
+  const getNewsData = async (
+    offset?: string,
+    q?: string
+  ): Promise<NewsPageData> => {
+    const hasQuery = !!(q && q.trim());
     const offRaw = Number.isFinite(Number(offset)) ? Number(offset) : 0;
     const off = normalizeOffset(offRaw);
-    const limit = off === 0 ? FIRST_PAGE_SIZE : LATER_PAGE_SIZE;
 
-    const page = await ArticlesService.list({ offset: off, limit });
+    // Con búsqueda, usamos layout “normal” (sin hero) y tamaño LATER_PAGE
+    const limit = hasQuery
+      ? LATER_PAGE_SIZE
+      : off === 0
+      ? FIRST_PAGE_SIZE
+      : LATER_PAGE_SIZE;
 
-    const hasHero = off === 0;
+    const page = await ArticlesService.list({
+      offset: off,
+      limit,
+      q: hasQuery ? q!.trim() : undefined,
+    });
+
+    const hasHero = !hasQuery && off === 0;
     const [featured, ...restRaw] = page.data;
     const rest = hasHero ? restRaw : page.data;
 

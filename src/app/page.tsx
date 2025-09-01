@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ArticlesService } from "@/services/articles.service";
 import { NewsCarousel } from "@/components/news/NewsCarousel";
 import { TopPlaylistsRow } from "@/components/charts/TopPlaylistsRow";
+import { Button } from "@/components/ui/button";
 
 export default async function Home() {
   // Trae las 5 últimas (orden ya es por fecha desc en tu backend)
@@ -13,14 +14,9 @@ export default async function Home() {
       {/* Carrusel de noticias */}
       <section className="container mx-auto px-4 pb-16">
         <NewsCarousel articles={latest} />
-        <div className="mt-6 text-center">
-          <Link
-            href="/news"
-            className="inline-block px-4 py-2 rounded-lg border hover:bg-black/5 transition"
-          >
-            Ver todas las noticias →
-          </Link>
-        </div>
+        <Button className="mt-6 text-center">
+          <Link href="/news">Ver todas las noticias →</Link>
+        </Button>
       </section>
 
       {/* Top charts */}

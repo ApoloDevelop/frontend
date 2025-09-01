@@ -12,12 +12,14 @@ const B = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 export class ArticlesRepository {
   static async list(params?: ListParams) {
-    const q = new URLSearchParams();
+    const qsp = new URLSearchParams();
     if (typeof params?.offset === "number")
-      q.set("offset", String(params.offset));
-    if (typeof params?.limit === "number") q.set("limit", String(params.limit));
+      qsp.set("offset", String(params.offset));
+    if (typeof params?.limit === "number")
+      qsp.set("limit", String(params.limit));
+    if (params?.q && params.q.trim()) qsp.set("q", params.q.trim());
 
-    const url = `${B}/articles${q.toString() ? `?${q.toString()}` : ""}`;
+    const url = `${B}/articles${qsp.toString() ? `?${qsp.toString()}` : ""}`;
     const res = await fetch(url, { cache: "no-store" });
     if (!res.ok) throw new Error("Error al listar artículos");
     return (await res.json()) as ListResponse<Article>;

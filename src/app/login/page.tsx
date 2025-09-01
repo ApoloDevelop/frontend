@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import Welcome from "@/components/home/Welcome";
@@ -9,8 +9,32 @@ import { Eye, EyeOff, Mail, Lock } from "lucide-react";
 import { LoginService } from "@/services/login.service";
 import { isAuthenticated } from "@/lib/auth";
 
+function sanitizeNext(n: string | null): string {
+  if (!n) return "/";
+  try {
+    const decoded = decodeURIComponent(n);
+    // Debe ser ruta relativa del sitio y no puede apuntar a /login
+    if (!decoded.startsWith("/") || decoded.startsWith("//")) return "/";
+    if (decoded.startsWith("/login")) return "/";
+    return decoded;
+  } catch {
+    return "/";
+  }
+}
+
+function withNext(base: string | undefined, next: string | null) {
+  if (!base) return undefined;
+  const url = new URL(base);
+  if (next) url.searchParams.set("next", next);
+  return url.toString();
+}
+
 export default function LoginPage() {
   const router = useRouter();
+  const sp = useSearchParams();
+  const nextRaw = sp.get("next");
+  const nextSafe = useMemo(() => sanitizeNext(nextRaw), [nextRaw]);
+
   const [cred, setCred] = useState({ credential: "", password: "" });
   const [error, setError] = useState<string | null>(null);
   const [showPass, setShowPass] = useState(false);
@@ -19,22 +43,26 @@ export default function LoginPage() {
   const OAUTH_GOOGLE = process.env.NEXT_PUBLIC_OAUTH_GOOGLE_URL;
   const OAUTH_SPOTIFY = process.env.NEXT_PUBLIC_OAUTH_SPOTIFY_URL;
 
-  const sp = useSearchParams();
   const oauthError = sp.get("oauth") === "error";
 
+  // Si ya hay sesión, redirige al destino (o a /)
   useEffect(() => {
-    if (isAuthenticated()) router.replace("/");
-  }, [router]);
+    if (isAuthenticated()) {
+      router.replace(nextSafe);
+    }
+  }, [router, nextSafe]);
 
   useEffect(() => {
     if (oauthError) {
       setError(
         "No se pudo completar el inicio de sesión con el proveedor. Inténtalo de nuevo."
       );
-      // opcional: limpiar la URL
-      router.replace("/login");
+      // Mantén el `next` en la URL al limpiar la bandera de error
+      router.replace(
+        nextRaw ? `/login?next=${encodeURIComponent(nextRaw)}` : "/login"
+      );
     }
-  }, [oauthError, router]);
+  }, [oauthError, router, nextRaw]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -42,14 +70,17 @@ export default function LoginPage() {
     setLoading(true);
     try {
       await LoginService.login(cred.credential, cred.password);
-      // Redirigir y refrescar para actualizar el estado del header
-      window.location.href = "/";
+      // Recarga completa y respeta `next`
+      window.location.href = nextSafe;
     } catch (err: any) {
-      setError(err.message || "Error al iniciar sesión");
+      setError(err?.message || "Error al iniciar sesión");
     } finally {
       setLoading(false);
     }
   }
+
+  const googleUrl = withNext(OAUTH_GOOGLE, nextRaw);
+  const spotifyUrl = withNext(OAUTH_SPOTIFY, nextRaw);
 
   return (
     <div className="min-h-screen w-full bg-[#f3f3f3] text-zinc-900">
@@ -142,9 +173,7 @@ export default function LoginPage() {
             {/* OAuth */}
             <div className="flex flex-col gap-2">
               <Button
-                onClick={() =>
-                  OAUTH_GOOGLE && (window.location.href = OAUTH_GOOGLE)
-                }
+                onClick={() => googleUrl && (window.location.href = googleUrl)}
                 className="w-full justify-center rounded-xl bg-white text-zinc-900 hover:bg-zinc-50 border border-zinc-300"
               >
                 <img
@@ -157,7 +186,7 @@ export default function LoginPage() {
 
               <Button
                 onClick={() =>
-                  OAUTH_SPOTIFY && (window.location.href = OAUTH_SPOTIFY)
+                  spotifyUrl && (window.location.href = spotifyUrl)
                 }
                 className="w-full justify-center rounded-xl bg-black hover:bg-zinc-900 text-white"
               >
@@ -171,7 +200,11 @@ export default function LoginPage() {
             <p className="mt-6 text-center text-sm text-zinc-600">
               ¿No tienes cuenta?{" "}
               <a
-                href="/register"
+                href={
+                  nextRaw
+                    ? `/register?next=${encodeURIComponent(nextRaw)}`
+                    : "/register"
+                }
                 className="text-purple-700 underline underline-offset-4 hover:text-purple-600"
               >
                 Regístrate
@@ -179,9 +212,8 @@ export default function LoginPage() {
             </p>
           </div>
 
-          {/* Columna derecha: Welcome + CTA registro */}
+          {/* Columna derecha */}
           <div className="relative p-8 sm:p-10 md:p-12 bg-gradient-to-br from-purple-50 via-white to-purple-50 border-l border-zinc-200">
-            {/* adorno sutil */}
             <div className="pointer-events-none absolute -top-24 -right-24 h-72 w-72 rounded-full bg-purple-300/30 blur-3xl" />
             <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-white to-transparent" />
 

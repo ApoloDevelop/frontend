@@ -7,13 +7,16 @@ interface NewsHeaderProps {
 
 export function NewsHeader({ canWrite }: NewsHeaderProps) {
   return (
-    <div className="flex items-center justify-between mt-6 mb-4">
-      <h1 className="text-3xl font-bold">Noticias</h1>
-      {canWrite && (
-        <Button>
-          <Link href="/news/article">Añadir artículo</Link>
-        </Button>
-      )}
-    </div>
+    <header className="mt-6 mb-4">
+      <div className="flex flex-col items-start gap-2">
+        <h1 className="text-3xl font-bold">Noticias</h1>
+
+        {canWrite && (
+          <Button asChild>
+            <Link href="/news/article">Añadir artículo</Link>
+          </Button>
+        )}
+      </div>
+    </header>
   );
 }

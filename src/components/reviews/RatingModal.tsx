@@ -8,7 +8,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { DialogClose } from "@radix-ui/react-dialog";
 
-type RateableType = "artist" | "album" | "track";
+type RateableType = "artist" | "album" | "track" | "venue";
 
 export function RatingModal({
   open,
@@ -16,54 +16,59 @@ export function RatingModal({
   onSubmit,
   name,
   type,
+  initialScore = 0,
+  initialTitle = "",
+  initialComment = "",
+  hasExisting = false,
 }: {
   open: boolean;
   onClose: () => void;
   onSubmit: (score: number, comment: string, title: string) => void;
   name: string;
   type: RateableType;
+  initialScore?: number;
+  initialTitle?: string;
+  initialComment?: string;
+  hasExisting?: boolean;
 }) {
   const [score, setScore] = useState(0);
   const [comment, setComment] = useState("");
   const [title, setTitle] = useState("");
   const [hovered, setHovered] = useState<number | null>(null);
 
-  const headingByType: Record<RateableType, string> = {
-    artist: "Puntúa a",
-    album: "Puntúa el álbum",
-    track: "Puntúa la canción",
-  };
-
-  const resetForm = () => {
-    setScore(0);
-    setComment("");
-    setTitle("");
-    setHovered(null);
-  };
-
   useEffect(() => {
-    if (!open) resetForm();
-  }, [open]);
+    if (open) {
+      setScore(initialScore ?? 0);
+      setTitle(initialTitle ?? "");
+      setComment(initialComment ?? "");
+      setHovered(null);
+    } else {
+      setScore(0);
+      setTitle("");
+      setComment("");
+      setHovered(null);
+    }
+  }, [open, initialScore, initialTitle, initialComment]);
+
+  const heading = hasExisting ? `Tu reseña de ${name}` : `Puntúa a ${name}`;
+  const cta = hasExisting ? "Actualizar reseña" : "Guardar";
 
   return (
     <Dialog
       open={open}
       onOpenChange={(isOpen) => {
-        if (!isOpen) {
-          resetForm();
-          onClose();
-        }
+        if (!isOpen) onClose();
       }}
     >
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>
-            {headingByType[type]} {name}
-          </DialogTitle>
+          <DialogTitle>{heading}</DialogTitle>
         </DialogHeader>
+
         <div className="flex flex-col items-center gap-4">
+          {/* Estrellas 1..10 */}
           <div className="flex gap-1">
-            {[...Array(10)].map((_, i) => (
+            {Array.from({ length: 10 }).map((_, i) => (
               <button
                 key={i}
                 type="button"
@@ -81,9 +86,11 @@ export function RatingModal({
               </button>
             ))}
           </div>
+
           {score > 0 && (
             <p className="text-lg font-semibold">Tu nota: {score}</p>
           )}
+
           <input
             type="text"
             placeholder="Título (opcional)"
@@ -100,27 +107,17 @@ export function RatingModal({
           />
 
           <div className="flex w-full justify-end gap-2">
-            {/* Botón Cancelar que cierra y limpia */}
             <DialogClose asChild>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={resetForm} // 🔄
-              >
+              <Button type="button" variant="outline">
                 Cancelar
               </Button>
             </DialogClose>
 
             <Button
-              onClick={() => {
-                if (score > 0) {
-                  onSubmit(score, comment, title);
-                  window.location.reload(); // si quieres, puedes quitar esto y hacer refetch elegante
-                }
-              }}
+              onClick={() => score > 0 && onSubmit(score, comment, title)}
               disabled={score === 0}
             >
-              Enviar valoración
+              {cta}
             </Button>
           </div>
         </div>

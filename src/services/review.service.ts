@@ -4,7 +4,6 @@ export class ReviewService {
   static async rate(payload: {
     type: "artist" | "album" | "track" | "venue";
     name: string;
-    userId: number;
     score: number;
     comment?: string;
     title?: string;
@@ -38,7 +37,11 @@ export class ReviewService {
     );
   }
 
-  static async voteReview(reviewId: number, value: 1 | -1, userId: number) {
-    return await ReviewRepository.voteReview(reviewId, value, userId);
+  static async voteReview(reviewId: number, value: 1 | -1) {
+    return await ReviewRepository.voteReview(reviewId, value);
+  }
+
+  static async deleteReview(reviewId: number) {
+    return ReviewRepository.deleteReview(reviewId);
   }
 }

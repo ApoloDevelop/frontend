@@ -1,7 +1,7 @@
 /* components/ReviewsModal.tsx */
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   Dialog,
   DialogOverlay,
@@ -14,7 +14,7 @@ import { ChartContainer, ChartTooltip, ChartLegend } from "../ui/chart";
 import { BarChart, Bar, XAxis, YAxis, Cell } from "recharts";
 import { Avatar, AvatarImage, AvatarFallback } from "../ui/avatar";
 import { Card, CardHeader, CardTitle, CardContent } from "../ui/card";
-import { ThumbsUp, ThumbsDown, X as XIcon } from "lucide-react";
+import { ThumbsUp, ThumbsDown, X as XIcon, Trash2 } from "lucide-react";
 import { ReviewService } from "@/services/review.service";
 import { ReviewCardData, SortMode } from "@/types/reviews";
 
@@ -26,6 +26,7 @@ interface ReviewsModalProps {
   averageScore: number | null;
   verified: boolean;
   currentUserId?: number | null;
+  canModerate?: boolean;
 }
 
 const PAGE_SIZE = 10;
@@ -38,6 +39,7 @@ export function ReviewsModal({
   averageScore,
   verified,
   currentUserId,
+  canModerate = false,
 }: ReviewsModalProps) {
   const [reviews, setReviews] = useState<ReviewCardData[]>([]);
   const [histogram, setHistogram] = useState<{ name: string; count: number }[]>(
@@ -73,6 +75,13 @@ export function ReviewsModal({
     setMaxCount(Math.max(1, ...counts.map((c) => c.count)));
   };
 
+  function mergeDedupe(prev: ReviewCardData[], next: ReviewCardData[]) {
+    const map = new Map<number, ReviewCardData>();
+    for (const r of prev) map.set(r.id, r);
+    for (const r of next) map.set(r.id, r);
+    return Array.from(map.values());
+  }
+
   const loadPage = async (cursor?: number) => {
     if (isLoading) return;
     setIsLoading(true);
@@ -84,7 +93,6 @@ export function ReviewsModal({
         PAGE_SIZE,
         cursor
       );
-      // page: { items: ReviewCardData[], nextCursor: number | null }
       setReviews((prev) => {
         const merged = cursor ? [...prev, ...page.items] : page.items;
         recomputeHistogram(merged);
@@ -130,40 +138,47 @@ export function ReviewsModal({
 
   const yTicks = Array.from({ length: maxCount + 1 }, (_, i) => i);
 
-  // filtro
-  const filtered =
-    filterScore == null
-      ? reviews
-      : reviews.filter((r) => Math.round(r.score) === filterScore);
-
   // orden
-  const sorted = [...filtered].sort((a, b) => {
-    switch (sortMode) {
-      case "up_desc": {
-        if (b.upvotes !== a.upvotes) return b.upvotes - a.upvotes;
-        if (a.downvotes !== b.downvotes) return a.downvotes - b.downvotes;
-        return (
-          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-        );
+  const sortedBase = useMemo(() => {
+    const base = [...reviews].sort((a, b) => {
+      switch (sortMode) {
+        case "up_desc":
+          if (b.upvotes !== a.upvotes) return b.upvotes - a.upvotes;
+          if (a.downvotes !== b.downvotes) return a.downvotes - b.downvotes;
+          return +new Date(b.created_at) - +new Date(a.created_at);
+        case "up_asc":
+          if (a.upvotes !== b.upvotes) return a.upvotes - b.upvotes;
+          if (b.downvotes !== a.downvotes) return b.downvotes - a.downvotes;
+          return +new Date(b.created_at) - +new Date(a.created_at);
+        case "recent_asc":
+          return +new Date(a.created_at) - +new Date(b.created_at);
+        case "recent_desc":
+        default:
+          return +new Date(b.created_at) - +new Date(a.created_at);
       }
-      case "up_asc": {
-        if (a.upvotes !== b.upvotes) return a.upvotes - b.upvotes;
-        if (b.downvotes !== a.downvotes) return b.downvotes - a.downvotes;
-        return (
-          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-        );
-      }
-      case "recent_asc":
-        return (
-          new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
-        );
-      case "recent_desc":
-      default:
-        return (
-          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-        );
-    }
-  });
+    });
+    return base;
+  }, [reviews, sortMode]);
+
+  const filteredBase =
+    filterScore == null
+      ? sortedBase
+      : sortedBase.filter((r) => Math.round(r.score) === filterScore);
+
+  const myReview = useMemo(
+    () =>
+      currentUserId
+        ? filteredBase.find((r) => r.user?.id === currentUserId) ?? null
+        : null,
+    [filteredBase, currentUserId]
+  );
+  const otherReviews = useMemo(
+    () =>
+      filteredBase.filter(
+        (r) => !currentUserId || r.user?.id !== currentUserId
+      ),
+    [filteredBase, currentUserId]
+  );
 
   const handleVote = async (reviewId: number, value: 1 | -1) => {
     if (!currentUserId) return;
@@ -197,11 +212,23 @@ export function ReviewsModal({
     );
 
     try {
-      await ReviewService.voteReview(reviewId, value, currentUserId);
-      // si quieres consolidar desde servidor: await loadPage(undefined) (pero perderías el scroll)
+      await ReviewService.voteReview(reviewId, value);
     } catch (e) {
       console.error("vote failed:", e);
       setReviews(prev); // revert
+    }
+  };
+
+  const handleDelete = async (reviewId: number) => {
+    if (!currentUserId && !canModerate) return;
+    if (!confirm("¿Eliminar esta reseña?")) return;
+
+    try {
+      await ReviewService.deleteReview(reviewId);
+      window.location.reload();
+    } catch (e) {
+      console.error("delete failed:", e);
+      alert("No se pudo eliminar la reseña");
     }
   };
 
@@ -304,7 +331,121 @@ export function ReviewsModal({
           ref={scrollRef}
           className="grow overflow-y-auto space-y-3 sm:space-y-4 pr-1"
         >
-          {sorted.map((review) => {
+          {/* --- MI RESEÑA --- */}
+          {myReview && (
+            <>
+              <h4 className="text-sm font-semibold text-purple-800 mb-1">
+                Tu reseña
+              </h4>
+
+              <Card key={`mine-${myReview.id}`}>
+                <CardHeader className="flex justify-between items-start sm:items-center gap-3 sm:gap-4">
+                  <div className="flex items-start sm:items-center gap-3 sm:gap-4">
+                    <Avatar className="h-10 w-10 sm:h-12 sm:w-12">
+                      {myReview.user.profile_pic ? (
+                        <AvatarImage
+                          src={myReview.user.profile_pic}
+                          alt={myReview.user.username}
+                        />
+                      ) : (
+                        <AvatarFallback>
+                          {myReview.user.username.charAt(0)}
+                        </AvatarFallback>
+                      )}
+                    </Avatar>
+                    <div className="min-w-0">
+                      <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                        <span className="truncate">
+                          {myReview.title || "Sin título"}
+                        </span>
+                        <span className="shrink-0 font-mono bg-gray-100 px-2 py-0.5 rounded">
+                          {myReview.score}
+                        </span>
+                      </CardTitle>
+
+                      {/* Eliminar debajo de la puntuación */}
+                      <div className="mt-1">
+                        <button
+                          onClick={() => handleDelete(myReview.id)}
+                          className="inline-flex items-center gap-1 text-sm text-red-600 hover:underline cursor-pointer"
+                          title="Eliminar reseña"
+                        >
+                          <Trash2 className="h-4 w-4" /> Eliminar reseña
+                        </button>
+                      </div>
+
+                      <div className="mt-1 text-sm sm:text-[0.95rem] text-gray-700 italic">
+                        {myReview.user.username}
+                      </div>
+
+                      <div className="text-xs text-muted-foreground">
+                        {require("dayjs")(myReview.created_at)
+                          .locale("es")
+                          .format("DD MMM YYYY")}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* net score */}
+                  <div
+                    className={`text-sm sm:text-base font-semibold ${
+                      myReview.upvotes - myReview.downvotes > 0
+                        ? "text-green-600"
+                        : myReview.upvotes - myReview.downvotes < 0
+                        ? "text-red-600"
+                        : "text-muted-foreground"
+                    }`}
+                  >
+                    {(() => {
+                      const net = myReview.upvotes - myReview.downvotes;
+                      return net > 0 ? `+${net}` : `${net}`;
+                    })()}
+                  </div>
+                </CardHeader>
+
+                {myReview.text && (
+                  <CardContent className="pt-0 sm:pt-2 text-sm sm:text-base">
+                    {myReview.text}
+                    <div className="mt-3 flex items-center gap-3">
+                      <button
+                        onClick={() => handleVote(myReview.id, 1)}
+                        aria-pressed={myReview.myVote === 1}
+                        className={`inline-flex items-center justify-center rounded-full border px-2.5 py-1.5 transition ${
+                          myReview.myVote === 1
+                            ? "bg-green-50 border-green-500 text-green-700"
+                            : "border-transparent hover:bg-green-50 text-green-600"
+                        }`}
+                        title="Estoy de acuerdo"
+                      >
+                        <ThumbsUp className="h-4 w-4" />
+                      </button>
+                      <button
+                        onClick={() => handleVote(myReview.id, -1)}
+                        aria-pressed={myReview.myVote === -1}
+                        className={`inline-flex items-center justify-center rounded-full border px-2.5 py-1.5 transition ${
+                          myReview.myVote === -1
+                            ? "bg-red-50 border-red-500 text-red-700"
+                            : "border-transparent hover:bg-red-50 text-red-600"
+                        }`}
+                        title="No estoy de acuerdo"
+                      >
+                        <ThumbsDown className="h-4 w-4" />
+                      </button>
+                    </div>
+                  </CardContent>
+                )}
+              </Card>
+
+              {otherReviews.length > 0 && (
+                <h4 className="text-sm font-semibold text-gray-700 mt-4">
+                  Otras reseñas
+                </h4>
+              )}
+            </>
+          )}
+
+          {/* --- OTRAS --- */}
+          {otherReviews.map((review) => {
             const net = review.upvotes - review.downvotes;
             const netClass =
               net > 0
@@ -312,6 +453,7 @@ export function ReviewsModal({
                 : net < 0
                 ? "text-red-600"
                 : "text-muted-foreground";
+            const canDelete = review.user?.id === currentUserId || canModerate;
 
             return (
               <Card key={review.id}>
@@ -331,16 +473,30 @@ export function ReviewsModal({
                     </Avatar>
                     <div className="min-w-0">
                       <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
-                        <span className="truncate">{review.user.username}</span>
+                        <span className="truncate">
+                          {review.title || "Sin título"}
+                        </span>
                         <span className="shrink-0 font-mono bg-gray-100 px-2 py-0.5 rounded">
                           {review.score}
                         </span>
                       </CardTitle>
-                      {review.title && (
-                        <div className="mt-1 text-sm sm:text-[0.95rem] text-gray-700 italic">
-                          {review.title}
+
+                      {/* Eliminar debajo de la puntuación (si procede) */}
+                      {canDelete && (
+                        <div className="mt-1">
+                          <button
+                            onClick={() => handleDelete(review.id)}
+                            className="inline-flex items-center gap-1 text-sm text-red-600 hover:underline cursor-pointer"
+                            title="Eliminar reseña"
+                          >
+                            <Trash2 className="h-4 w-4" /> Eliminar reseña
+                          </button>
                         </div>
                       )}
+
+                      <div className="mt-1 text-sm sm:text-[0.95rem] text-gray-700 italic">
+                        {review.user.username}
+                      </div>
                       <div className="text-xs text-muted-foreground">
                         {require("dayjs")(review.created_at)
                           .locale("es")

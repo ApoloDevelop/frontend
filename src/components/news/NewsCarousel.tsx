@@ -15,29 +15,38 @@ type Props = {
 export function NewsCarousel({ articles, title = "Últimas noticias" }: Props) {
   const trackRef = useRef<HTMLDivElement | null>(null);
   const [index, setIndex] = useState(0);
+  const [isHovered, setIsHovered] = useState(false);
 
-  // Actualiza el índice al hacer scroll (snap)
+  // Auto-slide cada 5 segundos (pausado al hacer hover)
+  useEffect(() => {
+    if (isHovered || articles.length <= 1) return;
+
+    const interval = setInterval(() => {
+      setIndex((prev) => (prev === articles.length - 1 ? 0 : prev + 1));
+    }, 8000);
+
+    return () => clearInterval(interval);
+  }, [isHovered, articles.length]);
+
+  // Actualizar el scroll cuando cambie el índice
   useEffect(() => {
     const el = trackRef.current;
     if (!el) return;
-    const handler = () => {
-      const w = el.clientWidth;
-      const i = Math.round(el.scrollLeft / (w || 1));
-      setIndex(i);
-    };
-    el.addEventListener("scroll", handler, { passive: true });
-    return () => el.removeEventListener("scroll", handler);
-  }, []);
+    el.scrollTo({ left: index * el.clientWidth, behavior: "smooth" });
+  }, [index]);
 
   const slideTo = (i: number) => {
-    const el = trackRef.current;
-    if (!el) return;
     const clamped = Math.max(0, Math.min(i, articles.length - 1));
-    el.scrollTo({ left: clamped * el.clientWidth, behavior: "smooth" });
+    setIndex(clamped);
   };
 
-  const prev = () => slideTo(index - 1);
-  const next = () => slideTo(index + 1);
+  const prev = () => {
+    setIndex((prev) => (prev === 0 ? articles.length - 1 : prev - 1));
+  };
+
+  const next = () => {
+    setIndex((prev) => (prev === articles.length - 1 ? 0 : prev + 1));
+  };
 
   if (!articles?.length) return null;
 
@@ -53,7 +62,7 @@ export function NewsCarousel({ articles, title = "Últimas noticias" }: Props) {
               type="button"
               onClick={prev}
               aria-label="Anterior"
-              className="rounded-full border px-3 py-2 hover:bg-black/5 disabled:opacity-40"
+              className="rounded-full border px-3 py-2 hover:bg-black/5 disabled:opacity-40 cursor-pointer"
               disabled={index === 0}
             >
               <ChevronLeft className="h-5 w-5" />
@@ -62,7 +71,7 @@ export function NewsCarousel({ articles, title = "Últimas noticias" }: Props) {
               type="button"
               onClick={next}
               aria-label="Siguiente"
-              className="rounded-full border px-3 py-2 hover:bg-black/5 disabled:opacity-40"
+              className="rounded-full border px-3 py-2 hover:bg-black/5 disabled:opacity-40 cursor-pointer"
               disabled={index === articles.length - 1}
             >
               <ChevronRight className="h-5 w-5" />
@@ -74,6 +83,8 @@ export function NewsCarousel({ articles, title = "Últimas noticias" }: Props) {
       {/* Pista del carrusel */}
       <div
         ref={trackRef}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
         className="relative w-full overflow-x-auto scroll-smooth snap-x snap-mandatory
                    [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
         aria-roledescription="carousel"
