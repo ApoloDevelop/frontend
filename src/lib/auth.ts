@@ -65,8 +65,11 @@ export function getToken(): string | null {
 
 /** Guarda sesión en cliente (LS + cookie para SSR) */
 export function setSession(token: string, user?: AuthUser) {
+  if (isServer) return;
   localStorage.setItem(TOKEN_KEY, token);
   localStorage.setItem(USER_KEY, JSON.stringify(user));
+  // Guardamos también en cookie para SSR (30 días)
+  setCookie(TOKEN_COOKIE, token, 30 * 24 * 60 * 60);
 }
 
 /** Limpia sesión en cliente */

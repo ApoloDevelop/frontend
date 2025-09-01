@@ -42,7 +42,8 @@ export default function LoginPage() {
     setLoading(true);
     try {
       await LoginService.login(cred.credential, cred.password);
-      router.push("/");
+      // Redirigir y refrescar para actualizar el estado del header
+      window.location.href = "/";
     } catch (err: any) {
       setError(err.message || "Error al iniciar sesión");
     } finally {

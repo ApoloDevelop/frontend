@@ -4,6 +4,8 @@ import { useEffect, useRef, useState } from "react";
 import { CommentsService } from "@/services/comments.service";
 import type { Comment } from "@/types/comment";
 import CommentItem from "./CommentItem";
+import { useRouter } from "next/navigation";
+import { Button } from "../ui/button";
 
 type Props = {
   articleId: number;
@@ -11,6 +13,7 @@ type Props = {
 };
 
 export default function CommentsSection({ articleId, currentUserId }: Props) {
+  const router = useRouter();
   const [list, setList] = useState<Comment[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -124,26 +127,36 @@ export default function CommentsSection({ articleId, currentUserId }: Props) {
       {/* Form principal */}
       <div className="rounded-xl border p-4 bg-white">
         <h3 className="font-semibold mb-2">Deja tu comentario</h3>
-        {!canPost ? (
-          <p className="text-gray-600 text-sm">Inicia sesión para comentar.</p>
-        ) : (
-          <>
-            <textarea
-              className="w-full rounded-lg border p-3"
-              rows={4}
-              placeholder="Escribe un comentario…"
-              value={newContent}
-              onChange={(e) => setNewContent(e.target.value)}
-            />
-            <button
-              onClick={() => handlePost(null)}
-              className="mt-2 inline-flex items-center rounded-lg bg-black text-white px-4 py-2 disabled:opacity-50"
-              disabled={!newContent.trim()}
-            >
-              Publicar
-            </button>
-          </>
-        )}
+        <textarea
+          className="w-full rounded-lg border p-3 disabled:bg-gray-100 disabled:cursor-not-allowed"
+          rows={4}
+          placeholder={
+            canPost ? "Escribe un comentario…" : "Inicia sesión para comentar"
+          }
+          value={newContent}
+          onChange={(e) => setNewContent(e.target.value)}
+          disabled={!canPost}
+        />
+        <div className="mt-2 flex items-center justify-between">
+          <Button
+            onClick={() => handlePost(null)}
+            className="inline-flex items-center rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={!canPost || !newContent.trim()}
+          >
+            Publicar
+          </Button>
+          {!canPost && (
+            <p className="text-gray-600 text-sm">
+              <span
+                className="text-purple-600 hover:text-purple-800 cursor-pointer"
+                onClick={() => router.push("/login")}
+              >
+                Inicia sesión
+              </span>{" "}
+              para poder comentar.
+            </p>
+          )}
+        </div>
       </div>
 
       {/* Lista */}
@@ -153,8 +166,12 @@ export default function CommentsSection({ articleId, currentUserId }: Props) {
             <CommentItem
               c={c}
               currentUserId={currentUserId}
-              onReply={() => setReplyTo(c.id)}
-              onDelete={() => handleDelete(c.id)}
+              onReply={canPost ? () => setReplyTo(c.id) : undefined}
+              onDelete={
+                currentUserId === c.user_id
+                  ? () => handleDelete(c.id)
+                  : undefined
+              }
             />
 
             {/* Respuestas */}
@@ -165,7 +182,11 @@ export default function CommentsSection({ articleId, currentUserId }: Props) {
                     <CommentItem
                       c={r}
                       currentUserId={currentUserId}
-                      onDelete={() => handleDelete(r.id)}
+                      onDelete={
+                        currentUserId === r.user_id
+                          ? () => handleDelete(r.id)
+                          : undefined
+                      }
                     />
                   </li>
                 ))}
@@ -182,18 +203,19 @@ export default function CommentsSection({ articleId, currentUserId }: Props) {
                   placeholder="Responder…"
                 />
                 <div className="mt-2 flex gap-2">
-                  <button
+                  <Button
                     onClick={() => handlePost(c.id)}
-                    className="inline-flex items-center rounded-lg bg-black text-white px-3 py-1.5"
+                    className="inline-flex items-center rounded-lg bg-black text-white px-3 py-1.5 cursor-pointer"
                   >
                     Responder
-                  </button>
-                  <button
+                  </Button>
+                  <Button
                     onClick={() => setReplyTo(null)}
-                    className="inline-flex items-center rounded-lg border px-3 py-1.5"
+                    className="inline-flex items-center rounded-lg border px-3 py-1.5 hover:bg-red-800"
+                    variant={"destructive"}
                   >
                     Cancelar
-                  </button>
+                  </Button>
                 </div>
               </div>
             )}
@@ -203,9 +225,7 @@ export default function CommentsSection({ articleId, currentUserId }: Props) {
 
       {hasMore && (
         <div className="text-center">
-          <button onClick={loadMore} className="rounded-lg border px-4 py-2">
-            Cargar más
-          </button>
+          <Button onClick={loadMore}>Ver más comentarios</Button>
         </div>
       )}
     </div>

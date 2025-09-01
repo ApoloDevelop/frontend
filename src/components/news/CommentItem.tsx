@@ -16,7 +16,7 @@ export default function CommentItem({
   onReply,
   onDelete,
 }: Props) {
-  const isOwner = currentUserId && currentUserId === c.user_id;
+  const isOwner = !!currentUserId && currentUserId === c.user_id;
 
   return (
     <div className="flex gap-3">
@@ -42,12 +42,18 @@ export default function CommentItem({
 
         <div className="mt-2 flex gap-3 text-sm text-gray-600">
           {onReply && (
-            <button onClick={onReply} className="hover:underline">
+            <button
+              onClick={onReply}
+              className="hover:underline cursor-pointer"
+            >
               Responder
             </button>
           )}
           {isOwner && onDelete && (
-            <button onClick={onDelete} className="hover:underline text-red-600">
+            <button
+              onClick={onDelete}
+              className="hover:underline text-red-600 cursor-pointer"
+            >
               Eliminar
             </button>
           )}

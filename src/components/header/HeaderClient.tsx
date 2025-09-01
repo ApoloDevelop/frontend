@@ -24,7 +24,7 @@ export function HeaderClient({
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  const { user } = useAuthUser(initialUser); // 👈 hidrata con snapshot del servidor
+  const { user, setUser } = useAuthUser(initialUser);
 
   const btnRef = useRef<HTMLButtonElement | null>(null);
   const menuRef = useRef<HTMLDivElement | null>(null);
@@ -79,6 +79,7 @@ export function HeaderClient({
     href === "/" ? pathname === "/" : pathname?.startsWith(href);
 
   const handleLogout = () => {
+    setUser(null); // 👈 Actualizar estado inmediatamente
     clearSession(); // o: localStorage.removeItem("token"); localStorage.removeItem("user");
     setMenuOpen(false);
     setOpen(false);

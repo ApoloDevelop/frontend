@@ -20,7 +20,8 @@ export default function OAuthSuccess() {
         // guarda token, pide user y guarda user
         const user = await LoginRepository.getProfile(token);
         setSession(token, user);
-        router.replace("/");
+        // Usar window.location.href para refrescar completamente la página
+        window.location.href = "/";
       } catch {
         router.replace("/login?oauth=error");
       }
