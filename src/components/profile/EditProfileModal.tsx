@@ -41,6 +41,8 @@ export function EditProfileModal({
     setEmail,
     bio,
     setBio,
+    fullname,
+    setFullname,
     password,
     setPassword,
     confirmPassword,
@@ -90,6 +92,7 @@ export function EditProfileModal({
   const router = useRouter();
 
   const isModified =
+    fullname !== user.fullname ||
     username !== user.username ||
     email !== user.email ||
     bio !== (user.biography || "") ||
@@ -133,6 +136,7 @@ export function EditProfileModal({
     const updatedUser = await updateProfile(
       user,
       {
+        fullname,
         username,
         email,
         password,
@@ -219,6 +223,8 @@ export function EditProfileModal({
 
               {section === "personal" && (
                 <EditPersonalDataForm
+                  fullname={fullname}
+                  setFullname={setFullname}
                   birthdate={birthdate}
                   setBirthdate={setBirthdate}
                   country={country}

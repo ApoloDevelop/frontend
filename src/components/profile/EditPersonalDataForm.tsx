@@ -3,6 +3,8 @@ import { Input } from "../ui/input";
 import { GenreSelect } from "../register/GenreSelect";
 
 interface EditPersonalDataFormProps {
+  fullname: string;
+  setFullname: (v: string) => void;
   birthdate: string;
   setBirthdate: (v: string) => void;
   country: string;
@@ -15,6 +17,8 @@ interface EditPersonalDataFormProps {
 }
 
 export function EditPersonalDataForm({
+  fullname,
+  setFullname,
   birthdate,
   setBirthdate,
   country,
@@ -27,6 +31,20 @@ export function EditPersonalDataForm({
 }: EditPersonalDataFormProps) {
   return (
     <div className="space-y-4 mt-4">
+      <div id="fullname-input">
+        <label className="text-sm font-semibold mb-1 block">
+          Nombre completo
+        </label>
+        <Input
+          name="fullname"
+          type="text"
+          placeholder="Escribe tu nombre completo"
+          value={fullname}
+          onChange={(e) => setFullname(e.target.value)}
+          className={fieldErrors.fullname ? "border-red-500" : ""}
+        />
+      </div>
+
       <div id="birthdate-input">
         <label className="text-sm font-semibold mb-1 block">
           Fecha de nacimiento

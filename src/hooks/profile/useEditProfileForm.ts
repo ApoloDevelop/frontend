@@ -4,6 +4,7 @@ export function useEditProfileForm(user: any) {
   const [username, setUsername] = useState(user.username);
   const [email, setEmail] = useState(user.email);
   const [bio, setBio] = useState(user.biography || "");
+  const [fullname, setFullname] = useState(user.fullname || "");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [birthdate, setBirthdate] = useState(user?.birthdate || "");
@@ -20,6 +21,7 @@ export function useEditProfileForm(user: any) {
     setUsername(user.username);
     setEmail(user.email);
     setBio(user.biography || "");
+    setFullname(user.fullname || "");
     setPassword("");
     setConfirmPassword("");
     setBirthdate(user.birthdate.slice(0, 10) || "");
@@ -49,6 +51,8 @@ export function useEditProfileForm(user: any) {
     setEmail,
     bio,
     setBio,
+    fullname,
+    setFullname,
     password,
     setPassword,
     confirmPassword,

@@ -12,6 +12,7 @@ export function useEditProfileUpdate() {
   const updateProfile = async (
     user: any,
     dataToUpdate: {
+      fullname: string;
       username: string;
       email: string;
       password: string;
@@ -79,6 +80,7 @@ export function useEditProfileUpdate() {
       }
 
       const updateObj: any = {
+        fullname: dataToUpdate.fullname,
         email: dataToUpdate.email,
         biography: dataToUpdate.bio,
         birthdate: dataToUpdate.birthdate
