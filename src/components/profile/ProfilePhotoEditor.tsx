@@ -30,19 +30,21 @@ export function ProfilePhotoEditor({
     setCroppedAreaPixels(croppedPixels);
   };
 
-  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
     // Validar tipo de archivo
-    if (!file.type.startsWith('image/')) {
-      setError('Por favor selecciona un archivo de imagen válido');
+    if (!file.type.startsWith("image/")) {
+      setError("Por favor selecciona un archivo de imagen válido");
       return;
     }
 
     // Validar tamaño (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
-      setError('La imagen debe ser menor a 5MB');
+      setError("La imagen debe ser menor a 5MB");
       return;
     }
 
@@ -64,26 +66,31 @@ export function ProfilePhotoEditor({
 
     try {
       // Crear imagen recortada
-      const croppedImage = await getCroppedImg(originalImage, croppedAreaPixels);
-      
+      const croppedImage = await getCroppedImg(
+        originalImage,
+        croppedAreaPixels
+      );
+
       // Convertir a File
       const croppedImageFile = await fetch(croppedImage)
         .then((res) => res.blob())
-        .then((blob) => new File([blob], "profile-photo.jpg", { type: "image/jpeg" }));
+        .then(
+          (blob) =>
+            new File([blob], "profile-photo.jpg", { type: "image/jpeg" })
+        );
 
       // Subir a Cloudinary
       const imageUrl = await CloudinaryService.uploadImage(croppedImageFile);
-      
+
       // Actualizar la imagen en el perfil
       onImageUpdated(imageUrl);
-      
+
       setShowCropper(false);
-      
+
       // Limpiar la URL temporal
       URL.revokeObjectURL(originalImage);
-      
     } catch (err: any) {
-      setError(err?.message || 'Error al subir la imagen');
+      setError(err?.message || "Error al subir la imagen");
     } finally {
       setUploading(false);
     }
@@ -98,20 +105,22 @@ export function ProfilePhotoEditor({
 
   const handleImageClick = () => {
     if (uploading || showCropper) return;
-    const input = document.getElementById('profile-photo-input');
+    const input = document.getElementById("profile-photo-input");
     input?.click();
   };
 
   return (
     <div className={`relative ${className}`}>
       {/* Wrapper clickeable que contiene la imagen */}
-      <div 
+      <div
         onClick={handleImageClick}
-        className={`relative group cursor-pointer transition-all duration-200 ${uploading ? 'opacity-60' : ''}`}
+        className={`relative group cursor-pointer transition-all duration-200 ${
+          uploading ? "opacity-60" : ""
+        }`}
         title="Haz click para cambiar tu foto de perfil"
       >
         {children}
-        
+
         {/* Overlay de hover con texto */}
         {!uploading && !showCropper && (
           <div className="absolute inset-0 rounded-full bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity duration-200 select-none">
@@ -120,7 +129,7 @@ export function ProfilePhotoEditor({
             </span>
           </div>
         )}
-        
+
         {/* Overlay de loading */}
         {uploading && (
           <div className="absolute inset-0 flex items-center justify-center bg-black/20 rounded-full">

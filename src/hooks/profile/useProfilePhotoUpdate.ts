@@ -13,7 +13,7 @@ export function useProfilePhotoUpdate() {
       await UserService.updateUser(userId, { profile_pic: imageUrl });
       return true;
     } catch (err: any) {
-      setError(err?.message || 'Error al actualizar la foto de perfil');
+      setError(err?.message || "Error al actualizar la foto de perfil");
       return false;
     } finally {
       setLoading(false);
@@ -28,7 +28,7 @@ export function useProfilePhotoUpdate() {
       await UserService.updateUser(userId, { cover_pic: imageUrl });
       return true;
     } catch (err: any) {
-      setError(err?.message || 'Error al actualizar la foto de cover');
+      setError(err?.message || "Error al actualizar la foto de cover");
       return false;
     } finally {
       setLoading(false);

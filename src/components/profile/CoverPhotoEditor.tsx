@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 import { CloudinaryService } from "@/services/cloudinary.service";
 import { CropperModal } from "@/components/register/CropperModal";
 import getCroppedImg from "@/utils/images";
@@ -25,51 +25,33 @@ export function CoverPhotoEditor({
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<any>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
 
-  // Calcular aspecto dinámicamente cuando se abre el cropper
-  const [aspectRatio, setAspectRatio] = useState<number>(4.6875); // aspecto más panorámico basado en h-64 en desktop típico
+  // Aspecto fijo 3:1 como solicitaste
+  const aspectRatio = 3.0;
 
   const onCropComplete = (_: any, croppedPixels: any) => {
     setCroppedAreaPixels(croppedPixels);
   };
 
-  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
     // Validar tipo de archivo
-    if (!file.type.startsWith('image/')) {
-      setError('Por favor selecciona un archivo de imagen válido');
+    if (!file.type.startsWith("image/")) {
+      setError("Por favor selecciona un archivo de imagen válido");
       return;
     }
 
     // Validar tamaño (max 10MB para cover)
     if (file.size > 10 * 1024 * 1024) {
-      setError('La imagen debe ser menor a 10MB');
+      setError("La imagen debe ser menor a 10MB");
       return;
     }
 
     setError(null);
-
-    // Calcular aspecto dinámicamente con un retraso para asegurar que el DOM esté listo
-    setTimeout(() => {
-      if (containerRef.current) {
-        const { width, height } = containerRef.current.getBoundingClientRect();
-        if (width > 0 && height > 0) {
-          const ratio = width / height;
-          setAspectRatio(ratio);
-          console.log(`Cover aspect ratio calculated: ${ratio.toFixed(2)}:1 (${width}x${height})`);
-        } else {
-          // Fallback: calcular basándose en viewport width típico y h-64 (256px)
-          const viewportWidth = window.innerWidth;
-          const coverHeight = 256; // h-64 = 256px
-          const fallbackRatio = viewportWidth / coverHeight;
-          setAspectRatio(fallbackRatio);
-          console.log(`Using fallback aspect ratio: ${fallbackRatio.toFixed(2)}:1 (${viewportWidth}x${coverHeight})`);
-        }
-      }
-    }, 100);
 
     // Crear URL para mostrar en el cropper
     const imageUrl = URL.createObjectURL(file);
@@ -87,26 +69,30 @@ export function CoverPhotoEditor({
 
     try {
       // Crear imagen recortada
-      const croppedImage = await getCroppedImg(originalImage, croppedAreaPixels);
-      
+      const croppedImage = await getCroppedImg(
+        originalImage,
+        croppedAreaPixels
+      );
+
       // Convertir a File
       const croppedImageFile = await fetch(croppedImage)
         .then((res) => res.blob())
-        .then((blob) => new File([blob], "cover-photo.jpg", { type: "image/jpeg" }));
+        .then(
+          (blob) => new File([blob], "cover-photo.jpg", { type: "image/jpeg" })
+        );
 
       // Subir a Cloudinary
       const imageUrl = await CloudinaryService.uploadImage(croppedImageFile);
-      
+
       // Actualizar la imagen en el perfil
       onImageUpdated(imageUrl);
-      
+
       setShowCropper(false);
-      
+
       // Limpiar la URL temporal
       URL.revokeObjectURL(originalImage);
-      
     } catch (err: any) {
-      setError(err?.message || 'Error al subir la imagen');
+      setError(err?.message || "Error al subir la imagen");
     } finally {
       setUploading(false);
     }
@@ -121,20 +107,22 @@ export function CoverPhotoEditor({
 
   const handleImageClick = () => {
     if (uploading || showCropper) return;
-    const input = document.getElementById('cover-photo-input');
+    const input = document.getElementById("cover-photo-input");
     input?.click();
   };
 
   return (
-    <div className={`relative ${className}`} ref={containerRef}>
+    <div className={`relative ${className}`}>
       {/* Wrapper clickeable que contiene la imagen */}
-      <div 
+      <div
         onClick={handleImageClick}
-        className={`relative group cursor-pointer transition-all duration-200 w-full h-full ${uploading ? 'opacity-60' : ''}`}
+        className={`relative group cursor-pointer transition-all duration-200 w-full h-full ${
+          uploading ? "opacity-60" : ""
+        }`}
         title="Haz click para cambiar tu foto de portada"
       >
         {children}
-        
+
         {/* Overlay de hover con texto */}
         {!uploading && !showCropper && (
           <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity duration-200 select-none">
@@ -143,7 +131,7 @@ export function CoverPhotoEditor({
             </span>
           </div>
         )}
-        
+
         {/* Overlay de loading */}
         {uploading && (
           <div className="absolute inset-0 flex items-center justify-center bg-black/20">
@@ -172,7 +160,7 @@ export function CoverPhotoEditor({
         setZoom={setZoom}
         onCropComplete={onCropComplete}
         onSave={handleCropSave}
-        aspect={aspectRatio} // Usar el aspecto calculado dinámicamente
+        aspect={aspectRatio} // Usar aspecto fijo de 3:1
         label="Ajusta tu foto de portada"
       />
 
