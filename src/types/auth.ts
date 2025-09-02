@@ -3,6 +3,8 @@ export type ApiUser = {
   role_id: number | string;
   fullname?: string;
   username?: string;
+  country?: string;
+  city?: string;
 };
 
 export type AuthUser = {
@@ -11,6 +13,8 @@ export type AuthUser = {
   username: string;
   fullname?: string | null;
   name: string;
+  country?: string | null | undefined;
+  city?: string | null | undefined;
 };
 
 export type SessionUser = AuthUser;

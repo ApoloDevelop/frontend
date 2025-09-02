@@ -29,6 +29,8 @@ export function useAuthUser(initialUser: AuthUser | null) {
           username: String(u.username),
           fullname: u.fullname ?? null,
           name: (u.fullname ?? u.username) as string,
+          country: u.country ?? null,
+          city: u.city ?? null,
         };
         setUser(norm);
         setSession(token, norm);

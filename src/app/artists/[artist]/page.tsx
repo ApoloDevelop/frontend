@@ -35,7 +35,8 @@ export default async function ArtistPage({
     } = await getArtistData(artistName);
 
     // Get user data using custom hook
-    const { authUser, mockUser } = await getCurrentUserData();
+    const { authUser } = await getCurrentUserData();
+    console.log("Auth User:", authUser);
 
     return (
       <div className="container mx-auto">
@@ -69,7 +70,7 @@ export default async function ArtistPage({
             topTracks={topTracks}
             artistId={artistData.id}
             slug={slug}
-            user={mockUser}
+            user={authUser}
           />
         </div>
       </div>

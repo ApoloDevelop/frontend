@@ -29,6 +29,8 @@ export function normalizeUser(u: ApiUser): AuthUser {
     username: safeUsername,
     fullname,
     name: display,
+    country: u.country ?? null,
+    city: u.city ?? null,
   };
 }
 

@@ -41,6 +41,7 @@ export async function getArtistData(
   ]);
 
   // Fetch artist info (using mock for now)
+  // const info = await SongstatsService.getArtistInfo(artistData.id);
   const info = mockArtistData;
   const bio = info?.bio || null;
   const genres = info?.genres || [];

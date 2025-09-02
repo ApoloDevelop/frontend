@@ -26,6 +26,9 @@ export async function NearYou({
   };
   events: SongstatsEvent[] | null | undefined;
 }) {
+  console.log("User:", user);
+  console.log("Country:", user.country);
+  console.log("City:", user.city);
   const profileEditHref = `/users/${user.username}`;
   if (!user.city || !user.country) {
     return (
