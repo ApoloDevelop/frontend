@@ -1,3 +1,4 @@
+"use client";
 import { ChartContainer, ChartTooltip, ChartLegend } from "../ui/chart";
 import { BarChart, Bar, XAxis, YAxis, Cell } from "recharts";
 

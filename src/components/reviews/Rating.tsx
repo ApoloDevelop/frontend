@@ -19,7 +19,6 @@ type ExtraProps =
   | { type: "venue"; location: string };
 
 export default async function Rating(props: BaseProps & ExtraProps) {
-  // Get authentication data
   const { user, isVerifiedUser, isAuthenticated, token } =
     await getRatingAuth();
 

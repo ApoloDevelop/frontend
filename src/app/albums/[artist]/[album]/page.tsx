@@ -12,6 +12,8 @@ import { deslugify, fold, slugify } from "@/utils/normalization";
 import { AlbumTracklist } from "@/components/album/AlbumTracklist";
 import { Hero } from "@/components/images/Hero";
 import { CustomBreadcrumb } from "@/components/ui/CustomBreadcrumb";
+import { getCurrentUser } from "@/lib/auth";
+import { Rating } from "@/components/reviews";
 
 export default async function AlbumPage({
   params: rawParams,
@@ -42,13 +44,15 @@ export default async function AlbumPage({
       : undefined;
 
   const breadcrumbItems = [
-    { label: "ARTISTAS", href: "/artists" },
+    { label: "ARTISTAS" }, //href: /artists
     { label: artistName.toUpperCase(), href: `/artists/${artistSlug}` },
     {
       label: album.name.toUpperCase(),
       isCurrentPage: true,
     },
   ];
+
+  const user = await getCurrentUser();
 
   return (
     <>
@@ -84,29 +88,30 @@ export default async function AlbumPage({
                   priority
                 />
               </div>
-              <RatingClient
+              <Rating
                 name={album.name}
                 type="album"
-                userId={1}
                 artistName={artistName}
+                itemId={stats.itemId ?? null}
               />
               <div className="flex flex-wrap items-center gap-3">
-                {/* CTA primario */}
-
-                {/* Secundarios en ghost */}
-                <FavoriteButton
-                  type="album"
-                  name={album.name}
-                  artistName={artistName}
-                  userId={1}
-                />
-
-                <AddToListDialog
-                  userId={1}
-                  itemType="album"
-                  name={album.name}
-                  artistName={artistName}
-                />
+                {/* Mostrar solo si hay sesión */}
+                {user && (
+                  <>
+                    <FavoriteButton
+                      type="album"
+                      name={album.name}
+                      artistName={artistName}
+                      userId={user.id}
+                    />
+                    <AddToListDialog
+                      userId={user.id}
+                      itemType="album"
+                      name={album.name}
+                      artistName={artistName}
+                    />
+                  </>
+                )}
                 <a
                   href={album.external_urls?.spotify}
                   target="_blank"
@@ -167,6 +172,11 @@ export default async function AlbumPage({
                   itemId={stats.itemId}
                   name={album.name}
                   variant="card"
+                  // ⬇️ para el ReviewsModal: votos, “Tu reseña”, borrar, etc.
+                  currentUserId={user?.id ?? null}
+                  canModerate={
+                    user ? [1, 2].includes(Number(user.role_id)) : false
+                  }
                 />
               </div>
 
@@ -174,20 +184,37 @@ export default async function AlbumPage({
               <AlbumTracklist albumSlug={albumSlug} tracks={tracks} />
 
               {/* Créditos */}
-              {(album.label || album.total_tracks) && (
+              {(album.label || album.total_tracks || album.copyrights) && (
                 <section className="pt-4 border-t">
                   <h3 className="mb-2 text-xl font-semibold">Créditos</h3>
                   <ul className="space-y-1 text-base">
+                    {typeof album.total_tracks === "number" ? (
+                      <li>
+                        <span className="font-semibold">Nº de pistas:</span>{" "}
+                        {album.total_tracks}
+                      </li>
+                    ) : null}
                     {album.label ? (
                       <li>
                         <span className="font-semibold">Discográfica:</span>{" "}
                         {album.label}
                       </li>
                     ) : null}
-                    {typeof album.total_tracks === "number" ? (
+                    {album.copyrights && album.copyrights.length > 0 ? (
                       <li>
-                        <span className="font-semibold">Nº de pistas:</span>{" "}
-                        {album.total_tracks}
+                        <span className="font-semibold">Derechos:</span>
+                        <ul className="ml-4 mt-1 space-y-1">
+                          {album.copyrights.map(
+                            (copyright: any, index: number) => (
+                              <li
+                                key={index}
+                                className="text-sm text-muted-foreground"
+                              >
+                                {copyright.text}
+                              </li>
+                            )
+                          )}
+                        </ul>
                       </li>
                     ) : null}
                   </ul>
