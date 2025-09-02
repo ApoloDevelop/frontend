@@ -1,0 +1,1 @@
+export { useMediaMetadata } from "./useMediaMetadata";

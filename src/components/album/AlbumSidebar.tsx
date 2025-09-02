@@ -3,7 +3,7 @@ import Image from "next/image";
 import { FavoriteButton } from "@/components/favorites/FavoriteButton";
 import { AddToListDialog } from "@/components/lists/AddToListDialog";
 import { Rating } from "@/components/reviews";
-import { SpotifyButton } from "./SpotifyButton";
+import { SpotifyButton } from "@/components/ui/SpotifyButton";
 
 interface AlbumSidebarProps {
   albumName: string;

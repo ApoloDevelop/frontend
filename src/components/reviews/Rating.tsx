@@ -32,6 +32,7 @@ export default async function Rating(props: BaseProps & ExtraProps) {
       initialReview={initialReview}
       itemId={props.itemId ?? null}
       isVerifiedUser={isVerifiedUser}
+      currentUserId={user?.id ?? null}
     />
   );
 }

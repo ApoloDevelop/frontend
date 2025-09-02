@@ -1,4 +1,5 @@
 interface InitialReview {
+  id?: number;
   score: number;
   title?: string | null;
   text?: string | null;
@@ -33,6 +34,7 @@ export async function getInitialReview(
       const data = await jsonOrNull(res);
       if (data && typeof data === "object") {
         return {
+          id: Number(data.id ?? 0),
           score: Number(data.score ?? 0),
           title: data.title ?? null,
           text: data.text ?? null,

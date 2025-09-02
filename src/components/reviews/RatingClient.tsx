@@ -3,6 +3,7 @@ import { RatingModal } from "./RatingModal";
 import { RatingButton } from "./RatingButton";
 import { useRatingModal } from "@/hooks/reviews/useRatingModal";
 import { useRatingSubmit } from "@/hooks/reviews/useRatingSubmit";
+import { ReviewService } from "@/services/review.service";
 
 type RateableType = "artist" | "album" | "track" | "venue";
 
@@ -13,7 +14,9 @@ type BaseProps = {
   isAuthenticated: boolean;
   itemId?: number | null;
   isVerifiedUser?: boolean;
+  currentUserId?: number | null;
   initialReview?: {
+    id?: number;
     score: number;
     title?: string | null;
     text?: string | null;
@@ -43,6 +46,22 @@ export function RatingClient(props: RatingClientProps) {
 
   const { handleSubmit } = useRatingSubmit(submitProps);
 
+  // Para eliminar reseñas, solo necesitamos una función simple
+  const handleDelete = async () => {
+    if (!props.initialReview?.id) return;
+
+    if (!confirm("¿Eliminar esta reseña?")) return;
+
+    try {
+      await ReviewService.deleteReview(props.initialReview.id);
+      // Recargar la página o manejar la actualización de estado
+      window.location.reload();
+    } catch (error) {
+      console.error("Error al eliminar la reseña:", error);
+      alert("No se pudo eliminar la reseña");
+    }
+  };
+
   const hasReview = !!props.initialReview;
 
   return (
@@ -58,6 +77,7 @@ export function RatingClient(props: RatingClientProps) {
         open={open}
         onClose={handleClose}
         onSubmit={handleSubmit}
+        onDelete={hasReview ? handleDelete : undefined}
         name={props.name}
         type={props.type}
         initialScore={props.initialReview?.score ?? 0}

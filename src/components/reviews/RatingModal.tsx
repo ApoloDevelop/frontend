@@ -16,6 +16,7 @@ export function RatingModal({
   open,
   onClose,
   onSubmit,
+  onDelete,
   name,
   type,
   initialScore = 0,
@@ -26,6 +27,7 @@ export function RatingModal({
   open: boolean;
   onClose: () => void;
   onSubmit: (score: number, comment: string, title: string) => void;
+  onDelete?: () => void;
   name: string;
   type: RateableType;
   initialScore?: number;
@@ -92,6 +94,7 @@ export function RatingModal({
             score={score}
             hasExisting={hasExisting}
             onSubmit={handleSubmit}
+            onDelete={onDelete}
           />
         </div>
       </DialogContent>
