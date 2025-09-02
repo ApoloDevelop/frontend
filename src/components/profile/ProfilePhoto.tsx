@@ -1,3 +1,4 @@
+import { DEFAULT_AVATAR_URL } from "@/constants/registerConstants";
 import Image from "next/image";
 
 export const ProfilePhoto = ({
@@ -10,7 +11,7 @@ export const ProfilePhoto = ({
   return (
     <div className={className}>
       <Image
-        src={src || "/default-avatar.jpg"}
+        src={src || DEFAULT_AVATAR_URL}
         alt="Foto de perfil"
         width={180}
         height={180}
