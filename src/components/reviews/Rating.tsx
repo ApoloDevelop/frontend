@@ -15,7 +15,7 @@ type BaseProps = {
 type ExtraProps =
   | { type: "artist" }
   | { type: "album"; artistName: string }
-  | { type: "track"; artistName: string }
+  | { type: "track"; artistName: string; albumName: string }
   | { type: "venue"; location: string };
 
 export default async function Rating(props: BaseProps & ExtraProps) {

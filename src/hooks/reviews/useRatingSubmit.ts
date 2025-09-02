@@ -7,6 +7,7 @@ interface SubmitRatingProps {
   type: RateableType;
   name: string;
   artistName?: string;
+  albumName?: string;
   location?: string;
 }
 
@@ -29,10 +30,15 @@ export function useRatingSubmit(
     const { type, name } = props;
     const payload: any = { type, name, score, comment, title };
 
-    const needsArtist = type === "album" || type === "track";
+    const needsArtist = type === "album";
+    const needsAlbumAndArtist = type === "track";
 
     if (needsArtist && props.artistName) {
       payload.artistName = props.artistName;
+    } else if (needsAlbumAndArtist && props.albumName && props.artistName) {
+      payload.albumName = props.albumName;
+      payload.artistName = props.artistName;
+      console.log("Rating payload:", payload);
     } else if (type === "venue" && props.location) {
       payload.location = props.location;
     }

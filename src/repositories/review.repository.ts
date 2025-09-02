@@ -48,6 +48,28 @@ export class ReviewRepository {
     }>;
   }
 
+  static async getTrackReviewStats(
+    trackName: string,
+    artistName: string,
+    albumName: string
+  ) {
+    const q = new URLSearchParams({ trackName, artistName, albumName });
+    const res = await fetch(
+      `${
+        process.env.NEXT_PUBLIC_BACKEND_URL
+      }/reviews/track/stats?${q.toString()}`,
+      { cache: "no-store" }
+    );
+    if (!res.ok) throw new Error("Error al obtener las stats del track");
+    return res.json() as Promise<{
+      verified: number | null;
+      unverified: number | null;
+      verifiedCount: number;
+      unverifiedCount: number;
+      itemId: number | null;
+    }>;
+  }
+
   static async getReviewsByItem(
     itemId: number,
     verified: boolean,

@@ -23,7 +23,7 @@ type BaseProps = {
 type ExtraProps =
   | { type: "artist" }
   | { type: "album"; artistName: string }
-  | { type: "track"; artistName: string }
+  | { type: "track"; artistName: string; albumName: string }
   | { type: "venue"; location: string };
 
 type RatingClientProps = BaseProps & ExtraProps;
@@ -34,8 +34,9 @@ export function RatingClient(props: RatingClientProps) {
   const submitProps = {
     type: props.type,
     name: props.name,
-    ...(props.type === "album" || props.type === "track"
-      ? { artistName: props.artistName }
+    ...(props.type === "album" ? { artistName: props.artistName } : {}),
+    ...(props.type === "track"
+      ? { artistName: props.artistName, albumName: props.albumName }
       : {}),
     ...(props.type === "venue" ? { location: props.location } : {}),
   };

@@ -16,6 +16,10 @@ import Link from "next/link";
 import { GeniusService } from "@/services/genius.service";
 import { LyricsDisplayer } from "@/components/song/LyricsDisplayer";
 import { mockTrackData } from "@/mocks/mockSongstats";
+import { getCurrentUser } from "@/lib/auth";
+import { ReviewService } from "@/services/review.service";
+import { ItemService } from "@/services/item.service";
+import { Rating } from "@/components/reviews";
 
 export default async function SongPage({
   params: rawParams,
@@ -44,6 +48,34 @@ export default async function SongPage({
     lyrics:
       "Esta es una letra de ejemplo para la canción. \nEsta es la segunda línea de la letra. \nEsta es la tercera línea de la letra. \nEsta es una letra de ejemplo para la canción. \nEsta es la segunda línea de la letra. \nEsta es la tercera línea de la letra. \nEsta es una letra de ejemplo para la canción. \nEsta es la segunda línea de la letra. \nEsta es la tercera línea de la letra.", // Valor mock
   };
+
+  const user = await getCurrentUser();
+  const canModerate = !!user && [1, 2].includes(Number(user.role_id));
+
+  // Item + stats para Scores/Reviews
+  const primaryArtist = track.artists?.[0]?.name || artistName;
+  const stats = (await ReviewService.getTrackReviewStats(
+    track.name,
+    primaryArtist,
+    albumName
+  ).catch(() => null)) || {
+    verified: null,
+    unverified: null,
+    verifiedCount: 0,
+    unverifiedCount: 0,
+    itemId: null as number | null,
+  };
+
+  // fallback de itemId (por si tu endpoint aún no lo devuelve)
+  let itemId = stats.itemId ?? null;
+  if (itemId == null) {
+    const item = await ItemService.findItemByTypeAndName(
+      "track",
+      track.name,
+      primaryArtist
+    ).catch(() => null);
+    itemId = item?.itemId ?? null;
+  }
 
   const cover = track.album?.images?.[0]?.url || "/default-cover.png";
   const durationMs = track.duration_ms ?? 0;
@@ -85,7 +117,7 @@ export default async function SongPage({
   const collaboratorsByRole = sortCollabs(translatedCollaborators);
 
   const breadcrumbItems = [
-    { label: "ARTISTAS", href: "/artists" },
+    { label: "ARTISTAS" }, // href: /artists
     {
       label: wrapWord(artistName).toUpperCase(),
       href: `/artists/${artistSlug}`,
@@ -99,6 +131,8 @@ export default async function SongPage({
       isCurrentPage: true,
     },
   ];
+
+  const artistNameSure = track.artists[0]?.name || "";
 
   return (
     <>
@@ -154,25 +188,39 @@ export default async function SongPage({
 
               {/* Botones “inertes” (sin servicios) */}
 
-              <RatingClient
+              <Rating
                 name={track.name}
                 type="track"
-                userId={1}
-                artistName={track.artists[0]?.name || ""}
+                itemId={itemId}
+                artistName={artistNameSure}
+                albumName={albumName}
               />
-              <div className="flex flex-wrap items-center gap-3">
-                <FavoriteButton
-                  type="track"
-                  name={track.name}
-                  artistName={track.artists[0]?.name || ""}
-                  userId={1}
-                />
-                <AddToListDialog
-                  itemType="track"
-                  name={track.name}
-                  userId={1}
-                  artistName={track.artists[0]?.name || ""}
-                />
+              {user && (
+                <div className="flex flex-wrap items-center gap-3">
+                  <FavoriteButton
+                    type="track"
+                    name={track.name}
+                    artistName={primaryArtist}
+                    userId={user.id}
+                  />
+                  <AddToListDialog
+                    itemType="track"
+                    name={track.name}
+                    artistName={primaryArtist}
+                    userId={user.id}
+                  />
+                  <a
+                    href={track.external_urls?.spotify}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 rounded-xl bg-green-900 px-4 py-2 text-white hover:bg-green-700 transition"
+                  >
+                    <SpotifyLogo />
+                    <span>Reproducir en Spotify</span>
+                  </a>
+                </div>
+              )}
+              {!user && (
                 <a
                   href={track.external_urls?.spotify}
                   target="_blank"
@@ -182,7 +230,7 @@ export default async function SongPage({
                   <SpotifyLogo />
                   <span>Reproducir en Spotify</span>
                 </a>
-              </div>
+              )}
             </aside>
 
             {/* MAIN */}
@@ -244,13 +292,15 @@ export default async function SongPage({
               {/* Valoraciones (placeholder estático) */}
               <section className="w-full lg:w-[737px]">
                 <Scores
-                  verified={4.5}
-                  unverified={3.8}
-                  verifiedCount={100}
-                  unverifiedCount={50}
-                  itemId={1}
+                  verified={stats.verified}
+                  unverified={stats.unverified}
+                  verifiedCount={stats.verifiedCount}
+                  unverifiedCount={stats.unverifiedCount}
+                  itemId={itemId}
                   name={wrapWord(track.name)}
                   variant="card"
+                  currentUserId={user?.id ?? null}
+                  canModerate={canModerate}
                 />
               </section>
 

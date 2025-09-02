@@ -4,10 +4,11 @@ export class ReviewService {
   static async rate(payload: {
     type: "artist" | "album" | "track" | "venue";
     name: string;
+    artistName?: string; // álbum/track
+    albumName?: string; // track
     score: number;
     comment?: string;
     title?: string;
-    artistName?: string; // álbum/track
     location?: string; // venue
   }) {
     return ReviewRepository.rate(payload);
@@ -19,6 +20,18 @@ export class ReviewService {
 
   static async getAlbumReviewStats(albumName: string, artistName?: string) {
     return ReviewRepository.getAlbumReviewStats(albumName, artistName);
+  }
+
+  static async getTrackReviewStats(
+    trackName: string,
+    artistName: string,
+    albumName: string
+  ) {
+    return ReviewRepository.getTrackReviewStats(
+      trackName,
+      artistName,
+      albumName
+    );
   }
 
   static async getReviewsByItem(
