@@ -5,6 +5,12 @@ export { ArtistMainContent } from "./ArtistMainContent";
 export { ArtistRatings } from "./ArtistRatings";
 export { ArtistSidebar } from "./ArtistSidebar";
 
+// Events components
+export { default as ArtistEventsHero } from "./ArtistEventsHero";
+export { default as ArtistEventsHeader } from "./ArtistEventsHeader";
+export { default as ArtistEventsContent } from "./ArtistEventsContent";
+export { default as ArtistNotFound } from "./ArtistNotFound";
+
 // Existing components
 export { ArtistBio } from "./ArtistBio";
 export { LatestAlbums } from "./LatestAlbums";
