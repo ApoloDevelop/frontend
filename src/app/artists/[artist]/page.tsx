@@ -9,6 +9,7 @@ import {
   ArtistMainContent,
   ArtistSidebar,
 } from "@/components/artist";
+import { ErrorPage } from "@/components/system/ErrorPage";
 
 export default async function ArtistPage({
   params,
@@ -76,6 +77,20 @@ export default async function ArtistPage({
       </div>
     );
   } catch (error) {
-    return <div className="text-center py-20">Artista no encontrado.</div>;
+    console.error("Error loading artist data:", error);
+
+    // Determinar el mensaje de error específico
+    const errorMessage =
+      error instanceof Error
+        ? error.message
+        : "Error al cargar los datos del artista";
+
+    return (
+      <ErrorPage
+        message={errorMessage}
+        title="Artista no disponible"
+        icon="🎤"
+      />
+    );
   }
 }

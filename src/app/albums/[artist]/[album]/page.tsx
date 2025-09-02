@@ -1,19 +1,9 @@
-import Image from "next/image";
-import { notFound } from "next/navigation";
-import Link from "next/link";
 import { SpotifyService } from "@/services/spotify.service";
-import SpotifyLogo from "@/components/icons/SpotifyLogo";
-import { RatingClient } from "@/components/reviews/RatingClient";
 import { ReviewService } from "@/services/review.service";
-import { Scores } from "@/components/reviews/Scores";
-import { FavoriteButton } from "@/components/favorites/FavoriteButton";
-import { AddToListDialog } from "@/components/lists/AddToListDialog";
-import { deslugify, fold, slugify } from "@/utils/normalization";
-import { AlbumTracklist } from "@/components/album/AlbumTracklist";
-import { Hero } from "@/components/images/Hero";
-import { CustomBreadcrumb } from "@/components/ui/CustomBreadcrumb";
+import { deslugify, fold } from "@/utils/normalization";
 import { getCurrentUser } from "@/lib/auth";
-import { Rating } from "@/components/reviews";
+import { AlbumLayout } from "@/components/album/AlbumLayout";
+import { ErrorPage } from "@/components/system/ErrorPage";
 
 export default async function AlbumPage({
   params: rawParams,
@@ -21,209 +11,76 @@ export default async function AlbumPage({
   params: { artist: string; album: string };
 }) {
   const { artist: artistSlug, album: albumSlug } = await rawParams;
+  const user = await getCurrentUser();
 
   const artistName = deslugify(artistSlug);
   const albumName = deslugify(albumSlug);
 
-  const album = await SpotifyService.fetchAlbumByName(albumName, artistName);
+  try {
+    // Cargar datos en server-side
+    const album = await SpotifyService.fetchAlbumByName(albumName, artistName);
 
-  if (
-    !album ||
-    !album.artists?.some((a: any) => fold(a.name) === fold(artistName))
-  ) {
-    return notFound();
+    if (
+      !album ||
+      !album.artists?.some((a: any) => fold(a.name) === fold(artistName))
+    ) {
+      return (
+        <ErrorPage
+          message="Álbum no encontrado"
+          title="Álbum no disponible"
+          icon="💿"
+        />
+      );
+    }
+
+    const [tracks, stats] = await Promise.all([
+      SpotifyService.fetchAlbumTracks(album.id),
+      ReviewService.getAlbumReviewStats(album.name, artistName),
+    ]);
+
+    const albumMetadata = {
+      cover: album.images?.[0]?.url || "/default-cover.png",
+      year:
+        album.release_date &&
+        !Number.isNaN(new Date(album.release_date).getTime())
+          ? new Date(album.release_date).getFullYear()
+          : undefined,
+      releaseDate: album.release_date
+        ? new Date(album.release_date).toLocaleDateString()
+        : null,
+      genre: album.genres?.[0] || null,
+      spotifyUrl: album.external_urls?.spotify,
+    };
+
+    const breadcrumbItems = [
+      { label: "ARTISTAS" },
+      { label: artistName.toUpperCase(), href: `/artists/${artistSlug}` },
+      {
+        label: album.name.toUpperCase(),
+        isCurrentPage: true,
+      },
+    ];
+
+    return (
+      <AlbumLayout
+        album={album}
+        tracks={tracks}
+        stats={stats}
+        artistName={artistName}
+        albumSlug={albumSlug}
+        albumMetadata={albumMetadata}
+        breadcrumbItems={breadcrumbItems}
+        user={user}
+      />
+    );
+  } catch (error) {
+    console.error("Error loading album data:", error);
+    return (
+      <ErrorPage
+        message="Error al cargar los datos del álbum"
+        title="Álbum no disponible"
+        icon="💿"
+      />
+    );
   }
-
-  const tracks = await SpotifyService.fetchAlbumTracks(album.id);
-  const stats = await ReviewService.getAlbumReviewStats(album.name, artistName);
-
-  const cover = album.images?.[0]?.url || "/default-cover.png";
-  const year =
-    album.release_date && !Number.isNaN(new Date(album.release_date).getTime())
-      ? new Date(album.release_date).getFullYear()
-      : undefined;
-
-  const breadcrumbItems = [
-    { label: "ARTISTAS" }, //href: /artists
-    { label: artistName.toUpperCase(), href: `/artists/${artistSlug}` },
-    {
-      label: album.name.toUpperCase(),
-      isCurrentPage: true,
-    },
-  ];
-
-  const user = await getCurrentUser();
-
-  return (
-    <>
-      {/* HERO: fondo con blur + degradado para legibilidad */}
-      <Hero cover={cover} />
-
-      {/* CONTENIDO */}
-      <div className="relative -mt-16 pb-16">
-        <div className="mx-auto max-w-6xl px-4">
-          {/* Breadcrumbs */}
-          <CustomBreadcrumb items={breadcrumbItems} />
-
-          <div className="grid grid-cols-12 gap-8 mt-6">
-            {/* ASIDE STICKY: cover + CTAs */}
-            <aside className="col-span-12 md:col-span-4 md:sticky md:top-24 space-y-4 self-start">
-              <h1
-                title={album.name}
-                className="text-3xl md:text-4xl font-bold leading-tight"
-              >
-                {album.name}
-                {year ? (
-                  <span className="text-muted-foreground"> ({year})</span>
-                ) : null}
-              </h1>
-
-              <div className="aspect-square w-full overflow-hidden rounded-2xl shadow-lg bg-white">
-                <Image
-                  src={cover}
-                  alt={`Cover de ${album.name}`}
-                  width={800}
-                  height={800}
-                  className="h-full w-full object-cover"
-                  priority
-                />
-              </div>
-              <Rating
-                name={album.name}
-                type="album"
-                artistName={artistName}
-                itemId={stats.itemId ?? null}
-              />
-              <div className="flex flex-wrap items-center gap-3">
-                {/* Mostrar solo si hay sesión */}
-                {user && (
-                  <>
-                    <FavoriteButton
-                      type="album"
-                      name={album.name}
-                      artistName={artistName}
-                      userId={user.id}
-                    />
-                    <AddToListDialog
-                      userId={user.id}
-                      itemType="album"
-                      name={album.name}
-                      artistName={artistName}
-                    />
-                  </>
-                )}
-                <a
-                  href={album.external_urls?.spotify}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 rounded-xl bg-green-900 px-4 py-2 text-white hover:bg-green-700 transition"
-                >
-                  <SpotifyLogo />
-                  <span>Reproducir en Spotify</span>
-                </a>
-              </div>
-            </aside>
-
-            {/* MAIN: título, metadatos, tracklist, créditos */}
-            <main className="col-span-12 md:col-span-8 space-y-8">
-              {/* Título + metadatos */}
-              <header className="space-y-2">
-                <p className="text-lg">
-                  <span className="font-semibold">Artista:</span>{" "}
-                  {album.artists?.map((artist: any, index: number) => (
-                    <span key={artist.id || artist.name}>
-                      <Link
-                        href={`/artists/${slugify(artist.name)}`}
-                        className="text-purple-600 hover:underline"
-                        scroll
-                      >
-                        {artist.name}
-                      </Link>
-                      {index < album.artists.length - 1 && ", "}
-                    </span>
-                  ))}
-                </p>
-
-                {album.release_date ? (
-                  <p className="text-lg">
-                    <span className="font-semibold">Lanzamiento:</span>{" "}
-                    <span
-                      title={new Date(album.release_date).toLocaleDateString()}
-                    >
-                      {new Date(album.release_date).toLocaleDateString()}
-                    </span>
-                  </p>
-                ) : null}
-
-                {album.genres && album.genres.length > 0 ? (
-                  <p className="text-lg">
-                    <span className="font-semibold">Género:</span>{" "}
-                    {album.genres[0]}
-                  </p>
-                ) : null}
-              </header>
-
-              <div className="w-full lg:w-[737px] justify-self-start">
-                <Scores
-                  verified={stats.verified}
-                  unverified={stats.unverified}
-                  verifiedCount={stats.verifiedCount}
-                  unverifiedCount={stats.unverifiedCount}
-                  itemId={stats.itemId}
-                  name={album.name}
-                  variant="card"
-                  // ⬇️ para el ReviewsModal: votos, “Tu reseña”, borrar, etc.
-                  currentUserId={user?.id ?? null}
-                  canModerate={
-                    user ? [1, 2].includes(Number(user.role_id)) : false
-                  }
-                />
-              </div>
-
-              {/* Tracklist */}
-              <AlbumTracklist albumSlug={albumSlug} tracks={tracks} />
-
-              {/* Créditos */}
-              {(album.label || album.total_tracks || album.copyrights) && (
-                <section className="pt-4 border-t">
-                  <h3 className="mb-2 text-xl font-semibold">Créditos</h3>
-                  <ul className="space-y-1 text-base">
-                    {typeof album.total_tracks === "number" ? (
-                      <li>
-                        <span className="font-semibold">Nº de pistas:</span>{" "}
-                        {album.total_tracks}
-                      </li>
-                    ) : null}
-                    {album.label ? (
-                      <li>
-                        <span className="font-semibold">Discográfica:</span>{" "}
-                        {album.label}
-                      </li>
-                    ) : null}
-                    {album.copyrights && album.copyrights.length > 0 ? (
-                      <li>
-                        <span className="font-semibold">Derechos:</span>
-                        <ul className="ml-4 mt-1 space-y-1">
-                          {album.copyrights.map(
-                            (copyright: any, index: number) => (
-                              <li
-                                key={index}
-                                className="text-sm text-muted-foreground"
-                              >
-                                {copyright.text}
-                              </li>
-                            )
-                          )}
-                        </ul>
-                      </li>
-                    ) : null}
-                  </ul>
-                </section>
-              )}
-            </main>
-          </div>
-        </div>
-      </div>
-    </>
-  );
 }
