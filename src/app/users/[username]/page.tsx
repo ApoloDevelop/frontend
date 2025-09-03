@@ -24,6 +24,7 @@ import { ActivityComposerModal } from "@/components/profile/ActivityComposerModa
 import { ActivityFeed } from "@/components/profile/ActivityFeed";
 import { PlusIcon } from "lucide-react";
 import UserPageSkeleton from "@/components/skeletons/UserPageSkeleton";
+import { ErrorPage } from "@/components/system/ErrorPage";
 
 export default function UserProfilePage({
   params,
@@ -31,7 +32,7 @@ export default function UserProfilePage({
   params: Promise<{ username: string }>;
 }) {
   const { username } = use(params);
-  const { user, loading } = useUserProfile(username);
+  const { user, loading, error } = useUserProfile(username);
   const { localUser, setLocalUser } = useLocalUserProfile(user);
   const { isModalOpen, openModal, closeModal } = useEditProfileModal();
   const { canEdit } = useProfilePermissions(user?.id);
@@ -143,8 +144,15 @@ export default function UserProfilePage({
     return <UserPageSkeleton />;
   }
 
+  // Si no hay usuario y no está cargando, entonces no existe
   if (!user && !localUser) {
-    notFound();
+    return (
+      <ErrorPage
+        message="El usuario que buscas no existe o ha sido eliminado"
+        title="Usuario no encontrado"
+        icon="👤"
+      />
+    );
   }
 
   const currentUser = localUser || user;
