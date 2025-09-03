@@ -55,7 +55,7 @@ export function MobileDrawer({
         </div>
 
         {/* Links de navegación */}
-        <NavigationLinks 
+        <NavigationLinks
           isActive={isActive}
           onItemClick={onClose}
           isMobile={true}
@@ -63,9 +63,7 @@ export function MobileDrawer({
 
         {/* Acciones del drawer */}
         <div className="mt-auto px-3 py-4 border-t space-y-2">
-          {!user && (
-            <LoginButton onMobileMenuClose={onClose} />
-          )}
+          {!user && <LoginButton onMobileMenuClose={onClose} />}
 
           {user && (
             <>

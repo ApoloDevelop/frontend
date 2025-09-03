@@ -12,12 +12,12 @@ interface UserMenuProps {
   onLogout: () => void;
 }
 
-export function UserMenu({ 
-  user, 
-  isOpen, 
-  onToggle, 
-  onClose, 
-  onLogout 
+export function UserMenu({
+  user,
+  isOpen,
+  onToggle,
+  onClose,
+  onLogout,
 }: UserMenuProps) {
   const btnRef = useRef<HTMLButtonElement>(null);
   const menuRef = useClickOutside<HTMLDivElement>(isOpen, onClose, btnRef);

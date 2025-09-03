@@ -12,10 +12,10 @@ interface NavigationLinksProps {
   isMobile?: boolean;
 }
 
-export function NavigationLinks({ 
-  isActive, 
-  onItemClick, 
-  isMobile = false 
+export function NavigationLinks({
+  isActive,
+  onItemClick,
+  isMobile = false,
 }: NavigationLinksProps) {
   if (isMobile) {
     return (

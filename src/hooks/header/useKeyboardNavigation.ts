@@ -1,8 +1,6 @@
 import { useEffect } from "react";
 
-export function useKeyboardNavigation(
-  onEscape: () => void
-) {
+export function useKeyboardNavigation(onEscape: () => void) {
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       if (e.key === "Escape") {
