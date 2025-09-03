@@ -116,25 +116,51 @@ export default function RegisterPage() {
   };
 
   useEffect(() => {
-    if (isAuthenticated()) router.replace("/");
+    if (isAuthenticated()) {
+      router.replace("/");
+    }
   }, [router]);
 
   const handleCreateAccount = async () => {
     setIsLoading(true);
+    setAlertMsgs([]); // Limpiar mensajes previos
 
     try {
       let profilePicUrl = DEFAULT_AVATAR_URL;
 
       if (profileImage) {
-        profilePicUrl = await CloudinaryService.uploadImage(profileImage);
+        try {
+          console.log("Uploading profile image...");
+          profilePicUrl = await CloudinaryService.uploadImage(profileImage);
+          console.log("Image uploaded successfully:", profilePicUrl);
+        } catch (uploadError) {
+          console.warn("Error uploading image, using default:", uploadError);
+          // Continuar con imagen por defecto si falla la subida
+        }
       }
 
+      console.log("Creating account with data:", {
+        ...formData,
+        profilePicUrl,
+      });
       const data = await RegisterService.createAccount(formData, profilePicUrl);
+      console.log("Account creation response:", data);
 
-      setSession(data.token, data.user);
-      router.replace("/"); // home
+      if (data.token && data.user) {
+        console.log("Setting session and redirecting...");
+        setSession(data.token, data.user);
+
+        // Usar window.location.replace para una redirección más forzosa
+        console.log("Redirecting to home page...");
+        window.location.replace("/");
+
+        return; // Salir de la función para evitar mostrar alertas
+      } else {
+        console.error("Invalid server response:", data);
+        throw new Error("Respuesta inválida del servidor");
+      }
     } catch (error: any) {
-      console.error(error);
+      console.error("Error creating account:", error);
       setAlertMsgs([error.message || "Error al crear la cuenta"]);
     } finally {
       setIsLoading(false);

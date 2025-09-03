@@ -1,4 +1,5 @@
 import { RegisterRepository } from "@/repositories/register.repository";
+import { normalizeUser } from "@/lib/auth";
 
 export class RegisterService {
   static async createAccount(
@@ -15,7 +16,14 @@ export class RegisterService {
       social_genre: formData.social_genre || null,
     };
 
-    return await RegisterRepository.registerUser(body);
+    const response = await RegisterRepository.registerUser(body);
+
+    // Si la respuesta incluye un usuario, normalizarlo
+    if (response.user) {
+      response.user = normalizeUser(response.user);
+    }
+
+    return response;
   }
 
   static async validateAndCheckIfExists(
