@@ -162,6 +162,7 @@ export default function UserProfilePage({
     localUser,
     currentUser,
     canEdit,
+    isAdmin,
   });
 
   return (
@@ -219,7 +220,7 @@ export default function UserProfilePage({
         roleId={currentUser.role_id}
         followButton={
           !canEdit && (
-            <div className="flex gap-2">
+            <div className="flex gap-2 relative z-20">
               <FollowButton
                 profileUserId={currentUser.id}
                 onFollowChange={handleFollowChange}
@@ -228,8 +229,14 @@ export default function UserProfilePage({
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => setRoleModalOpen(true)}
-                  className="text-xs"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log("Ajustar rol clicked - isAdmin:", isAdmin);
+                    setRoleModalOpen(true);
+                  }}
+                  className="text-xs relative z-30 pointer-events-auto cursor-pointer"
+                  style={{ pointerEvents: 'auto' }}
                 >
                   Ajustar rol
                 </Button>
