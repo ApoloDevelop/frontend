@@ -20,6 +20,8 @@ import { FollowButton } from "@/components/profile/FollowButton";
 import { FollowCounters } from "@/components/profile/FollowCounters";
 import { RoleAdjustModal } from "@/components/profile/RoleAdjustModal";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { ActivityComposer } from "@/components/profile/ActivityComposer";
+import { ActivityFeed } from "@/components/profile/ActivityFeed";
 
 export default function UserProfilePage({
   params,
@@ -40,6 +42,7 @@ export default function UserProfilePage({
     loading: photoLoading,
     error: photoError,
   } = useProfilePhotoUpdate();
+  const [refreshFeed, setRefreshFeed] = useState(0);
 
   const handleProfilePhotoUpdate = async (newImageUrl: string) => {
     console.log("Updating profile photo. Current user:", currentUser);
@@ -258,6 +261,20 @@ export default function UserProfilePage({
         }}
         onRoleUpdated={handleRoleUpdate}
       />
+
+      {canEdit && (
+        <div className="px-6 mt-6">
+          <ActivityComposer onPosted={() => setRefreshFeed((v) => v + 1)} />
+        </div>
+      )}
+
+      <div className="px-6">
+        <ActivityFeed
+          userId={currentUser.id}
+          refreshToken={refreshFeed}
+          canDelete={canEdit || isAdmin}
+        />
+      </div>
     </div>
   );
 }
