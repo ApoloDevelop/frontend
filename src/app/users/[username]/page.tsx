@@ -16,6 +16,7 @@ import { useProfilePhotoUpdate } from "@/hooks/profile/useProfilePhotoUpdate";
 import { ProfilePhotoEditor } from "@/components/profile/ProfilePhotoEditor";
 import { CoverPhotoEditor } from "@/components/profile/CoverPhotoEditor";
 import { toast } from "sonner";
+import { FollowBar } from "@/components/profile/FollowBar";
 
 export default function UserProfilePage({
   params,
@@ -176,6 +177,11 @@ export default function UserProfilePage({
           </Button>
         )}
       </div>
+
+      <FollowBar
+        profileUserId={currentUser.id}
+        showFollowButton={!canEdit} // si es tu perfil, no mostramos "Seguir"
+      />
 
       {/* Mostrar errores de actualización de fotos */}
       {photoError && (

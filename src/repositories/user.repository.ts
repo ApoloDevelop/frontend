@@ -1,3 +1,6 @@
+import { FollowSummary, UserLite } from "@/types/users";
+import { authHeaders } from "@/utils/auth";
+
 const B = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 export class UserRepository {
@@ -29,5 +32,64 @@ export class UserRepository {
       throw new Error("Error al actualizar el usuario");
     }
     return await res.json();
+  }
+
+  static async follow(targetUserId: number) {
+    const res = await fetch(`${B}/users/${targetUserId}/follow`, {
+      method: "POST",
+      headers: authHeaders(),
+    });
+    if (!res.ok)
+      throw new Error(
+        await res.text().catch(() => "No se pudo seguir a este usuario")
+      );
+    return res.json() as Promise<{ following: true }>;
+  }
+
+  static async unfollow(targetUserId: number) {
+    const res = await fetch(`${B}/users/${targetUserId}/follow`, {
+      method: "DELETE",
+      headers: authHeaders(),
+    });
+    if (!res.ok)
+      throw new Error(
+        await res
+          .text()
+          .catch(() => "No se pudo dejar de seguir a este usuario")
+      );
+    return res.json() as Promise<{ following: false }>;
+  }
+
+  static async getFollowSummary(profileUserId: number) {
+    const res = await fetch(`${B}/users/${profileUserId}/follow-summary`, {
+      headers: authHeaders(),
+      cache: "no-store",
+    });
+    if (!res.ok) throw new Error("Error al obtener el resumen de seguidores");
+    return res.json() as Promise<FollowSummary>;
+  }
+
+  static async listFollowers(profileUserId: number, skip = 0, take = 20) {
+    const q = new URLSearchParams({
+      skip: String(skip),
+      take: String(take),
+    });
+    const res = await fetch(`${B}/users/${profileUserId}/followers?${q}`, {
+      cache: "no-store",
+    });
+    if (!res.ok) throw new Error("Error al obtener la lista de seguidores");
+    return res.json() as Promise<UserLite[]>;
+  }
+
+  static async listFollowing(profileUserId: number, skip = 0, take = 20) {
+    const q = new URLSearchParams({
+      skip: String(skip),
+      take: String(take),
+    });
+    const res = await fetch(`${B}/users/${profileUserId}/following?${q}`, {
+      cache: "no-store",
+    });
+    if (!res.ok) throw new Error("Error al obtener la lista de seguidos");
+    return res.json() as Promise<UserLite[]>;
   }
 }
