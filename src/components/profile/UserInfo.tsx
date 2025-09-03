@@ -55,10 +55,7 @@ export const UserInfo = ({
         );
       case 4:
         return (
-          <div 
-            title="Verificado" 
-            className="ml-1 cursor-help inline-flex"
-          >
+          <div title="Verificado" className="-ml-2 cursor-help inline-flex">
             <Badge variant="verified" className="flex items-center gap-1">
               <svg className="w-6 h-6" viewBox="0 0 20 20" fill="currentColor">
                 <path
@@ -88,82 +85,87 @@ export const UserInfo = ({
             </div>
             <div className="flex-grow"></div>
             {followButton && (
-              <div className="flex-shrink-0 relative z-10 pointer-events-auto">
-                {followButton}
-              </div>
+              <div className="flex-shrink-0">{followButton}</div>
             )}
             <Separator orientation="vertical" className="flex-shrink-0" />
-            {spLink && (
-              <a
-                href={spLink}
-                target="_blank"
-                rel="noopener noreferrer"
-                title="Spotify"
-              >
-                <FaSpotify
-                  className="text-green-600 hover:scale-110 transition"
-                  size={20}
-                />
-              </a>
-            )}
-            {igLink && (
-              <a
-                href={igLink}
-                target="_blank"
-                rel="noopener noreferrer"
-                title="Instagram"
-              >
-                <FaInstagram
-                  className="text-pink-500 hover:scale-110 transition"
-                  size={20}
-                />
-              </a>
-            )}
-            {twLink && (
-              <a
-                href={twLink}
-                target="_blank"
-                rel="noopener noreferrer"
-                title="X (Twitter)"
-              >
-                <FaXTwitter
-                  className="text-black hover:scale-110 transition"
-                  size={20}
-                />
-              </a>
-            )}
-            {ytLink && (
-              <a
-                href={ytLink}
-                target="_blank"
-                rel="noopener noreferrer"
-                title="YouTube"
-              >
-                <FaYoutube
-                  className="text-red-600 hover:scale-110 transition"
-                  size={20}
-                />
-              </a>
-            )}
-            {extUrl && (
-              <a
-                href={extUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                title="Enlace externo"
-              >
-                <svg
-                  className="inline text-purple-700 hover:scale-110 transition"
-                  width={18}
-                  height={18}
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
+            <div className="flex items-center gap-2">
+              {spLink && (
+                <a
+                  href={spLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title="Spotify"
+                  className="relative z-10"
                 >
-                  <path d="M12.293 2.293a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L14 5.414V15a1 1 0 11-2 0V5.414l-2.293 2.293A1 1 0 018.293 6.293l4-4z"></path>
-                  <path d="M3 9a1 1 0 011-1h2a1 1 0 110 2H5v6h10v-6h-1a1 1 0 110-2h2a1 1 0 011 1v8a1 1 0 01-1 1H4a1 1 0 01-1-1V9z"></path>
-                </svg>
-              </a>
-            )}
+                  <FaSpotify
+                    className="text-green-600 hover:scale-110 transition"
+                    size={20}
+                  />
+                </a>
+              )}
+              {igLink && (
+                <a
+                  href={igLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title="Instagram"
+                  className="relative z-10"
+                >
+                  <FaInstagram
+                    className="text-pink-500 hover:scale-110 transition"
+                    size={20}
+                  />
+                </a>
+              )}
+              {twLink && (
+                <a
+                  href={twLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title="X (Twitter)"
+                  className="relative z-10"
+                >
+                  <FaXTwitter
+                    className="text-black hover:scale-110 transition"
+                    size={20}
+                  />
+                </a>
+              )}
+              {ytLink && (
+                <a
+                  href={ytLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title="YouTube"
+                  className="relative z-10"
+                >
+                  <FaYoutube
+                    className="text-red-600 hover:scale-110 transition"
+                    size={20}
+                  />
+                </a>
+              )}
+              {extUrl && (
+                <a
+                  href={extUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title="Enlace externo"
+                  className="relative z-10"
+                >
+                  <svg
+                    className="inline text-purple-700 hover:scale-110 transition"
+                    width={18}
+                    height={18}
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path d="M12.293 2.293a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L14 5.414V15a1 1 0 11-2 0V5.414l-2.293 2.293A1 1 0 018.293 6.293l4-4z"></path>
+                    <path d="M3 9a1 1 0 011-1h2a1 1 0 110 2H5v6h10v-6h-1a1 1 0 110-2h2a1 1 0 011 1v8a1 1 0 01-1 1H4a1 1 0 01-1-1V9z"></path>
+                  </svg>
+                </a>
+              )}
+            </div>
           </div>
           <p id="username" className="text-gray-600">
             @{username}
@@ -187,77 +189,84 @@ export const UserInfo = ({
           {/* Redes sociales en segunda línea cuando no hay fullname */}
           <div id="social-media" className="flex items-center gap-2 mt-2">
             <Separator orientation="vertical" />
-            {spLink && (
-              <a
-                href={spLink}
-                target="_blank"
-                rel="noopener noreferrer"
-                title="Spotify"
-              >
-                <FaSpotify
-                  className="text-green-600 hover:scale-110 transition"
-                  size={20}
-                />
-              </a>
-            )}
-            {igLink && (
-              <a
-                href={igLink}
-                target="_blank"
-                rel="noopener noreferrer"
-                title="Instagram"
-              >
-                <FaInstagram
-                  className="text-pink-500 hover:scale-110 transition"
-                  size={20}
-                />
-              </a>
-            )}
-            {twLink && (
-              <a
-                href={twLink}
-                target="_blank"
-                rel="noopener noreferrer"
-                title="X (Twitter)"
-              >
-                <FaXTwitter
-                  className="text-black hover:scale-110 transition"
-                  size={20}
-                />
-              </a>
-            )}
-            {ytLink && (
-              <a
-                href={ytLink}
-                target="_blank"
-                rel="noopener noreferrer"
-                title="YouTube"
-              >
-                <FaYoutube
-                  className="text-red-600 hover:scale-110 transition"
-                  size={20}
-                />
-              </a>
-            )}
-            {extUrl && (
-              <a
-                href={extUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                title="Enlace externo"
-              >
-                <svg
-                  className="inline text-purple-700 hover:scale-110 transition"
-                  width={18}
-                  height={18}
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
+            <div className="flex items-center gap-2">
+              {spLink && (
+                <a
+                  href={spLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title="Spotify"
+                  className="relative z-10"
                 >
-                  <path d="M12.293 2.293a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L14 5.414V15a1 1 0 11-2 0V5.414l-2.293 2.293A1 1 0 018.293 6.293l4-4z"></path>
-                  <path d="M3 9a1 1 0 011-1h2a1 1 0 110 2H5v6h10v-6h-1a1 1 0 110-2h2a1 1 0 011 1v8a1 1 0 01-1 1H4a1 1 0 01-1-1V9z"></path>
-                </svg>
-              </a>
-            )}
+                  <FaSpotify
+                    className="text-green-600 hover:scale-110 transition"
+                    size={20}
+                  />
+                </a>
+              )}
+              {igLink && (
+                <a
+                  href={igLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title="Instagram"
+                  className="relative z-10"
+                >
+                  <FaInstagram
+                    className="text-pink-500 hover:scale-110 transition"
+                    size={20}
+                  />
+                </a>
+              )}
+              {twLink && (
+                <a
+                  href={twLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title="X (Twitter)"
+                  className="relative z-10"
+                >
+                  <FaXTwitter
+                    className="text-black hover:scale-110 transition"
+                    size={20}
+                  />
+                </a>
+              )}
+              {ytLink && (
+                <a
+                  href={ytLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title="YouTube"
+                  className="relative z-10"
+                >
+                  <FaYoutube
+                    className="text-red-600 hover:scale-110 transition"
+                    size={20}
+                  />
+                </a>
+              )}
+              {extUrl && (
+                <a
+                  href={extUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title="Enlace externo"
+                  className="relative z-10"
+                >
+                  <svg
+                    className="inline text-purple-700 hover:scale-110 transition"
+                    width={18}
+                    height={18}
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path d="M12.293 2.293a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L14 5.414V15a1 1 0 11-2 0V5.414l-2.293 2.293A1 1 0 018.293 6.293l4-4z"></path>
+                    <path d="M3 9a1 1 0 011-1h2a1 1 0 110 2H5v6h10v-6h-1a1 1 0 110-2h2a1 1 0 011 1v8a1 1 0 01-1 1H4a1 1 0 01-1-1V9z"></path>
+                  </svg>
+                </a>
+              )}
+            </div>
           </div>
         </>
       )}

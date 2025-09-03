@@ -12,6 +12,8 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import { ActivityPost } from "@/types/activity";
 import { toast } from "sonner";
 import Image from "next/image";
+import { slugify } from "@/utils/normalization";
+import ActivityFeedSkeleton from "@/components/skeletons/ActivityFeedSkeleton";
 dayjs.extend(relativeTime);
 dayjs.locale("es");
 
@@ -47,12 +49,13 @@ function ExpandableContent({ content }: { content: string }) {
 export function ActivityFeed({
   userId,
   refreshToken = 0,
-  canDelete = false,
+  currentUser = null,
   onDeleted,
 }: {
   userId: number;
   refreshToken?: number; // para forzar recarga
   canDelete?: boolean;
+  currentUser?: { id: number; role_id: number; username: string } | null;
   onDeleted?: (id: number) => void;
 }) {
   const TAKE = 10;
@@ -97,6 +100,33 @@ export function ActivityFeed({
     }
   };
 
+  // Función para generar el href según el tipo de item
+  const getItemHref = (post: ActivityPost): string => {
+    const { itemType, display } = post;
+
+    if (itemType === "artist" && display.title) {
+      return `/artists/${slugify(display.title)}`;
+    }
+
+    if (itemType === "album" && display.title && display.artistName) {
+      return `/albums/${slugify(display.artistName)}/${slugify(display.title)}`;
+    }
+
+    if (
+      itemType === "track" &&
+      display.title &&
+      display.artistName &&
+      display.albumName
+    ) {
+      return `/songs/${slugify(display.artistName)}/${slugify(
+        display.albumName
+      )}/${slugify(display.title)}`;
+    }
+
+    // Fallback en caso de que falten datos
+    return "#";
+  };
+
   // Cargar covers para los items
   const loadCovers = async (posts: ActivityPost[]) => {
     const newCovers: Record<number, string> = {};
@@ -138,6 +168,21 @@ export function ActivityFeed({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId, refreshToken]);
 
+  // Función para verificar si el usuario actual puede borrar un post específico
+  const canDeletePost = (post: ActivityPost): boolean => {
+    if (!currentUser) return false;
+
+    // El usuario puede borrar si:
+    // 1. Es el autor del post
+    // 2. Es admin (role_id = 1)
+    // 3. Es moderador (role_id = 2)
+    return (
+      post.author.id === currentUser.id ||
+      currentUser.role_id === 1 ||
+      currentUser.role_id === 2
+    );
+  };
+
   const remove = async (id: number) => {
     // Mostrar confirmación
     const confirmed = window.confirm(
@@ -158,82 +203,91 @@ export function ActivityFeed({
 
   return (
     <div className="mt-4">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-        {items.map((p) => (
-          <Card key={p.id} className="overflow-hidden h-fit">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium">
-                <Link
-                  href={`/users/${p.author.username}`}
-                  className="hover:underline"
-                >
-                  {p.author.username}
-                </Link>{" "}
-                <span className="text-xs text-muted-foreground block mt-1">
-                  {dayjs(p.timestamp).fromNow()}
-                </span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="text-sm">
-              <div className="mb-3 flex items-center gap-3">
-                {/* Cover del item */}
-                <div className="relative w-16 h-16 shrink-0">
-                  <Image
-                    src={itemCovers[p.id] || "/default-cover.png"}
-                    alt={p.display.title || "Cover"}
-                    fill
-                    className="object-cover rounded-md"
-                    sizes="64px"
-                  />
-                </div>
+      {/* Mostrar skeleton durante la carga inicial */}
+      {loading && items.length === 0 ? (
+        <ActivityFeedSkeleton />
+      ) : (
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            {items.map((p) => (
+              <Card key={p.id} className="overflow-hidden h-fit">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-medium">
+                    <Link
+                      href={`/users/${p.author.username}`}
+                      className="hover:underline"
+                    >
+                      {p.author.username}
+                    </Link>{" "}
+                    <span className="text-xs text-muted-foreground block mt-1">
+                      {dayjs(p.timestamp).fromNow()}
+                    </span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="text-sm">
+                  <Link href={getItemHref(p)} className="block">
+                    <div className="mb-3 flex items-center gap-3 hover:bg-black/5 rounded-lg p-2 -m-2 transition-colors -mt-8">
+                      {/* Cover del item */}
+                      <div className="relative w-16 h-16 shrink-0">
+                        <Image
+                          src={itemCovers[p.id] || "/default-cover.png"}
+                          alt={p.display.title || "Cover"}
+                          fill
+                          className="object-cover rounded-md"
+                          sizes="64px"
+                        />
+                      </div>
 
-                {/* Información del item */}
-                <div className="flex-1 min-w-0">
-                  <span className="uppercase text-[10px] text-muted-foreground mr-2">
-                    {p.itemType}
-                  </span>
-                  <h4 className="font-medium text-sm line-clamp-2 mb-1">
-                    {p.display.title}
-                  </h4>
-                  {p.display.artistName && (
-                    <p className="text-muted-foreground text-xs line-clamp-1">
-                      {p.display.artistName}
-                    </p>
+                      {/* Información del item */}
+                      <div className="flex-1 min-w-0">
+                        <span className="uppercase text-[10px] text-muted-foreground mr-2">
+                          {p.itemType}
+                        </span>
+                        <h4 className="font-medium text-sm line-clamp-2 mb-1 hover:text-primary transition-colors">
+                          {p.display.title}
+                        </h4>
+                        {p.display.artistName && (
+                          <p className="text-muted-foreground text-xs line-clamp-1">
+                            {p.display.artistName}
+                          </p>
+                        )}
+                        {p.display.albumName && (
+                          <p className="text-muted-foreground text-xs line-clamp-1">
+                            {p.display.albumName}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </Link>
+                  {p.content && <ExpandableContent content={p.content} />}
+                  {canDeletePost(p) && (
+                    <div className="mt-3">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => remove(p.id)}
+                        className="w-full"
+                      >
+                        Borrar
+                      </Button>
+                    </div>
                   )}
-                  {p.display.albumName && (
-                    <p className="text-muted-foreground text-xs line-clamp-1">
-                      {p.display.albumName}
-                    </p>
-                  )}
-                </div>
-              </div>
-              {p.content && <ExpandableContent content={p.content} />}
-              {canDelete && (
-                <div className="mt-3">
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => remove(p.id)}
-                    className="w-full"
-                  >
-                    Borrar
-                  </Button>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
 
-      <div className="flex justify-center pt-6">
-        {cursor != null ? (
-          <Button onClick={() => load(false)} disabled={loading}>
-            {loading ? "Cargando…" : "Cargar más"}
-          </Button>
-        ) : items.length === 0 ? (
-          <p className="text-sm text-muted-foreground">No hay actividad.</p>
-        ) : null}
-      </div>
+          <div className="flex justify-center pt-6">
+            {cursor != null ? (
+              <Button onClick={() => load(false)} disabled={loading}>
+                {loading ? "Cargando…" : "Cargar más"}
+              </Button>
+            ) : items.length === 0 ? (
+              <p className="text-sm text-muted-foreground">No hay actividad.</p>
+            ) : null}
+          </div>
+        </>
+      )}
     </div>
   );
 }

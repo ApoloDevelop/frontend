@@ -23,6 +23,7 @@ import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { ActivityComposerModal } from "@/components/profile/ActivityComposerModal";
 import { ActivityFeed } from "@/components/profile/ActivityFeed";
 import { PlusIcon } from "lucide-react";
+import UserPageSkeleton from "@/components/skeletons/UserPageSkeleton";
 
 export default function UserProfilePage({
   params,
@@ -139,7 +140,7 @@ export default function UserProfilePage({
   };
 
   if (loading) {
-    return <div className="text-center">Cargando...</div>;
+    return <UserPageSkeleton />;
   }
 
   if (!user && !localUser) {
@@ -282,9 +283,9 @@ export default function UserProfilePage({
 
       <div className="px-6">
         <ActivityFeed
-          userId={currentUser.id}
+          userId={user?.id || 0}
           refreshToken={refreshFeed}
-          canDelete={canEdit || isAdmin}
+          currentUser={authUser}
         />
       </div>
     </div>
