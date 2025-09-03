@@ -1,6 +1,7 @@
 import { FaInstagram, FaSpotify, FaYoutube } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
 import { Separator } from "../ui/separator";
+import { Badge } from "../ui/badge";
 import { useState } from "react";
 
 export const UserInfo = ({
@@ -15,6 +16,7 @@ export const UserInfo = ({
   igLink,
   extUrl,
   followButton,
+  roleId,
 }: any) => {
   const [expanded, setExpanded] = useState(false);
   let joinedText = "";
@@ -30,13 +32,60 @@ export const UserInfo = ({
   const plainBio = (biography ?? "").replace(/\r?\n/g, " ");
   const needsToggle = plainBio.length > 150;
 
+  // Función para renderizar el badge del rol
+  const renderRoleBadge = () => {
+    switch (roleId) {
+      case 1:
+        return (
+          <Badge variant="admin" className="ml-2">
+            ADMIN
+          </Badge>
+        );
+      case 2:
+        return (
+          <Badge variant="mod" className="ml-2">
+            MOD
+          </Badge>
+        );
+      case 3:
+        return (
+          <Badge variant="writer" className="ml-2">
+            REDACTOR
+          </Badge>
+        );
+      case 4:
+        return (
+          <div 
+            title="Verificado" 
+            className="ml-1 cursor-help inline-flex"
+          >
+            <Badge variant="verified" className="flex items-center gap-1">
+              <svg className="w-6 h-6" viewBox="0 0 20 20" fill="currentColor">
+                <path
+                  fillRule="evenodd"
+                  d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </Badge>
+          </div>
+        );
+      case 5:
+      default:
+        return null; // No badge for reader role
+    }
+  };
+
   return (
     <div className={className}>
       {fullname ? (
         <>
           {/* Si hay fullname, mostramos nombre completo con botón en la primera línea */}
           <div id="social-media" className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold">{fullname}</h1>
+            <div className="flex items-center">
+              <h1 className="text-2xl font-bold">{fullname}</h1>
+              {renderRoleBadge()}
+            </div>
             <div className="flex-grow"></div>
             {followButton && (
               <div className="flex-shrink-0 relative z-10 pointer-events-auto">
@@ -124,9 +173,12 @@ export const UserInfo = ({
         <>
           {/* Si no hay fullname, mostramos username con botón de seguir */}
           <div className="flex items-center gap-2">
-            <p id="username" className="text-gray-600 text-2xl font-bold">
-              @{username}
-            </p>
+            <div className="flex items-center">
+              <p id="username" className="text-gray-600 text-2xl font-bold">
+                @{username}
+              </p>
+              {renderRoleBadge()}
+            </div>
             <div className="flex-grow"></div>
             {followButton && (
               <div className="flex-shrink-0">{followButton}</div>

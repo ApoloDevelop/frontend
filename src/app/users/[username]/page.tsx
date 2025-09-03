@@ -176,6 +176,7 @@ export default function UserProfilePage({
         twLink={currentUser.twitter_link}
         igLink={currentUser.instagram_link}
         extUrl={currentUser.external_url}
+        roleId={currentUser.role_id}
         followButton={
           !canEdit && (
             <FollowButton

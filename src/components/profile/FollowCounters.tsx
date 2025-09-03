@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
 import { UserService } from "@/services/user.service";
 import { FollowListModal } from "./FollowListModal";
 
@@ -37,16 +38,18 @@ export function FollowCounters({
       <div className="flex flex-wrap gap-2 items-center">
         <Button
           variant="ghost"
-          className="px-0 h-auto"
+          className="px-0 h-auto hover:underline"
           onClick={() => setFollowersOpen(true)}
         >
           Seguidores&nbsp;
           <span className="font-semibold">{counts.followers}</span>
         </Button>
 
+        <span className="text-gray-400 mx-1">|</span>
+
         <Button
           variant="ghost"
-          className="px-0 h-auto"
+          className="px-0 h-auto hover:underline"
           onClick={() => setFollowingOpen(true)}
         >
           Seguidos&nbsp;
