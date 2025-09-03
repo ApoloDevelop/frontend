@@ -11,7 +11,7 @@ export function ArticleEditorHeader({ isEdit }: ArticleEditorHeaderProps) {
       <p className="text-gray-600">
         {isEdit
           ? "Modifica el contenido y guarda los cambios."
-          : "Redacta un nuevo artículo para la portada."}
+          : "Redacta un nuevo artículo."}
       </p>
     </div>
   );
