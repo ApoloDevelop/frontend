@@ -1,4 +1,3 @@
-import { Scroll } from "lucide-react";
 import "./globals.css";
 import Header from "@/components/header/index";
 import ScrollTopOnRouteChange from "@/components/system/ScrollTopOnRouteChange";

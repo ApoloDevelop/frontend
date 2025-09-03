@@ -18,6 +18,8 @@ import { CoverPhotoEditor } from "@/components/profile/CoverPhotoEditor";
 import { toast } from "sonner";
 import { FollowButton } from "@/components/profile/FollowButton";
 import { FollowCounters } from "@/components/profile/FollowCounters";
+import { RoleAdjustModal } from "@/components/profile/RoleAdjustModal";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
 
 export default function UserProfilePage({
   params,
@@ -29,7 +31,9 @@ export default function UserProfilePage({
   const { localUser, setLocalUser } = useLocalUserProfile(user);
   const { isModalOpen, openModal, closeModal } = useEditProfileModal();
   const { canEdit } = useProfilePermissions(user?.id);
+  const { currentUser: authUser, isAdmin } = useCurrentUser();
   const [refreshCounters, setRefreshCounters] = useState(0); // Estado para refresh de contadores
+  const [roleModalOpen, setRoleModalOpen] = useState(false);
   const {
     updateProfilePhoto,
     updateCoverPhoto,
@@ -117,6 +121,18 @@ export default function UserProfilePage({
     setRefreshCounters((prev) => prev + 1);
   };
 
+  // Función para manejar el cambio de rol
+  const handleRoleUpdate = (newRoleId: number) => {
+    setLocalUser((prevUser: any) => {
+      const updatedUser = {
+        ...currentUser,
+        ...prevUser,
+        role_id: newRoleId,
+      };
+      return updatedUser;
+    });
+  };
+
   if (loading) {
     return <div className="text-center">Cargando...</div>;
   }
@@ -179,10 +195,22 @@ export default function UserProfilePage({
         roleId={currentUser.role_id}
         followButton={
           !canEdit && (
-            <FollowButton
-              profileUserId={currentUser.id}
-              onFollowChange={handleFollowChange}
-            />
+            <div className="flex gap-2">
+              <FollowButton
+                profileUserId={currentUser.id}
+                onFollowChange={handleFollowChange}
+              />
+              {isAdmin && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setRoleModalOpen(true)}
+                  className="text-xs"
+                >
+                  Ajustar rol
+                </Button>
+              )}
+            </div>
           )
         }
       />
@@ -217,6 +245,18 @@ export default function UserProfilePage({
         onClose={closeModal}
         user={currentUser}
         onUserUpdated={setLocalUser}
+      />
+
+      <RoleAdjustModal
+        open={roleModalOpen}
+        onOpenChange={setRoleModalOpen}
+        targetUser={{
+          id: currentUser.id,
+          username: currentUser.username,
+          fullname: currentUser.fullname,
+          role_id: currentUser.role_id,
+        }}
+        onRoleUpdated={handleRoleUpdate}
       />
     </div>
   );
