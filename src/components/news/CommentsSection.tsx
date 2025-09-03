@@ -31,7 +31,12 @@ export default function CommentsSection({ articleId, currentUser }: Props) {
         const res = await CommentsService.listByArticle(articleId, {
           limit: 10,
         });
-        setList(res.data);
+        // Ordenar comentarios principales por fecha (más reciente primero)
+        const sortedData = res.data.sort(
+          (a, b) =>
+            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        );
+        setList(sortedData);
         setNextCursor(res.nextCursor);
         setHasMore(res.hasMore);
       } catch (e: any) {
@@ -78,7 +83,8 @@ export default function CommentsSection({ articleId, currentUser }: Props) {
         setReplyTo(null);
         if (replyRef.current) replyRef.current.value = "";
       } else {
-        setList((prev) => [...prev, { ...created, other_comment: [] }]);
+        // Insertar el nuevo comentario al principio de la lista (más reciente primero)
+        setList((prev) => [{ ...created, other_comment: [] }, ...prev]);
         setNewContent("");
       }
     } catch (e: any) {
@@ -112,7 +118,12 @@ export default function CommentsSection({ articleId, currentUser }: Props) {
         limit: 10,
         cursor: nextCursor,
       });
-      setList((prev) => [...prev, ...res.data]);
+      // Ordenar los nuevos comentarios por fecha (más reciente primero)
+      const sortedNewData = res.data.sort(
+        (a, b) =>
+          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      );
+      setList((prev) => [...prev, ...sortedNewData]);
       setNextCursor(res.nextCursor);
       setHasMore(res.hasMore);
     } catch (e: any) {

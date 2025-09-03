@@ -32,7 +32,14 @@ export function GlobalSearch() {
   };
 
   useEffect(() => {
-    if (open) inputRef.current?.focus();
+    if (open) {
+      // Delay más largo para esperar que termine la animación
+      const timer = setTimeout(() => {
+        inputRef.current?.focus();
+      }, 300);
+
+      return () => clearTimeout(timer);
+    }
   }, [open]);
 
   // Buscar con debounce
@@ -100,7 +107,15 @@ export function GlobalSearch() {
             key="icon"
             aria-label="Buscar"
             className="p-2 rounded-md hover:bg-gray-100 cursor-pointer"
-            onClick={() => setOpen(true)}
+            onClick={() => {
+              setOpen(true);
+              // Foco inmediato después de setState
+              requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                  inputRef.current?.focus();
+                });
+              });
+            }}
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
@@ -127,7 +142,7 @@ export function GlobalSearch() {
               aria-label="Buscar en Apolo"
             />
             <button
-              className="p-1 rounded hover:bg-gray-100"
+              className="p-1 rounded hover:bg-gray-100 cursor-pointer"
               onClick={closeSearch}
               aria-label="Cerrar buscador"
             >
