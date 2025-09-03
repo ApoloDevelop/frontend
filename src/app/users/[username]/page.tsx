@@ -20,8 +20,9 @@ import { FollowButton } from "@/components/profile/FollowButton";
 import { FollowCounters } from "@/components/profile/FollowCounters";
 import { RoleAdjustModal } from "@/components/profile/RoleAdjustModal";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
-import { ActivityComposer } from "@/components/profile/ActivityComposer";
+import { ActivityComposerModal } from "@/components/profile/ActivityComposerModal";
 import { ActivityFeed } from "@/components/profile/ActivityFeed";
+import { PlusIcon } from "lucide-react";
 
 export default function UserProfilePage({
   params,
@@ -36,6 +37,7 @@ export default function UserProfilePage({
   const { currentUser: authUser, isAdmin } = useCurrentUser();
   const [refreshCounters, setRefreshCounters] = useState(0); // Estado para refresh de contadores
   const [roleModalOpen, setRoleModalOpen] = useState(false);
+  const [activityModalOpen, setActivityModalOpen] = useState(false);
   const {
     updateProfilePhoto,
     updateCoverPhoto,
@@ -168,6 +170,16 @@ export default function UserProfilePage({
           <CoverPhoto src={currentUser.cover_pic} />
         )}
       </div>
+
+      {/* Botón Añadir post - Posicionado a la derecha, debajo del cover */}
+      {canEdit && (
+        <div className="flex justify-end px-6 mt-4">
+          <Button onClick={() => setActivityModalOpen(true)} size="sm">
+            <PlusIcon className="w-4 h-4 mr-2" />
+            Añadir post
+          </Button>
+        </div>
+      )}
       <div className="relative">
         {canEdit ? (
           <ProfilePhotoEditor
@@ -262,11 +274,11 @@ export default function UserProfilePage({
         onRoleUpdated={handleRoleUpdate}
       />
 
-      {canEdit && (
-        <div className="px-6 mt-6">
-          <ActivityComposer onPosted={() => setRefreshFeed((v) => v + 1)} />
-        </div>
-      )}
+      <ActivityComposerModal
+        open={activityModalOpen}
+        onOpenChange={setActivityModalOpen}
+        onPosted={() => setRefreshFeed((v) => v + 1)}
+      />
 
       <div className="px-6">
         <ActivityFeed
