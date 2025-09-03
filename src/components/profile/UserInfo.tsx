@@ -14,6 +14,7 @@ export const UserInfo = ({
   twLink,
   igLink,
   extUrl,
+  followButton,
 }: any) => {
   const [expanded, setExpanded] = useState(false);
   let joinedText = "";
@@ -33,6 +34,7 @@ export const UserInfo = ({
     <div className={className}>
       <div id="social-media" className="flex items-center gap-2">
         <h1 className="text-2xl font-bold">{fullname}</h1>
+        {followButton && <div className="ml-auto">{followButton}</div>}
         <Separator orientation="vertical" />
         {spLink && (
           <a
@@ -118,7 +120,7 @@ export const UserInfo = ({
         {needsToggle && (
           <button
             onClick={() => setExpanded((v) => !v)}
-            className="mt-1 text-sm text-violet-600 hover:underline"
+            className="mt-1 text-sm text-violet-600 hover:underline cursor-pointer"
           >
             {expanded ? "Ver menos" : "Ver más"}
           </button>

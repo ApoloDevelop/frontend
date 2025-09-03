@@ -16,7 +16,8 @@ import { useProfilePhotoUpdate } from "@/hooks/profile/useProfilePhotoUpdate";
 import { ProfilePhotoEditor } from "@/components/profile/ProfilePhotoEditor";
 import { CoverPhotoEditor } from "@/components/profile/CoverPhotoEditor";
 import { toast } from "sonner";
-import { FollowBar } from "@/components/profile/FollowBar";
+import { FollowButton } from "@/components/profile/FollowButton";
+import { FollowCounters } from "@/components/profile/FollowCounters";
 
 export default function UserProfilePage({
   params,
@@ -168,7 +169,19 @@ export default function UserProfilePage({
         twLink={currentUser.twitter_link}
         igLink={currentUser.instagram_link}
         extUrl={currentUser.external_url}
+        followButton={
+          !canEdit && <FollowButton profileUserId={currentUser.id} />
+        }
       />
+
+      {/* Contadores de seguidores/seguidos debajo de la biografía */}
+      <div className="px-6 mt-4">
+        <FollowCounters
+          profileUserId={currentUser.id}
+          username={currentUser.username}
+        />
+      </div>
+
       <div className="flex px-6 mt-4">
         {canEdit && (
           <Button variant="default" onClick={openModal}>
@@ -177,11 +190,6 @@ export default function UserProfilePage({
           </Button>
         )}
       </div>
-
-      <FollowBar
-        profileUserId={currentUser.id}
-        showFollowButton={!canEdit} // si es tu perfil, no mostramos "Seguir"
-      />
 
       {/* Mostrar errores de actualización de fotos */}
       {photoError && (
