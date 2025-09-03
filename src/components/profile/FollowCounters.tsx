@@ -8,9 +8,11 @@ import { FollowListModal } from "./FollowListModal";
 export function FollowCounters({
   profileUserId,
   username,
+  refreshTrigger,
 }: {
   profileUserId: number;
   username: string;
+  refreshTrigger?: number; // Prop para triggear refresh
 }) {
   const [counts, setCounts] = useState({ followers: 0, following: 0 });
   const [followersOpen, setFollowersOpen] = useState(false);
@@ -28,7 +30,7 @@ export function FollowCounters({
   useEffect(() => {
     loadCounts();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [profileUserId]);
+  }, [profileUserId, refreshTrigger]); // Agregamos refreshTrigger como dependencia
 
   return (
     <>

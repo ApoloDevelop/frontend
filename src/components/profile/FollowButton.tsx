@@ -6,7 +6,13 @@ import { UserService } from "@/services/user.service";
 import { toast } from "sonner";
 import { getCurrentUser } from "@/lib/auth";
 
-export function FollowButton({ profileUserId }: { profileUserId: number }) {
+export function FollowButton({
+  profileUserId,
+  onFollowChange,
+}: {
+  profileUserId: number;
+  onFollowChange?: (isFollowing: boolean) => void;
+}) {
   const [user, setUser] = useState<any>(undefined); // undefined = cargando, null = no autenticado
   const [isFollowing, setIsFollowing] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -56,9 +62,11 @@ export function FollowButton({ profileUserId }: { profileUserId: number }) {
       if (isFollowing) {
         await UserService.unfollowUser(profileUserId);
         setIsFollowing(false);
+        onFollowChange?.(false); // Notificar el cambio
       } else {
         await UserService.followUser(profileUserId);
         setIsFollowing(true);
+        onFollowChange?.(true); // Notificar el cambio
       }
     } catch (e: any) {
       toast.error(e.message || "No se pudo actualizar el seguimiento");
@@ -73,6 +81,7 @@ export function FollowButton({ profileUserId }: { profileUserId: number }) {
       disabled={loading}
       variant={isFollowing ? "secondary" : "default"}
       size="sm"
+      className="relative z-20 pointer-events-auto min-w-[80px]"
     >
       {isFollowing ? "Siguiendo" : "Seguir"}
     </Button>

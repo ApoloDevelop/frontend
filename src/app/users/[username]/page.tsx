@@ -5,7 +5,7 @@ import { CoverPhoto } from "@/components/profile/CoverPhoto";
 import { ProfilePhoto } from "@/components/profile/ProfilePhoto";
 import { useUserProfile } from "@/hooks/useUserProfile";
 import { UserInfo } from "@/components/profile/UserInfo";
-import { use } from "react";
+import { use, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { PencilIcon } from "lucide-react";
 import { EditProfileModal } from "@/components/profile/EditProfileModal";
@@ -29,6 +29,7 @@ export default function UserProfilePage({
   const { localUser, setLocalUser } = useLocalUserProfile(user);
   const { isModalOpen, openModal, closeModal } = useEditProfileModal();
   const { canEdit } = useProfilePermissions(user?.id);
+  const [refreshCounters, setRefreshCounters] = useState(0); // Estado para refresh de contadores
   const {
     updateProfilePhoto,
     updateCoverPhoto,
@@ -110,6 +111,12 @@ export default function UserProfilePage({
     }
   };
 
+  // Función para manejar el cambio de seguimiento
+  const handleFollowChange = (isFollowing: boolean) => {
+    // Incrementamos el counter para triggear el refresh de FollowCounters
+    setRefreshCounters((prev) => prev + 1);
+  };
+
   if (loading) {
     return <div className="text-center">Cargando...</div>;
   }
@@ -170,7 +177,12 @@ export default function UserProfilePage({
         igLink={currentUser.instagram_link}
         extUrl={currentUser.external_url}
         followButton={
-          !canEdit && <FollowButton profileUserId={currentUser.id} />
+          !canEdit && (
+            <FollowButton
+              profileUserId={currentUser.id}
+              onFollowChange={handleFollowChange}
+            />
+          )
         }
       />
 
@@ -179,6 +191,7 @@ export default function UserProfilePage({
         <FollowCounters
           profileUserId={currentUser.id}
           username={currentUser.username}
+          refreshTrigger={refreshCounters}
         />
       </div>
 
