@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 
 interface CreateListDialogProps {
   open: boolean;
-  onOpenChange: () => void;
+  onOpenChange: (open: boolean) => void;
   newListName: string;
   setNewListName: (name: string) => void;
   onCreateList: (name: string) => Promise<boolean>;
@@ -28,7 +28,7 @@ export function CreateListDialog({
   const handleCreate = async () => {
     const success = await onCreateList(newListName);
     if (success) {
-      onOpenChange();
+      onOpenChange(false);
     }
   };
 
@@ -49,7 +49,7 @@ export function CreateListDialog({
 
           <div className="flex justify-end gap-2">
             <Button
-              onClick={onOpenChange}
+              onClick={() => onOpenChange(false)}
               className="bg-gray-200 hover:bg-gray-300 text-black"
               disabled={loading}
             >

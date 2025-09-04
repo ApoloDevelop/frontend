@@ -23,9 +23,11 @@ import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { ActivityComposerModal } from "@/components/profile/ActivityComposerModal";
 import { ActivityFeed } from "@/components/profile/ActivityFeed";
 import { PlusIcon } from "lucide-react";
+import { ListIcon } from "lucide-react";
 import UserPageSkeleton from "@/components/skeletons/UserPageSkeleton";
 import { ErrorPage } from "@/components/system/ErrorPage";
 import { AdminDeleteButton } from "@/components/profile/AdminDeleteButton";
+import { MyListsDialog } from "@/components/lists/MyListsDialog";
 
 export default function UserProfilePage({
   params,
@@ -41,6 +43,7 @@ export default function UserProfilePage({
   const [refreshCounters, setRefreshCounters] = useState(0); // Estado para refresh de contadores
   const [roleModalOpen, setRoleModalOpen] = useState(false);
   const [activityModalOpen, setActivityModalOpen] = useState(false);
+  const [myListsModalOpen, setMyListsModalOpen] = useState(false);
   const {
     updateProfilePhoto,
     updateCoverPhoto,
@@ -192,10 +195,20 @@ export default function UserProfilePage({
 
         {/* Botón Añadir post - Solo para el propio usuario */}
         {canEdit && (
-          <Button onClick={() => setActivityModalOpen(true)} size="sm">
-            <PlusIcon className="w-4 h-4 mr-2" />
-            Añadir post
-          </Button>
+          <>
+            <Button
+              onClick={() => setMyListsModalOpen(true)}
+              size="sm"
+              variant="outline"
+            >
+              <ListIcon className="w-4 h-4 mr-2" />
+              Mis listas
+            </Button>
+            <Button onClick={() => setActivityModalOpen(true)} size="sm">
+              <PlusIcon className="w-4 h-4 mr-2" />
+              Añadir post
+            </Button>
+          </>
         )}
       </div>
       <div className="relative">
@@ -303,6 +316,12 @@ export default function UserProfilePage({
         open={activityModalOpen}
         onOpenChange={setActivityModalOpen}
         onPosted={() => setRefreshFeed((v) => v + 1)}
+      />
+
+      <MyListsDialog
+        open={myListsModalOpen}
+        onOpenChange={setMyListsModalOpen}
+        userId={currentUser.id}
       />
 
       <div className="px-6">

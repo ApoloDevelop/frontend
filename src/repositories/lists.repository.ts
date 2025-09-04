@@ -63,4 +63,45 @@ export class ListRepository {
       throw new Error("Error al eliminar el ítem de la lista");
     }
   }
+
+  static async getListById(listId: number): Promise<any> {
+    const res = await fetch(`${B}/lists/${listId}`, {
+      cache: "no-store",
+      headers: authHeaders(),
+    });
+
+    if (res.status === 401 || res.status === 403) {
+      throw new Error("No tienes acceso a esta lista");
+    }
+    if (!res.ok) {
+      throw new Error("Error al obtener la lista");
+    }
+
+    return await res.json();
+  }
+
+  static async deleteList(listId: number): Promise<void> {
+    const res = await fetch(`${B}/lists/${listId}`, {
+      method: "DELETE",
+      headers: authHeaders(),
+    });
+
+    if (!res.ok) {
+      throw new Error("Error al eliminar la lista");
+    }
+  }
+
+  static async updateListName(listId: number, name: string): Promise<any> {
+    const res = await fetch(`${B}/lists/${listId}`, {
+      method: "PUT",
+      headers: authHeaders(),
+      body: JSON.stringify({ name }),
+    });
+
+    if (!res.ok) {
+      throw new Error("Error al actualizar el nombre de la lista");
+    }
+
+    return await res.json();
+  }
 }
