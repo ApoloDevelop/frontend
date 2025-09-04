@@ -82,7 +82,8 @@ export function ReviewsModal({
         className="
           w-[92vw] sm:w-[90vw] max-w-md sm:max-w-lg md:max-w-2xl
           p-4 sm:p-6 md:p-8 rounded-xl sm:rounded-2xl
-          flex flex-col h-[85vh]
+          flex flex-col max-h-[95vh] min-h-[300px]
+          overflow-hidden
         "
       >
         <DialogHeader className="shrink-0">

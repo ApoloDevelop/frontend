@@ -21,7 +21,7 @@ export function ReviewHistogram({
     <ChartContainer
       id="reviews-histogram"
       config={{ count: { label: "Puntuaciones" } }}
-      className="mb-4 sm:mb-6 h-40 sm:h-56 md:h-64 w-full shrink-0"
+      className="mb-4 sm:mb-6 h-32 sm:h-40 md:h-48 w-full shrink-0"
     >
       <BarChart
         data={histogram}

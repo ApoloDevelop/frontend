@@ -33,8 +33,10 @@ export function ReviewList({
   return (
     <div
       ref={scrollRef}
-      className="flex-1 overflow-y-auto space-y-3 sm:space-y-4 pr-1"
-      style={{ minHeight: 0 }}
+      className="flex-1 overflow-y-auto space-y-3 sm:space-y-4 pr-1 min-h-[120px]"
+      style={{ 
+        minHeight: 0
+      }}
     >
       {/* Mi reseña */}
       {myReview && (
