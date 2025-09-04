@@ -7,16 +7,20 @@ import {
   DEFAULT_AVATAR_URL,
   acceptedTypes,
 } from "@/constants/registerConstants";
-import { useRegisterForm } from "@/hooks/register/useRegisterForm";
-import { useImageCropper } from "@/hooks/register/useImageCropper";
-import { useAlert } from "@/hooks/register/useAlert";
-import { usePasswordToggle } from "@/hooks/register/usePasswordToggle";
-import { useStepValidation } from "@/hooks/register/useStepValidation";
+import {
+  useRegisterForm,
+  useImageCropper,
+  useAlert,
+  usePasswordToggle,
+  useStepValidation,
+} from "@/hooks/register";
 import { isCurrentPageValid } from "@/utils/registerValidation";
-import { StepIndicator } from "@/components/register/StepIndicator";
-import { RegisterFormStep1 } from "@/components/register/steps/RegisterFormStep1";
-import { RegisterFormStep2 } from "@/components/register/steps/RegisterFormStep2";
-import { RegisterFormStep3 } from "@/components/register/steps/RegisterFormStep3";
+import {
+  StepIndicator,
+  RegisterFormStep1,
+  RegisterFormStep2,
+  RegisterFormStep3,
+} from "@/components/register";
 import { AlertMessage } from "@/components/ui/AlertMessage";
 import { CloudinaryService } from "@/services/cloudinary.service";
 import { useRouter } from "next/navigation";
