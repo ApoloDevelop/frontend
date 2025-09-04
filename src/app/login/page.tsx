@@ -5,7 +5,6 @@ import { useLogin, useLoginNavigation } from "@/hooks/auth";
 
 export default function LoginPage() {
   const {
-    nextRaw,
     nextSafe,
     oauthError,
     googleUrl,
@@ -23,7 +22,7 @@ export default function LoginPage() {
     showPassword,
     setShowPassword,
     handleLogin,
-  } = useLogin((nextUrl) => redirectToNext(nextSafe));
+  } = useLogin(() => redirectToNext(nextSafe));
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();

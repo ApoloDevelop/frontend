@@ -130,28 +130,18 @@ export default function RegisterPage() {
 
       if (profileImage) {
         try {
-          console.log("Uploading profile image...");
           profilePicUrl = await CloudinaryService.uploadImage(profileImage);
-          console.log("Image uploaded successfully:", profilePicUrl);
         } catch (uploadError) {
           console.warn("Error uploading image, using default:", uploadError);
           // Continuar con imagen por defecto si falla la subida
         }
       }
-
-      console.log("Creating account with data:", {
-        ...formData,
-        profilePicUrl,
-      });
       const data = await RegisterService.createAccount(formData, profilePicUrl);
-      console.log("Account creation response:", data);
 
       if (data.token && data.user) {
-        console.log("Setting session and redirecting...");
         setSession(data.token, data.user);
 
         // Usar window.location.replace para una redirección más forzosa
-        console.log("Redirecting to home page...");
         window.location.replace("/");
 
         return; // Salir de la función para evitar mostrar alertas
