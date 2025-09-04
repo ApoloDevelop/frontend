@@ -26,7 +26,7 @@ export function ArticleHeader({
 }: ArticleHeaderProps) {
   return (
     <header className="flex flex-col sm:flex-row gap-4 sm:gap-6 items-start sm:items-center mb-6 sm:mb-8 px-4">
-      <div className="ml-0 sm:ml-6 mt-2 sm:mt-0 flex-1">
+      <div className="ml-0 sm:ml-6 mt-2 sm:mt-0 flex-1 order-2 sm:order-1">
         <h1 className="text-4xl font-bold">{title}</h1>
         <div className="mt-2 flex flex-wrap items-center gap-3 text-gray-600">
           <time dateTime={publishedDate} className="italic">
@@ -45,19 +45,19 @@ export function ArticleHeader({
         </div>
       </div>
 
-      {/* Botonera derecha */}
-      <div className="ml-auto flex gap-2">
+      {/* Botonera: izquierda en móvil, derecha en desktop */}
+      <div className="flex flex-col sm:flex-row gap-2 order-1 sm:order-2 sm:ml-auto">
         {canEdit && (
-          <>
-            <Button asChild variant="secondary">
+          <div className="flex gap-2 order-2 sm:order-none">
+            <Button asChild variant="secondary" className="flex-1 sm:w-auto">
               <Link href={`/news/article?edit=${articleId}`}>
                 Editar artículo
               </Link>
             </Button>
             <DeleteArticleButton id={articleId} />
-          </>
+          </div>
         )}
-        <Button asChild>
+        <Button asChild className="w-full sm:w-auto order-1 sm:order-none">
           <Link href="/news">Volver a noticias</Link>
         </Button>
       </div>
