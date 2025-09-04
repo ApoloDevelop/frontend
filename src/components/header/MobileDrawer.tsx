@@ -1,9 +1,12 @@
 import Link from "next/link";
-import { X, User, Power } from "lucide-react";
+import { X, User, Power, Bell } from "lucide-react";
 import { AuthUser } from "@/types/auth";
 import { BrandLogo } from "./BrandLogo";
 import { NavigationLinks } from "./NavigationLinks";
 import { LoginButton } from "./LoginButton";
+import { useState } from "react";
+import { NotificationPanel } from "@/components/notifications/NotificationPanel";
+import { useNotifications } from "@/hooks/notifications/useNotifications";
 
 interface MobileDrawerProps {
   isOpen: boolean;
@@ -20,6 +23,9 @@ export function MobileDrawer({
   isActive,
   onLogout,
 }: MobileDrawerProps) {
+  const [notificationPanelOpen, setNotificationPanelOpen] = useState(false);
+  const { unreadCount } = useNotifications();
+
   return (
     <>
       {/* OVERLAY */}
@@ -67,6 +73,36 @@ export function MobileDrawer({
 
           {user && (
             <>
+              {/* Botón de notificaciones (móvil) */}
+              <div className="relative">
+                <button
+                  onClick={() =>
+                    setNotificationPanelOpen(!notificationPanelOpen)
+                  }
+                  className="w-full inline-flex items-center justify-center gap-2 rounded-md border border-gray-200 px-3 py-2 text-sm hover:bg-gray-50 transition relative"
+                >
+                  <Bell className="h-4 w-4" />
+                  Notificaciones
+                  {unreadCount > 0 && (
+                    <span className="absolute -top-1 -right-1 inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-bold leading-none text-white bg-red-500 rounded-full min-w-[18px] h-[18px]">
+                      {unreadCount > 99 ? "99+" : unreadCount}
+                    </span>
+                  )}
+                </button>
+
+                {/* Panel de notificaciones móvil */}
+                {notificationPanelOpen && (
+                  <div className="fixed inset-0 bg-black/40 z-[80] flex items-center justify-center p-4">
+                    <div className="w-full max-w-md">
+                      <NotificationPanel
+                        isOpen={true}
+                        onClose={() => setNotificationPanelOpen(false)}
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+
               <Link
                 href={`/users/${user.username}`}
                 onClick={onClose}
