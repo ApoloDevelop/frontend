@@ -23,6 +23,8 @@ export default function CommentsSection({ articleId, currentUser }: Props) {
 
   const [newContent, setNewContent] = useState("");
   const [replyTo, setReplyTo] = useState<number | null>(null);
+  const [isPosting, setIsPosting] = useState(false);
+  const [isReplying, setIsReplying] = useState(false);
   const replyRef = useRef<HTMLTextAreaElement | null>(null);
 
   useEffect(() => {
@@ -31,7 +33,6 @@ export default function CommentsSection({ articleId, currentUser }: Props) {
         const res = await CommentsService.listByArticle(articleId, {
           limit: 10,
         });
-        // Ordenar comentarios principales por fecha (más reciente primero)
         const sortedData = res.data.sort(
           (a, b) =>
             new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
@@ -50,10 +51,8 @@ export default function CommentsSection({ articleId, currentUser }: Props) {
   const canPost = !!currentUser;
   const currentUserId = currentUser?.id || null;
 
-  // Helper function to check if user can delete a comment
   const canDeleteComment = (commentUserId: number) => {
     if (!currentUser) return false;
-    // User can delete if they own the comment OR if they have role 1 or 2
     return (
       currentUser.id === commentUserId || [1, 2].includes(currentUser.role_id)
     );
@@ -64,6 +63,12 @@ export default function CommentsSection({ articleId, currentUser }: Props) {
       ? (replyRef.current?.value ?? "").trim()
       : newContent.trim();
     if (!content || !currentUserId) return;
+
+    if (parent_id) {
+      setIsReplying(true);
+    } else {
+      setIsPosting(true);
+    }
 
     try {
       const created = await CommentsService.create(
@@ -89,6 +94,10 @@ export default function CommentsSection({ articleId, currentUser }: Props) {
       }
     } catch (e: any) {
       alert(e?.message ?? "Error publicando el comentario.");
+    } finally {
+      // Resetear estados de carga
+      setIsPosting(false);
+      setIsReplying(false);
     }
   }
 
@@ -157,15 +166,15 @@ export default function CommentsSection({ articleId, currentUser }: Props) {
           }
           value={newContent}
           onChange={(e) => setNewContent(e.target.value)}
-          disabled={!canPost}
+          disabled={!canPost || isPosting}
         />
         <div className="mt-2 flex items-center justify-between">
           <Button
             onClick={() => handlePost(null)}
             className="inline-flex items-center rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
-            disabled={!canPost || !newContent.trim()}
+            disabled={!canPost || !newContent.trim() || isPosting}
           >
-            Publicar
+            {isPosting ? "Publicando..." : "Publicar"}
           </Button>
           {!canPost && (
             <p className="text-gray-600 text-sm">
@@ -220,21 +229,24 @@ export default function CommentsSection({ articleId, currentUser }: Props) {
               <div className="mt-3">
                 <textarea
                   ref={replyRef}
-                  className="w-full rounded-lg border p-3"
+                  className="w-full rounded-lg border p-3 disabled:bg-gray-100 disabled:cursor-not-allowed"
                   rows={3}
                   placeholder="Responder…"
+                  disabled={isReplying}
                 />
                 <div className="mt-2 flex gap-2">
                   <Button
                     onClick={() => handlePost(c.id)}
-                    className="inline-flex items-center rounded-lg bg-black text-white px-3 py-1.5 cursor-pointer"
+                    className="inline-flex items-center rounded-lg bg-black text-white px-3 py-1.5 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                    disabled={isReplying}
                   >
-                    Responder
+                    {isReplying ? "Respondiendo..." : "Responder"}
                   </Button>
                   <Button
                     onClick={() => setReplyTo(null)}
-                    className="inline-flex items-center rounded-lg border px-3 py-1.5 hover:bg-red-800"
+                    className="inline-flex items-center rounded-lg border px-3 py-1.5 hover:bg-red-800 disabled:opacity-50 disabled:cursor-not-allowed"
                     variant={"destructive"}
+                    disabled={isReplying}
                   >
                     Cancelar
                   </Button>

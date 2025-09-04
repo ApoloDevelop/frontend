@@ -27,7 +27,7 @@ export default async function NewsPage({
     return (
       <div className="container mx-auto px-4 overflow-x-clip">
         <div className="flex items-center justify-between mb-4">
-          <NewsHeader canWrite={canWrite} />
+          <NewsHeader canWrite={canWrite} showAddButton={false} />
           <NewsSearch />
         </div>
         <EmptyNewsState canWrite={canWrite} />

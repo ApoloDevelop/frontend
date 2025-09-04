@@ -20,7 +20,7 @@ export function VoteButtons({
       <button
         onClick={() => onVote(reviewId, 1)}
         aria-pressed={myVote === 1}
-        className={`inline-flex items-center justify-center rounded-full border px-2.5 py-1.5 transition ${
+        className={`cursor-pointer inline-flex items-center justify-center rounded-full border px-2.5 py-1.5 transition ${
           myVote === 1
             ? "bg-green-50 border-green-500 text-green-700"
             : "border-transparent hover:bg-green-50 text-green-600"
@@ -32,7 +32,7 @@ export function VoteButtons({
       <button
         onClick={() => onVote(reviewId, -1)}
         aria-pressed={myVote === -1}
-        className={`inline-flex items-center justify-center rounded-full border px-2.5 py-1.5 transition ${
+        className={`cursor-pointer inline-flex items-center justify-center rounded-full border px-2.5 py-1.5 transition ${
           myVote === -1
             ? "bg-red-50 border-red-500 text-red-700"
             : "border-transparent hover:bg-red-50 text-red-600"

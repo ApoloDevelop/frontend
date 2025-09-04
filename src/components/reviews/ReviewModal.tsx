@@ -39,7 +39,6 @@ export function ReviewsModal({
   currentUserId,
   canModerate = false,
 }: ReviewsModalProps) {
-  // Custom hooks
   const { reviews, setReviews, nextCursor, isLoading, scrollRef, sentinelRef } =
     useReviews({
       open,
@@ -99,7 +98,7 @@ export function ReviewsModal({
           </DialogTitle>
         </DialogHeader>
 
-        <div 
+        <div
           ref={scrollRef}
           className="flex-1 overflow-y-auto space-y-4 sm:space-y-6"
         >

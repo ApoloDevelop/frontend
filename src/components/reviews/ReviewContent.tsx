@@ -16,11 +16,9 @@ export function ReviewContent({
   currentUserId,
   onVote,
 }: ReviewContentProps) {
-  if (!text) return null;
-
   return (
     <CardContent className="pt-0 sm:pt-2 text-sm sm:text-base">
-      {text}
+      {text && <div className="mb-3">{text}</div>}
       <VoteButtons
         reviewId={reviewId}
         myVote={myVote}
