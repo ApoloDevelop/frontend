@@ -7,6 +7,14 @@ export { ProfileEditSection } from "./ProfileEditSection";
 export { ProfilePhotoError } from "./ProfilePhotoError";
 export { ProfileModals } from "./ProfileModals";
 
+// Activity feed components
+export { ActivityFeed } from "./ActivityFeed";
+export { ActivityCard } from "./ActivityCard";
+export { ExpandableContent } from "./ExpandableContent";
+export { ItemDisplay } from "./ItemDisplay";
+export { DeleteButton } from "./DeleteButton";
+export { LoadMoreButton } from "./LoadMoreButton";
+
 // Existing profile components
 export { CoverPhoto } from "./CoverPhoto";
 export { CoverPhotoEditor } from "./CoverPhotoEditor";
@@ -24,6 +32,5 @@ export { FollowButtonSmall } from "./FollowButtonSmall";
 export { FollowCounters } from "./FollowCounters";
 export { FollowListModal } from "./FollowListModal";
 export { AdminDeleteButton } from "./AdminDeleteButton";
-export { ActivityFeed } from "./ActivityFeed";
 export { ActivityComposerModal } from "./ActivityComposerModal";
 export { RoleAdjustModal } from "./RoleAdjustModal";
