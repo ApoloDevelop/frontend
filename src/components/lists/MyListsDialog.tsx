@@ -27,28 +27,8 @@ import {
 import { ListDetailDialog } from "./ListDetailDialog";
 import { CreateListDialog } from "./CreateListDialog";
 import Image from "next/image";
-
-type ItemType = "artist" | "album" | "track";
-type TabType = ItemType | "favorites";
-
-interface List {
-  id: number;
-  name: string;
-  itemType?: ItemType;
-  createdAt?: string;
-  listItems?: Array<{ itemId: number }>;
-}
-
-interface FavoriteItem {
-  itemId: number;
-  type: ItemType;
-  item: {
-    id: number;
-    name: string;
-    artistName?: string;
-    albumName?: string;
-  };
-}
+import { ItemType2 } from "@/types/items";
+import { FavoriteItem, List, TabType } from "@/types/lists";
 
 interface MyListsDialogProps {
   open: boolean;
@@ -129,7 +109,7 @@ export function MyListsDialog({
   // Función para obtener el cover de un item
   const getCoverForItem = async (
     item: FavoriteItem,
-    itemType: ItemType
+    itemType: ItemType2
   ): Promise<string> => {
     try {
       const { name, artistName, albumName } = item.item || {};
@@ -201,7 +181,7 @@ export function MyListsDialog({
     }
   };
 
-  const fetchLists = async (itemType: ItemType) => {
+  const fetchLists = async (itemType: ItemType2) => {
     setLoading(true);
     try {
       const fetchedLists = await ListService.getUserLists(itemType);
@@ -236,7 +216,7 @@ export function MyListsDialog({
       if (activeTab === "favorites") return false; // No crear listas en favoritos
       const newList = await ListService.createList(
         listName,
-        activeTab as ItemType
+        activeTab as ItemType2
       );
       setLists((prev) => [
         ...prev,
@@ -330,7 +310,7 @@ export function MyListsDialog({
               )}
             </TabsList>
 
-            {(["artist", "album", "track"] as ItemType[]).map((type) => (
+            {(["artist", "album", "track"] as ItemType2[]).map((type) => (
               <TabsContent key={type} value={type} className="space-y-4">
                 {/* Controles de búsqueda y ordenación */}
                 <div className="flex items-center gap-2">
@@ -528,7 +508,7 @@ export function MyListsDialog({
             if (activeTab === "favorites") {
               fetchFavorites();
             } else {
-              fetchLists(activeTab as ItemType);
+              fetchLists(activeTab as ItemType2);
             }
           }}
         />

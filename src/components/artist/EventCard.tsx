@@ -1,11 +1,5 @@
 import dayjs from "dayjs";
-import { SongstatsEvent } from "@/types/events";
-
-type EventCardProps = {
-  event: SongstatsEvent;
-  distanceKm: number;
-  userCity: string;
-};
+import { EventCardProps, SongstatsEvent } from "@/types/events";
 
 export function EventCard({ event, distanceKm, userCity }: EventCardProps) {
   const place = [event?.city || "", event?.region ? `(${event.region})` : ""]

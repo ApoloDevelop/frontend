@@ -3,18 +3,8 @@
 import { TagPickerHeader } from "../news/TagPickerHeader";
 import { TagPickerSearchResults } from "../news/TagPickerSearchResults";
 import { useTagPickerSearch } from "@/hooks/news/useTagPickerSearch";
-import { TagDraft } from "@/types/article";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
-
-type ItemType = "artist" | "album" | "track";
-
-interface ListTagPickerProps {
-  open: boolean;
-  onClose: () => void;
-  onAdd: (t: TagDraft) => void;
-  itemType: ItemType;
-  disabled?: boolean;
-}
+import { ListTagPickerProps } from "@/types/lists";
 
 export function ListTagPicker({
   open,

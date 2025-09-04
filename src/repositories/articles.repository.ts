@@ -1,4 +1,3 @@
-// src/repositories/articles.repository.ts
 import type {
   Article,
   CreateArticleInput,

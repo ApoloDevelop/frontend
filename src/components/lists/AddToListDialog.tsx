@@ -17,18 +17,7 @@ import { useListActions } from "@/hooks/lists/useListActions";
 import { CreateListDialog } from "./CreateListDialog";
 import { RemoveFromListDialog } from "./RemoveFromListDialog";
 import { ListContent } from "./ListContent";
-
-type ItemType = "artist" | "album" | "track" | "venue";
-
-interface AddToListDialogProps {
-  userId: number;
-  itemType: ItemType;
-  name: string;
-  artistName?: string;
-  location?: string;
-  height?: number;
-  className?: string;
-}
+import { AddToListDialogProps } from "@/types/lists";
 
 export function AddToListDialog({
   userId,

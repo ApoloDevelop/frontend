@@ -1,17 +1,9 @@
 "use client";
 
+import { EventData } from "@/types/events";
 import dayjs from "dayjs";
 import "dayjs/locale/es";
 import Flag from "react-world-flags";
-
-type EventData = {
-  title: string | null;
-  date: string | null;
-  link: string | null;
-  city: string | null;
-  region: string | null;
-  countryCode: string | null;
-};
 
 export function NextEvent({
   event,

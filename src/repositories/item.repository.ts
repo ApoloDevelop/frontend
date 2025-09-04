@@ -1,4 +1,3 @@
-// repositories/item.repository.ts
 export class ItemRepository {
   static async findItemByTypeAndName(
     type: "artist" | "album" | "track" | "venue",

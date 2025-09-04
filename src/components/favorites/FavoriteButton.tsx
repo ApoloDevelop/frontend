@@ -6,22 +6,7 @@ import { useFavoriteStatus } from "@/hooks/favorites/useFavoriteStatus";
 import { useFavoriteActions } from "@/hooks/favorites/useFavoriteActions";
 import { FavoriteIcon } from "./FavoriteIcon";
 import { FavoriteLabel } from "./FavoriteLabel";
-
-type FavType = "artist" | "album" | "track" | "venue";
-
-interface FavoriteButtonProps {
-  type: FavType;
-  name: string;
-  userId: number;
-  artistName?: string;
-  location?: string;
-  className?: string;
-  customLabels?: {
-    favorite: string;
-    notFavorite: string;
-  };
-  iconSize?: number;
-}
+import { FavoriteButtonProps } from "@/types/favorites";
 
 export function FavoriteButton({
   type,

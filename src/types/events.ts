@@ -19,3 +19,18 @@ export type NearestEventResult = {
   event: SongstatsEvent;
   distanceKm: number;
 } | null;
+
+export type EventCardProps = {
+  event: SongstatsEvent;
+  distanceKm: number;
+  userCity: string;
+};
+
+export type EventData = {
+  title: string | null;
+  date: string | null;
+  link: string | null;
+  city: string | null;
+  region: string | null;
+  countryCode: string | null;
+};

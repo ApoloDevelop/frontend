@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { SpotifyRepository } from "@/repositories/spotify.repository";
 import PlaylistCard from "./PlaylistCard";
 import { PlaylistLite } from "@/types/charts";
+import { SpotifyService } from "@/services/spotify.service";
 
 export function TopPlaylistsRow({
   esId,
@@ -26,8 +26,8 @@ export function TopPlaylistsRow({
     (async () => {
       try {
         const [pEs, pGlobal] = await Promise.all([
-          SpotifyRepository.fetchPlaylist(esId),
-          SpotifyRepository.fetchPlaylist(globalId),
+          SpotifyService.fetchPlaylist(esId),
+          SpotifyService.fetchPlaylist(globalId),
         ]);
         if (!mounted) return;
         setEs(pEs);

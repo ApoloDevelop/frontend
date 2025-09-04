@@ -4,15 +4,7 @@ import { SongstatsService } from "@/services/songstats.service";
 import { NextEvent } from "@/components/artist/NextEvent";
 import { NearYou } from "@/components/artist/NearYou";
 import { mockEvent } from "@/mocks/mockSongstats";
-
-type NextEventData = {
-  title: string | null;
-  date: string | null;
-  link: string | null;
-  city: string | null;
-  region: string | null;
-  countryCode: string | null;
-};
+import { EventData } from "@/types/events";
 
 export default async function EventsSidebar({
   artistId,
@@ -29,7 +21,7 @@ export default async function EventsSidebar({
   // const events = await SongstatsService.getArtistEventInfo(artistId);
   const events = mockEvent;
 
-  let nextEvent: NextEventData | null = null;
+  let nextEvent: EventData | null = null;
   if (events?.upcoming?.length) {
     const today = new Date();
     const sorted = events.upcoming
