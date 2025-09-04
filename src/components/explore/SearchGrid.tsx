@@ -47,6 +47,7 @@ export default function SearchGrid({
                     src={pic}
                     alt={it.name}
                     fill
+                    sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, 25vw"
                     className="object-cover"
                   />
                 </div>
@@ -77,6 +78,7 @@ export default function SearchGrid({
                     src={pic}
                     alt={it.name}
                     fill
+                    sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, 25vw"
                     className="object-cover"
                   />
                 </div>
@@ -103,7 +105,13 @@ export default function SearchGrid({
               className="group rounded-xl overflow-hidden bg-white border hover:shadow"
             >
               <div className="aspect-square relative">
-                <Image src={pic} alt={it.name} fill className="object-cover" />
+                <Image
+                  src={pic}
+                  alt={it.name}
+                  fill
+                  sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, 25vw"
+                  className="object-cover"
+                />
               </div>
               <div className="p-3">
                 <div className="font-semibold truncate">{it.name}</div>
@@ -132,7 +140,9 @@ export default function SearchGrid({
               size="sm"
               disabled={!data?.previous}
               onClick={() =>
-                setOffset(Math.max(0, (data?.offset ?? 0) - (data?.limit ?? 12)))
+                setOffset(
+                  Math.max(0, (data?.offset ?? 0) - (data?.limit ?? 12))
+                )
               }
             >
               Anterior
@@ -141,7 +151,9 @@ export default function SearchGrid({
               variant="outline"
               size="sm"
               disabled={!data?.next}
-              onClick={() => setOffset((data?.offset ?? 0) + (data?.limit ?? 12))}
+              onClick={() =>
+                setOffset((data?.offset ?? 0) + (data?.limit ?? 12))
+              }
             >
               Siguiente
             </Button>

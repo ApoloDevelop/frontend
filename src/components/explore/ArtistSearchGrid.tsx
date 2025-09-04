@@ -56,7 +56,13 @@ export default function ArtistSearchGrid({
         className="group rounded-xl overflow-hidden bg-white border hover:shadow transition-shadow"
       >
         <div className="aspect-square relative">
-          <Image src={pic} alt={artist.name} fill className="object-cover" />
+          <Image
+            src={pic}
+            alt={artist.name}
+            fill
+            sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, 25vw"
+            className="object-cover"
+          />
         </div>
         <div className="p-3">
           <div className="font-semibold truncate">{artist.name}</div>
@@ -136,9 +142,9 @@ export default function ArtistSearchGrid({
       <div className="flex items-center justify-between">
         <span className="text-xs text-muted-foreground">
           {items.length > 0 && data && data.total > 0
-            ? `${data.offset + 1}–${
-                data.offset + items.length
-              } de ${data.total}`
+            ? `${data.offset + 1}–${data.offset + items.length} de ${
+                data.total
+              }`
             : "No hay nada que ver por aquí"}
         </span>
         {data && data.total > 0 && (
