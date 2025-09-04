@@ -12,6 +12,7 @@ interface TagPickerSearchResultsProps {
   q: string;
   onAdd: (tag: TagDraft) => void;
   onClose: () => void;
+  disabled?: boolean;
 }
 
 export function TagPickerSearchResults({
@@ -22,6 +23,7 @@ export function TagPickerSearchResults({
   q,
   onAdd,
   onClose,
+  disabled = false,
 }: TagPickerSearchResultsProps) {
   const hasMinQuery = q.trim().length >= 2;
   const hasNoResults =
@@ -49,6 +51,7 @@ export function TagPickerSearchResults({
               artist={artist}
               onAdd={onAdd}
               onClose={onClose}
+              disabled={disabled}
             />
           ))}
         </ul>
@@ -70,6 +73,7 @@ export function TagPickerSearchResults({
               album={album}
               onAdd={onAdd}
               onClose={onClose}
+              disabled={disabled}
             />
           ))}
         </ul>
@@ -91,6 +95,7 @@ export function TagPickerSearchResults({
               track={track}
               onAdd={onAdd}
               onClose={onClose}
+              disabled={disabled}
             />
           ))}
         </ul>
@@ -104,15 +109,18 @@ function ArtistItem({
   artist,
   onAdd,
   onClose,
+  disabled = false,
 }: {
   artist: any;
   onAdd: (tag: TagDraft) => void;
   onClose: () => void;
+  disabled?: boolean;
 }) {
   return (
     <li>
       <button
-        className="w-full flex items-center gap-3 rounded-lg border p-2 hover:bg-black/5 text-left"
+        className="w-full flex items-center gap-3 rounded-lg border p-2 hover:bg-black/5 text-left disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent"
+        disabled={disabled}
         onClick={() => {
           onAdd({ type: "artist", name: artist.name });
           onClose();
@@ -138,15 +146,18 @@ function AlbumItem({
   album,
   onAdd,
   onClose,
+  disabled = false,
 }: {
   album: any;
   onAdd: (tag: TagDraft) => void;
   onClose: () => void;
+  disabled?: boolean;
 }) {
   return (
     <li>
       <button
-        className="w-full flex items-center gap-3 rounded-lg border p-2 hover:bg-black/5 text-left"
+        className="w-full flex items-center gap-3 rounded-lg border p-2 hover:bg-black/5 text-left disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent"
+        disabled={disabled}
         onClick={() => {
           const mainArtist = album.artists?.[0]?.name ?? "";
           onAdd({
@@ -179,15 +190,18 @@ function TrackItem({
   track,
   onAdd,
   onClose,
+  disabled = false,
 }: {
   track: any;
   onAdd: (tag: TagDraft) => void;
   onClose: () => void;
+  disabled?: boolean;
 }) {
   return (
     <li>
       <button
-        className="w-full flex items-center gap-3 rounded-lg border p-2 hover:bg-black/5 text-left"
+        className="w-full flex items-center gap-3 rounded-lg border p-2 hover:bg-black/5 text-left disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-transparent"
+        disabled={disabled}
         onClick={() => {
           const mainArtist = track.artists?.[0]?.name ?? "";
           onAdd({

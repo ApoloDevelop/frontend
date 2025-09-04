@@ -186,29 +186,34 @@ export default function UserProfilePage({
       </div>
 
       {/* Botones de administrador y añadir post */}
-      <div className="flex justify-end px-6 mt-4 gap-2">
+      <div className="flex flex-col sm:flex-row justify-end px-6 mt-4 gap-2">
         {/* Botón de eliminar cuenta para administradores */}
         <AdminDeleteButton
           user={currentUser}
           isVisible={isAdmin && authUser?.role_id === 1 && !canEdit}
         />
 
-        {/* Botón Añadir post - Solo para el propio usuario */}
+        {/* Botones para el propio usuario */}
         {canEdit && (
-          <>
+          <div className="flex flex-col sm:flex-row gap-2 items-end">
             <Button
               onClick={() => setMyListsModalOpen(true)}
               size="sm"
               variant="outline"
+              className="w-fit whitespace-nowrap"
             >
               <ListIcon className="w-4 h-4 mr-2" />
               Mis listas
             </Button>
-            <Button onClick={() => setActivityModalOpen(true)} size="sm">
+            <Button
+              onClick={() => setActivityModalOpen(true)}
+              size="sm"
+              className="w-fit whitespace-nowrap"
+            >
               <PlusIcon className="w-4 h-4 mr-2" />
               Añadir post
             </Button>
-          </>
+          </div>
         )}
       </div>
       <div className="relative">

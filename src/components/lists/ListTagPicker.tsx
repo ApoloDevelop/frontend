@@ -13,6 +13,7 @@ interface ListTagPickerProps {
   onClose: () => void;
   onAdd: (t: TagDraft) => void;
   itemType: ItemType;
+  disabled?: boolean;
 }
 
 export function ListTagPicker({
@@ -20,6 +21,7 @@ export function ListTagPicker({
   onClose,
   onAdd,
   itemType,
+  disabled = false,
 }: ListTagPickerProps) {
   const { q, setQ, loading, artists, albums, tracks, inputRef } =
     useTagPickerSearch(open);
@@ -78,6 +80,7 @@ export function ListTagPicker({
           q={q}
           onAdd={onAdd}
           onClose={onClose}
+          disabled={disabled}
         />
       </DialogContent>
     </Dialog>

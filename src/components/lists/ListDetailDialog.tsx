@@ -71,6 +71,7 @@ export function ListDetailDialog({
   const [tagPickerOpen, setTagPickerOpen] = useState(false);
   const [filteredItems, setFilteredItems] = useState<ListItem[]>([]);
   const [itemCovers, setItemCovers] = useState<Record<number, string>>({});
+  const [addingItem, setAddingItem] = useState(false);
 
   // Función para obtener el cover de un item
   const getCoverForItem = async (
@@ -227,6 +228,7 @@ export function ListDetailDialog({
   };
 
   const handleAddItem = async (tag: TagDraft) => {
+    setAddingItem(true);
     try {
       // Intentar resolver el tag a un itemId
       const itemId = await ListService.resolveTagToItemId(tag);
@@ -241,6 +243,8 @@ export function ListDetailDialog({
     } catch (error) {
       console.error("Error al añadir item:", error);
       toast.error("Error al añadir el elemento");
+    } finally {
+      setAddingItem(false);
     }
     setTagPickerOpen(false);
   };
@@ -376,9 +380,10 @@ export function ListDetailDialog({
                   onClick={() => setTagPickerOpen(true)}
                   size="sm"
                   className="flex items-center gap-2"
+                  disabled={addingItem}
                 >
                   <Plus className="w-4 h-4" />
-                  Añadir
+                  {addingItem ? "Añadiendo..." : "Añadir"}
                 </Button>
               </div>
 
@@ -473,6 +478,7 @@ export function ListDetailDialog({
         onClose={() => setTagPickerOpen(false)}
         onAdd={handleAddItem}
         itemType={list?.itemType || "artist"}
+        disabled={addingItem}
       />
     </>
   );
