@@ -27,15 +27,23 @@ export function DangerZoneForm({ user, onClose }: DangerZoneFormProps) {
 
     const success = await deleteAccount(user.id);
     if (success) {
-      // Limpiar sesión y redirigir
+      // Limpiar sesión
       clearSession();
+      
+      // Mostrar toast de éxito
       toast.success("Cuenta eliminada", {
         description: "Tu cuenta ha sido eliminada exitosamente.",
       });
 
+      // Cerrar modal
       onClose();
-      router.replace("/login");
-      router.refresh();
+      
+      // Redirigir directamente a login con recarga
+      if (typeof window !== "undefined") {
+        window.location.href = "/login";
+      } else {
+        router.replace("/login");
+      }
     } else {
       toast.error("Error", {
         description:
