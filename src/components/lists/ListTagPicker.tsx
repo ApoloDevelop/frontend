@@ -38,14 +38,22 @@ export function ListTagPicker({
     }
   };
 
-  const { artists: filteredArtists, albums: filteredAlbums, tracks: filteredTracks } = getFilteredResults();
+  const {
+    artists: filteredArtists,
+    albums: filteredAlbums,
+    tracks: filteredTracks,
+  } = getFilteredResults();
 
   const getPlaceholderText = () => {
     switch (itemType) {
-      case "artist": return "Buscar artista...";
-      case "album": return "Buscar álbum...";
-      case "track": return "Buscar canción...";
-      default: return "Buscar...";
+      case "artist":
+        return "Buscar artista...";
+      case "album":
+        return "Buscar álbum...";
+      case "track":
+        return "Buscar canción...";
+      default:
+        return "Buscar...";
     }
   };
 
@@ -55,9 +63,7 @@ export function ListTagPicker({
         className="sm:max-w-[900px] max-h-[85vh] overflow-hidden p-0"
         showCloseButton={false}
       >
-        <DialogTitle className="sr-only">
-          {getPlaceholderText()}
-        </DialogTitle>
+        <DialogTitle className="sr-only">{getPlaceholderText()}</DialogTitle>
         <TagPickerHeader
           q={q}
           setQ={setQ}

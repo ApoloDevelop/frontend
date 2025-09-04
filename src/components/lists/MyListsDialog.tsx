@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react"; // Estados para modales
+import React, { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -21,7 +21,7 @@ import {
   User,
   Disc3,
 } from "lucide-react";
-// // import { ListDetailDialog } from "./ListDetailDialog";
+import { ListDetailDialog } from "./ListDetailDialog";
 import { CreateListDialog } from "./CreateListDialog";
 
 type ItemType = "artist" | "album" | "track";
@@ -124,10 +124,8 @@ export function MyListsDialog({
   };
 
   const handleListClick = (listId: number) => {
-    // setSelectedListId(listId);
-    // setDetailDialogOpen(true);
-    console.log("Lista clickeada:", listId);
-    toast.info("Funcionalidad de detalle de lista en desarrollo");
+    setSelectedListId(listId);
+    setDetailDialogOpen(true);
   };
 
   const toggleSortOrder = () => {
@@ -265,14 +263,14 @@ export function MyListsDialog({
       </Dialog>
 
       {/* Modal de detalle de lista */}
-      {/*selectedListId && (
+      {selectedListId && (
         <ListDetailDialog
           open={detailDialogOpen}
           onOpenChange={setDetailDialogOpen}
           listId={selectedListId}
           onListUpdated={() => fetchLists(activeTab)}
         />
-      )*/}
+      )}
 
       {/* Modal de crear lista */}
       <CreateListDialog

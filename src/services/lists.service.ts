@@ -1,4 +1,6 @@
 import { ListRepository } from "@/repositories/lists.repository";
+import { ItemService } from "./item.service";
+import { TagDraft } from "@/types/article";
 
 export class ListService {
   static async getUserLists(
@@ -37,11 +39,22 @@ export class ListService {
     return await ListRepository.updateListName(listId, name);
   }
 
-  static async resolveTagToItemId(tag: any): Promise<number | null> {
-    // Esta función debería resolver un tag (artista, álbum, canción) a un itemId
-    // Por ahora, retornamos null ya que necesitaríamos más información sobre cómo
-    // se relacionan los tags con los items en el backend
-    console.log("Resolving tag to itemId:", tag);
-    return null;
+  static async resolveTagToItemId(tag: TagDraft): Promise<number | null> {
+    try {
+      // Convertir TagDraft a los parámetros que espera ItemService
+      const result = await ItemService.findItemByTypeAndName(
+        tag.type as "artist" | "album" | "track",
+        tag.name,
+        {
+          artistName: tag.artistName,
+          // albumName se podría añadir si ItemService lo soporta
+        }
+      );
+
+      return result ? result.itemId : null;
+    } catch (error) {
+      console.error("Error resolving tag to itemId:", error);
+      return null;
+    }
   }
 }
