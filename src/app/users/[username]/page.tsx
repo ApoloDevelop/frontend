@@ -224,6 +224,7 @@ export default function UserProfilePage({
         ytLink={currentUser.youtube_link}
         twLink={currentUser.twitter_link}
         igLink={currentUser.instagram_link}
+        ttLink={currentUser.tiktok_link}
         extUrl={currentUser.external_url}
         roleId={currentUser.role_id}
         followButton={

@@ -19,7 +19,7 @@ export function EditProfileModalSidebar({
             )}
           >
             <span className="sm:hidden">Usuario</span>
-            <span className="hidden sm:inline">Datos usuario</span>
+            <span className="hidden sm:inline">Datos de usuario</span>
           </button>
         </li>
         <li id="edit-personal-data">
@@ -31,7 +31,7 @@ export function EditProfileModalSidebar({
             )}
           >
             <span className="sm:hidden">Personal</span>
-            <span className="hidden sm:inline">Datos personal</span>
+            <span className="hidden sm:inline">Datos personales</span>
           </button>
         </li>
         <li id="edit-social-data">

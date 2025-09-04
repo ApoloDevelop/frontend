@@ -4,6 +4,7 @@ import {
   FaInstagram,
   FaSpotify,
   FaYoutube,
+  FaTiktok,
 } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
 
@@ -16,6 +17,8 @@ interface EditSocialMediaFormProps {
   setTwLink: (v: string) => void;
   igLink: string;
   setIgLink: (v: string) => void;
+  ttLink: string;
+  setTtLink: (v: string) => void;
   extUrl: string;
   setExtUrl: (v: string) => void;
 }
@@ -29,6 +32,8 @@ export function EditSocialMediaForm({
   setTwLink,
   igLink,
   setIgLink,
+  ttLink,
+  setTtLink,
   extUrl,
   setExtUrl,
 }: EditSocialMediaFormProps) {
@@ -80,6 +85,18 @@ export function EditSocialMediaForm({
           type="url"
           value={ytLink}
           onChange={(e) => setYtLink(e.target.value)}
+        />
+      </div>
+      <div id="tiktok-input">
+        <label className="text-sm font-semibold mb-1 block">
+          Enlace a TikTok
+          <FaTiktok className="inline text-black ml-1 mb-0" size={16} />
+        </label>
+        <Input
+          name="tiktok"
+          type="url"
+          value={ttLink}
+          onChange={(e) => setTtLink(e.target.value)}
         />
       </div>
       <div id="url-input">

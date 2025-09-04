@@ -12,6 +12,7 @@ type EditProfileFields = {
   igLink: string;
   twLink: string;
   ytLink: string;
+  ttLink: string;
 };
 
 type EditProfileErrors = {
@@ -25,6 +26,7 @@ type EditProfileErrors = {
   igLink?: boolean;
   twLink?: boolean;
   ytLink?: boolean;
+  ttLink?: boolean;
 };
 
 export function useEditProfileValidation() {
@@ -39,6 +41,7 @@ export function useEditProfileValidation() {
     igLink,
     twLink,
     ytLink,
+    ttLink,
   }: EditProfileFields) {
     const errors: EditProfileErrors = {};
     const messages: string[] = [];
@@ -120,6 +123,13 @@ export function useEditProfileValidation() {
       if (!ytLink.includes("youtube.com")) {
         errors.ytLink = true;
         messages.push("El enlace de YouTube no es válido.");
+      }
+    }
+
+    if (ttLink && ttLink.trim() !== "") {
+      if (!ttLink.includes("tiktok.com")) {
+        errors.ttLink = true;
+        messages.push("El enlace de TikTok no es válido.");
       }
     }
 

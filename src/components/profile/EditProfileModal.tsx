@@ -66,6 +66,8 @@ export function EditProfileModal({
     setTwLink,
     igLink,
     setIgLink,
+    ttLink,
+    setTtLink,
     extUrl,
     setExtUrl,
     canEditUsername,
@@ -107,6 +109,7 @@ export function EditProfileModal({
     ytLink !== (user.youtube_link || "") ||
     twLink !== (user.twitter_link || "") ||
     igLink !== (user.instagram_link || "") ||
+    ttLink !== (user.tiktok_link || "") ||
     extUrl !== (user.external_url || "");
 
   useEffect(() => {
@@ -151,6 +154,7 @@ export function EditProfileModal({
         ytLink,
         twLink,
         igLink,
+        ttLink,
         extUrl,
       },
       canEditUsername
@@ -253,6 +257,8 @@ export function EditProfileModal({
                   setTwLink={setTwLink}
                   igLink={igLink}
                   setIgLink={setIgLink}
+                  ttLink={ttLink}
+                  setTtLink={setTtLink}
                   extUrl={extUrl}
                   setExtUrl={setExtUrl}
                 />

@@ -1,4 +1,4 @@
-import { FaInstagram, FaSpotify, FaYoutube } from "react-icons/fa";
+import { FaInstagram, FaSpotify, FaYoutube, FaTiktok } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
 import { Separator } from "../ui/separator";
 import { Badge } from "../ui/badge";
@@ -14,6 +14,7 @@ export const UserInfo = ({
   ytLink,
   twLink,
   igLink,
+  ttLink,
   extUrl,
   followButton,
   roleId,
@@ -145,6 +146,20 @@ export const UserInfo = ({
                   />
                 </a>
               )}
+              {ttLink && (
+                <a
+                  href={ttLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title="TikTok"
+                  className="relative z-10"
+                >
+                  <FaTiktok
+                    className="text-black hover:scale-110 transition"
+                    size={20}
+                  />
+                </a>
+              )}
               {extUrl && (
                 <a
                   href={extUrl}
@@ -242,6 +257,20 @@ export const UserInfo = ({
                 >
                   <FaYoutube
                     className="text-red-600 hover:scale-110 transition"
+                    size={20}
+                  />
+                </a>
+              )}
+              {ttLink && (
+                <a
+                  href={ttLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title="TikTok"
+                  className="relative z-10"
+                >
+                  <FaTiktok
+                    className="text-black hover:scale-110 transition"
                     size={20}
                   />
                 </a>

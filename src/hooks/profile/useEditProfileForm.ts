@@ -15,6 +15,7 @@ export function useEditProfileForm(user: any) {
   const [ytLink, setYtLink] = useState(user?.youtube_link || "");
   const [twLink, setTwLink] = useState(user?.twitter_link || "");
   const [igLink, setIgLink] = useState(user?.instagram_link || "");
+  const [ttLink, setTtLink] = useState(user?.tiktok_link || "");
   const [extUrl, setExtUrl] = useState(user?.external_url || "");
 
   const resetForm = () => {
@@ -32,6 +33,7 @@ export function useEditProfileForm(user: any) {
     setYtLink(user?.youtube_link || "");
     setTwLink(user?.twitter_link || "");
     setIgLink(user?.instagram_link || "");
+    setTtLink(user?.tiktok_link || "");
     setExtUrl(user?.external_url || "");
   };
 
@@ -73,6 +75,8 @@ export function useEditProfileForm(user: any) {
     setTwLink,
     igLink,
     setIgLink,
+    ttLink,
+    setTtLink,
     extUrl,
     setExtUrl,
     canEditUsername,

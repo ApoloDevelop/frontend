@@ -26,6 +26,7 @@ export function useEditProfileUpdate() {
       ytLink: string;
       twLink: string;
       igLink: string;
+      ttLink: string;
       extUrl: string;
     },
     canEditUsername: boolean
@@ -46,6 +47,7 @@ export function useEditProfileUpdate() {
       igLink: dataToUpdate.igLink,
       twLink: dataToUpdate.twLink,
       ytLink: dataToUpdate.ytLink,
+      ttLink: dataToUpdate.ttLink,
     });
 
     if (Object.keys(errors).length > 0) {
@@ -93,6 +95,7 @@ export function useEditProfileUpdate() {
         youtube_link: dataToUpdate.ytLink || null,
         twitter_link: dataToUpdate.twLink || null,
         instagram_link: dataToUpdate.igLink || null,
+        tiktok_link: dataToUpdate.ttLink || null,
         external_url: dataToUpdate.extUrl || null,
       };
       if (canEditUsername && dataToUpdate.username !== user.username) {
