@@ -65,7 +65,9 @@ export function MyListsDialog({
   const [lists, setLists] = useState<List[]>([]);
   const [favorites, setFavorites] = useState<FavoriteItem[]>([]);
   const [filteredLists, setFilteredLists] = useState<List[]>([]);
-  const [filteredFavorites, setFilteredFavorites] = useState<FavoriteItem[]>([]);
+  const [filteredFavorites, setFilteredFavorites] = useState<FavoriteItem[]>(
+    []
+  );
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
@@ -75,8 +77,8 @@ export function MyListsDialog({
   const [selectedListId, setSelectedListId] = useState<number | null>(null);
   const [detailDialogOpen, setDetailDialogOpen] = useState(false);
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
-  const [newListName, setNewListName] = useState(""); 
-  
+  const [newListName, setNewListName] = useState("");
+
   // Cargar listas cuando se abre el modal o cambia el tab
   useEffect(() => {
     if (open) {
@@ -91,10 +93,17 @@ export function MyListsDialog({
   // Filtrar y ordenar listas y favoritos
   useEffect(() => {
     if (activeTab === "favorites") {
-      let filtered = favorites.filter((favorite) =>
-        favorite.item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (favorite.item.artistName?.toLowerCase() || "").includes(searchQuery.toLowerCase()) ||
-        (favorite.item.albumName?.toLowerCase() || "").includes(searchQuery.toLowerCase())
+      let filtered = favorites.filter(
+        (favorite) =>
+          favorite.item.name
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase()) ||
+          (favorite.item.artistName?.toLowerCase() || "").includes(
+            searchQuery.toLowerCase()
+          ) ||
+          (favorite.item.albumName?.toLowerCase() || "").includes(
+            searchQuery.toLowerCase()
+          )
       );
 
       filtered.sort((a, b) => {
@@ -179,7 +188,7 @@ export function MyListsDialog({
     try {
       const fetchedFavorites = await FavoriteService.getAllUserFavorites();
       setFavorites(fetchedFavorites);
-      
+
       // Cargar covers para los favoritos
       if (fetchedFavorites.length > 0) {
         await loadCoversForFavorites(fetchedFavorites);
@@ -225,7 +234,10 @@ export function MyListsDialog({
   const handleCreateList = async (listName: string): Promise<boolean> => {
     try {
       if (activeTab === "favorites") return false; // No crear listas en favoritos
-      const newList = await ListService.createList(listName, activeTab as ItemType);
+      const newList = await ListService.createList(
+        listName,
+        activeTab as ItemType
+      );
       setLists((prev) => [
         ...prev,
         { ...newList, listItems: [], createdAt: new Date().toISOString() },
@@ -292,26 +304,30 @@ export function MyListsDialog({
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="max-w-4xl max-h-[80vh] overflow-hidden">
+        <DialogContent className="max-w-4xl max-h-[80vh] w-[95vw] sm:w-full overflow-hidden">
           <DialogHeader>
-            <DialogTitle>Mis Listas</DialogTitle>
+            <DialogTitle className="text-lg sm:text-xl">Mis Listas</DialogTitle>
           </DialogHeader>
 
           <Tabs
             value={activeTab}
             onValueChange={(value) => setActiveTab(value as TabType)}
           >
-            <TabsList className="grid w-full grid-cols-4">
-              {(["artist", "album", "track", "favorites"] as TabType[]).map((type) => (
-                <TabsTrigger
-                  key={type}
-                  value={type}
-                  className="flex items-center gap-2"
-                >
-                  {getTabIcon(type)}
-                  {getTabLabel(type)}
-                </TabsTrigger>
-              ))}
+            <TabsList className="grid w-full grid-cols-4 h-auto min-h-[40px] sm:min-h-[44px]">
+              {(["artist", "album", "track", "favorites"] as TabType[]).map(
+                (type) => (
+                  <TabsTrigger
+                    key={type}
+                    value={type}
+                    className="flex flex-col items-center justify-center gap-1 px-1 py-2 text-xs sm:flex-row sm:gap-2 sm:px-3 sm:text-sm min-w-0"
+                  >
+                    <div className="flex-shrink-0">{getTabIcon(type)}</div>
+                    <span className="truncate max-w-full leading-tight sm:leading-normal">
+                      {getTabLabel(type)}
+                    </span>
+                  </TabsTrigger>
+                )
+              )}
             </TabsList>
 
             {(["artist", "album", "track"] as ItemType[]).map((type) => (

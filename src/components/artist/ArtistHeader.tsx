@@ -35,9 +35,9 @@ export function ArtistHeader({
         />
       </div>
       <div className="ml-0 sm:ml-6 mt-2 sm:mt-0 flex-1">
-        <div className="flex items-center gap-4 flex-wrap">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
           <h1 className="text-5xl font-bold text-black">{artistData.name}</h1>
-          <div className="inline-block mt-2">
+          <div className="hidden sm:inline-block">
             <Rating
               name={artistData.name}
               type="artist"
@@ -45,13 +45,22 @@ export function ArtistHeader({
             />
           </div>
         </div>
-        <p className="text-lg text-gray-600">
-          {details?.type === "Person"
-            ? "Artista"
-            : details?.type === "Group"
-            ? "Grupo"
-            : ""}
-        </p>
+        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+          <p className="text-lg text-gray-600">
+            {details?.type === "Person"
+              ? "Artista"
+              : details?.type === "Group"
+              ? "Grupo"
+              : ""}
+          </p>
+          <div className="sm:hidden">
+            <Rating
+              name={artistData.name}
+              type="artist"
+              itemId={item?.itemId ?? null}
+            />
+          </div>
+        </div>
       </div>
 
       <div className="ml-0 sm:ml-auto mt-3 sm:mt-2 flex flex-wrap items-center gap-2">
