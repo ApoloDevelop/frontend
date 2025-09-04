@@ -14,6 +14,8 @@ interface SearchTabsProps {
   };
   onQueryChange: (type: TabKind, value: string) => void;
   defaultValue?: TabKind;
+  value?: TabKind;
+  onTabChange?: (value: TabKind) => void;
 }
 
 const tabsConfig = [
@@ -27,9 +29,16 @@ export default function SearchTabs({
   queries,
   onQueryChange,
   defaultValue = "artist",
+  value,
+  onTabChange,
 }: SearchTabsProps) {
   return (
-    <Tabs defaultValue={defaultValue} className="w-full">
+    <Tabs
+      defaultValue={defaultValue}
+      value={value}
+      onValueChange={(val) => onTabChange?.(val as TabKind)}
+      className="w-full"
+    >
       <TabsList>
         {tabsConfig.map(({ value, label }) => (
           <TabsTrigger key={value} value={value}>
