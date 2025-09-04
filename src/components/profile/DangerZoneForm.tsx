@@ -29,7 +29,7 @@ export function DangerZoneForm({ user, onClose }: DangerZoneFormProps) {
     if (success) {
       // Limpiar sesión
       clearSession();
-      
+
       // Mostrar toast de éxito
       toast.success("Cuenta eliminada", {
         description: "Tu cuenta ha sido eliminada exitosamente.",
@@ -37,7 +37,7 @@ export function DangerZoneForm({ user, onClose }: DangerZoneFormProps) {
 
       // Cerrar modal
       onClose();
-      
+
       // Redirigir directamente a login con recarga
       if (typeof window !== "undefined") {
         window.location.href = "/login";

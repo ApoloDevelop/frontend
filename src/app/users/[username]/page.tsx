@@ -25,6 +25,7 @@ import { ActivityFeed } from "@/components/profile/ActivityFeed";
 import { PlusIcon } from "lucide-react";
 import UserPageSkeleton from "@/components/skeletons/UserPageSkeleton";
 import { ErrorPage } from "@/components/system/ErrorPage";
+import { AdminDeleteButton } from "@/components/profile/AdminDeleteButton";
 
 export default function UserProfilePage({
   params,
@@ -181,15 +182,22 @@ export default function UserProfilePage({
         )}
       </div>
 
-      {/* Botón Añadir post - Posicionado a la derecha, debajo del cover */}
-      {canEdit && (
-        <div className="flex justify-end px-6 mt-4">
+      {/* Botones de administrador y añadir post */}
+      <div className="flex justify-end px-6 mt-4 gap-2">
+        {/* Botón de eliminar cuenta para administradores */}
+        <AdminDeleteButton
+          user={currentUser}
+          isVisible={isAdmin && authUser?.role_id === 1 && !canEdit}
+        />
+
+        {/* Botón Añadir post - Solo para el propio usuario */}
+        {canEdit && (
           <Button onClick={() => setActivityModalOpen(true)} size="sm">
             <PlusIcon className="w-4 h-4 mr-2" />
             Añadir post
           </Button>
-        </div>
-      )}
+        )}
+      </div>
       <div className="relative">
         {canEdit ? (
           <ProfilePhotoEditor
@@ -236,7 +244,7 @@ export default function UserProfilePage({
                     setRoleModalOpen(true);
                   }}
                   className="text-xs relative z-30 pointer-events-auto cursor-pointer"
-                  style={{ pointerEvents: 'auto' }}
+                  style={{ pointerEvents: "auto" }}
                 >
                   Ajustar rol
                 </Button>
