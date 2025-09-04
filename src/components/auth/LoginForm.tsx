@@ -1,5 +1,6 @@
 import { Eye, EyeOff, Mail, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 interface LoginFormProps {
   credentials: { credential: string; password: string };
@@ -75,6 +76,14 @@ export default function LoginForm({
           >
             {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
           </button>
+        </div>
+        <div className="text-right mt-1">
+          <Link
+            href="/forgot-password"
+            className="text-sm text-purple-700 hover:text-purple-600 underline underline-offset-4"
+          >
+            ¿Has olvidado tu contraseña?
+          </Link>
         </div>
       </div>
 
