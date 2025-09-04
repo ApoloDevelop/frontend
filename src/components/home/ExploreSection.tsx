@@ -38,8 +38,8 @@ interface ExploreSectionProps {
 }
 
 export function ExploreSection({
-  title = "Explora más contenido",
-  subtitle = "Descubre todo lo que tenemos para ofrecerte",
+  title = "Explora en profundidad",
+  subtitle = "Conoce todo lo que tenemos para ofrecerte",
 }: ExploreSectionProps) {
   const exploreItems = [
     {
