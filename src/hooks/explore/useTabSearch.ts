@@ -1,16 +1,19 @@
 import { useState } from "react";
 import { Kind } from "./useSearch";
 
+export type TabKind = Kind | "user";
+
 interface SearchQueries {
   artist: string;
   album: string;
   track: string;
+  user: string;
 }
 
 interface UseTabSearchReturn {
   queries: SearchQueries;
-  updateQuery: (type: Kind, value: string) => void;
-  getQueryForType: (type: Kind) => string;
+  updateQuery: (type: TabKind, value: string) => void;
+  getQueryForType: (type: TabKind) => string;
 }
 
 /**
@@ -22,16 +25,17 @@ export function useTabSearch(): UseTabSearchReturn {
     artist: "",
     album: "",
     track: "",
+    user: "",
   });
 
-  const updateQuery = (type: Kind, value: string) => {
+  const updateQuery = (type: TabKind, value: string) => {
     setQueries((prev) => ({
       ...prev,
       [type]: value,
     }));
   };
 
-  const getQueryForType = (type: Kind): string => {
+  const getQueryForType = (type: TabKind): string => {
     return queries[type];
   };
 

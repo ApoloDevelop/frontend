@@ -1,22 +1,26 @@
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Kind } from "@/hooks/explore/useSearch";
+import { TabKind } from "@/hooks/explore/useTabSearch";
 import SearchTab from "./SearchTab";
 import ArtistSearchTab from "./ArtistSearchTab";
+import UserSearchTab from "./UserSearchTab";
 
 interface SearchTabsProps {
   queries: {
     artist: string;
     album: string;
     track: string;
+    user: string;
   };
-  onQueryChange: (type: Kind, value: string) => void;
-  defaultValue?: Kind;
+  onQueryChange: (type: TabKind, value: string) => void;
+  defaultValue?: TabKind;
 }
 
 const tabsConfig = [
-  { value: "artist" as Kind, label: "Artistas" },
-  { value: "album" as Kind, label: "Álbumes" },
-  { value: "track" as Kind, label: "Canciones" },
+  { value: "user" as TabKind, label: "Usuarios" },
+  { value: "artist" as TabKind, label: "Artistas" },
+  { value: "album" as TabKind, label: "Álbumes" },
+  { value: "track" as TabKind, label: "Canciones" },
 ];
 
 export default function SearchTabs({
@@ -35,6 +39,16 @@ export default function SearchTabs({
       </TabsList>
 
       {tabsConfig.map(({ value }) => {
+        if (value === "user") {
+          return (
+            <UserSearchTab
+              key={value}
+              value={queries[value]}
+              onValueChange={(newValue) => onQueryChange(value, newValue)}
+            />
+          );
+        }
+
         if (value === "artist") {
           return (
             <ArtistSearchTab
@@ -48,7 +62,7 @@ export default function SearchTabs({
         return (
           <SearchTab
             key={value}
-            type={value}
+            type={value as Kind}
             value={queries[value]}
             onValueChange={(newValue) => onQueryChange(value, newValue)}
           />

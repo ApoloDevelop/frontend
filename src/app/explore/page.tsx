@@ -13,7 +13,7 @@ export default function ExplorePage() {
       <SearchTabs
         queries={queries}
         onQueryChange={updateQuery}
-        defaultValue="artist"
+        defaultValue="user"
       />
     </div>
   );

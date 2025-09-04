@@ -1,18 +1,20 @@
 import { Input } from "@/components/ui/input";
 import { Kind } from "@/hooks/explore/useSearch";
+import { TabKind } from "@/hooks/explore/useTabSearch";
 import { X } from "lucide-react";
 
 interface SearchInputProps {
   value: string;
   onChange: (value: string) => void;
-  type: Kind;
+  type: TabKind;
   placeholder?: string;
 }
 
-const placeholders: Record<Kind, string> = {
+const placeholders: Record<TabKind, string> = {
   artist: "Buscar artistas",
   album: "Buscar álbumes",
   track: "Buscar canciones",
+  user: "Buscar usuarios",
 };
 
 export default function SearchInput({

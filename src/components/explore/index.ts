@@ -6,3 +6,6 @@ export { default as SearchTabs } from "./SearchTabs";
 export { default as ArtistFilters } from "./ArtistFilters";
 export { default as ArtistSearchGrid } from "./ArtistSearchGrid";
 export { default as ArtistSearchTab } from "./ArtistSearchTab";
+export { default as UserSearchTab } from "./UserSearchTab";
+export { default as UserSearchGrid } from "./UserSearchGrid";
+export { default as UserSearchResults } from "./UserSearchResults";
