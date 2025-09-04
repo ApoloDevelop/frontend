@@ -27,7 +27,7 @@ export function TagPickerHeader({
         aria-label="Buscar para añadir tag"
       />
       <button
-        className="rounded-md border px-3 py-2 hover:bg-black/5"
+        className="rounded-md border px-3 py-2 hover:bg-black/5 cursor-pointer"
         onClick={onClose}
       >
         Cerrar

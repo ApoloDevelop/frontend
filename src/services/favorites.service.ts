@@ -20,4 +20,8 @@ export class FavoriteService {
   static async removeFavorite(payload: FavPayload): Promise<void> {
     return FavoriteRepository.removeFavorite(payload);
   }
+
+  static async getAllUserFavorites(): Promise<any[]> {
+    return FavoriteRepository.getAllUserFavorites();
+  }
 }

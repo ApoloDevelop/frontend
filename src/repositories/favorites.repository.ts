@@ -68,4 +68,15 @@ export class FavoriteRepository {
         await res.text().catch(() => "Error eliminando favorito")
       );
   }
+
+  static async getAllUserFavorites(): Promise<any[]> {
+    const res = await fetch(`${B}/favorites/all`, {
+      cache: "no-store",
+      headers: authHeaders(),
+    });
+    if (res.status === 401 || res.status === 403) return [];
+    if (!res.ok) throw new Error("Error obteniendo favoritos del usuario");
+
+    return await res.json();
+  }
 }

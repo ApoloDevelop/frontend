@@ -34,7 +34,7 @@ export function TagPickerSearchResults({
     tracks.length === 0;
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-0 md:gap-4 p-3 overflow-auto">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-0 md:gap-4 p-3 overflow-auto max-h-[60vh]">
       {/* Artistas */}
       <div className="md:border-r md:pr-3">
         <h4 className="text-xs font-semibold uppercase text-gray-500 mb-2">
