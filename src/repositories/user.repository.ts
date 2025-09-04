@@ -92,4 +92,18 @@ export class UserRepository {
     if (!res.ok) throw new Error("Error al obtener la lista de seguidos");
     return res.json() as Promise<UserLite[]>;
   }
+
+  static async deleteUser(userId: number): Promise<any> {
+    const res = await fetch(`${B}/users/${userId}`, {
+      method: "DELETE",
+      headers: authHeaders(),
+    });
+    if (!res.ok) {
+      const errorText = await res
+        .text()
+        .catch(() => "Error al eliminar la cuenta");
+      throw new Error(errorText);
+    }
+    return await res.json();
+  }
 }

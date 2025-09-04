@@ -21,8 +21,9 @@ import { EditPersonalDataForm } from "./EditPersonalDataForm";
 import { formatDate } from "@/utils/date";
 import { normalize } from "@/utils/normalization";
 import { EditSocialMediaForm } from "./EditSocialMediaForm";
+import { DangerZoneForm } from "./DangerZoneForm";
 
-type Section = "profile" | "personal" | "social";
+type Section = "profile" | "personal" | "social" | "danger";
 
 export function EditProfileModal({
   open,
@@ -172,27 +173,32 @@ export function EditProfileModal({
     <>
       {loading && <LoadingScreen />}
       <Dialog open={open} onOpenChange={onClose}>
-        <DialogContent className="p-0" style={{ pointerEvents: "auto" }}>
+        <DialogContent
+          className="p-0 max-w-xs sm:max-w-lg md:max-w-2xl lg:max-w-3xl w-full h-[85vh] max-h-[500px] sm:max-h-[600px]"
+          style={{ pointerEvents: "auto" }}
+        >
           <AlertMessage
             alertMsgs={alertMsgs}
             showAlert={showAlert}
             topSize="10px"
           />
-          <div className="flex h-full">
+          <div className="flex flex-col sm:flex-row h-full min-h-0">
             <EditProfileModalSidebar
               section={section}
               setSection={setSection}
             />
 
             {/* Content */}
-            <div className="flex-1 p-4 overflow-y-auto">
+            <div className="flex-1 min-w-0 p-3 sm:p-4 overflow-y-auto flex flex-col">
               <DialogHeader>
                 <DialogTitle>
                   {section === "profile"
                     ? "Datos del usuario"
                     : section === "personal"
-                    ? "Datos personales"
-                    : "Redes sociales"}
+                      ? "Datos personales"
+                      : section === "social"
+                        ? "Redes sociales"
+                        : "Zona de peligro"}
                 </DialogTitle>
               </DialogHeader>
 
@@ -252,25 +258,36 @@ export function EditProfileModal({
                 />
               )}
 
-              <div className="flex justify-end gap-2 mt-6">
-                <Button variant="outline" onClick={onClose}>
-                  Cancelar
-                </Button>
-                <Button
-                  onClick={handleSave}
-                  disabled={Boolean(
-                    loading ||
-                      !isModified ||
-                      username.length > 30 ||
-                      !/^[a-zA-Z0-9_]+$/.test(username) ||
-                      email.length > 245 ||
-                      !email.includes("@") ||
-                      bio.length > 1500
-                  )}
-                >
-                  Guardar
-                </Button>
-              </div>
+              {section === "danger" && (
+                <DangerZoneForm user={user} onClose={onClose} />
+              )}
+
+              {section !== "danger" && (
+                <div className="flex flex-col sm:flex-row justify-end gap-2 mt-auto pt-4">
+                  <Button
+                    variant="outline"
+                    onClick={onClose}
+                    className="w-full sm:w-auto text-sm"
+                  >
+                    Cancelar
+                  </Button>
+                  <Button
+                    onClick={handleSave}
+                    disabled={Boolean(
+                      loading ||
+                        !isModified ||
+                        username.length > 30 ||
+                        !/^[a-zA-Z0-9_]+$/.test(username) ||
+                        email.length > 245 ||
+                        !email.includes("@") ||
+                        bio.length > 1500
+                    )}
+                    className="w-full sm:w-auto text-sm"
+                  >
+                    Guardar
+                  </Button>
+                </div>
+              )}
             </div>
           </div>
         </DialogContent>

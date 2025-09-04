@@ -1,5 +1,5 @@
 import "./globals.css";
-import Header from "@/components/header/index";
+import Header from "@/components/header/Header";
 import ScrollTopOnRouteChange from "@/components/system/ScrollTopOnRouteChange";
 import Toaster from "@/components/ui/Toaster";
 
