@@ -75,6 +75,7 @@ export class UserRepository {
       take: String(take),
     });
     const res = await fetch(`${B}/users/${profileUserId}/followers?${q}`, {
+      headers: authHeaders(),
       cache: "no-store",
     });
     if (!res.ok) throw new Error("Error al obtener la lista de seguidores");
@@ -87,6 +88,7 @@ export class UserRepository {
       take: String(take),
     });
     const res = await fetch(`${B}/users/${profileUserId}/following?${q}`, {
+      headers: authHeaders(),
       cache: "no-store",
     });
     if (!res.ok) throw new Error("Error al obtener la lista de seguidos");

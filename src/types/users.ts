@@ -10,6 +10,7 @@ export type UserLite = {
   username: string;
   fullname: string;
   profile_pic?: string | null;
+  isFollowing?: boolean | null; // null si no hay usuario autenticado o es el mismo usuario
 };
 
 export type FollowType = "followers" | "following";

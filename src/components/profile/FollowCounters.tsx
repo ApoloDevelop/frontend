@@ -28,6 +28,11 @@ export function FollowCounters({
     }
   }
 
+  const handleFollowChange = () => {
+    // Recargar contadores cuando alguien sigue/deja de seguir
+    loadCounts();
+  };
+
   useEffect(() => {
     loadCounts();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -64,6 +69,7 @@ export function FollowCounters({
         username={username}
         userId={profileUserId}
         type="followers"
+        onFollowChange={handleFollowChange}
       />
       <FollowListModal
         open={followingOpen}
@@ -71,6 +77,7 @@ export function FollowCounters({
         username={username}
         userId={profileUserId}
         type="following"
+        onFollowChange={handleFollowChange}
       />
     </>
   );
