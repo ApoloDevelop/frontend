@@ -12,3 +12,6 @@ export { useArticleForm } from "./useArticleForm";
 export { useTagManager } from "./useTagManager";
 export { useQuillEditor } from "./useQuillEditor";
 export { useTagPickerSearch } from "./useTagPickerSearch";
+
+// Hook para el carrusel de noticias
+export { useCarousel } from "./useCarousel";

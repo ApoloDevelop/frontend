@@ -28,3 +28,10 @@ export { TagPicker } from "./TagPicker";
 export { TagPickerModal } from "./TagPickerModal";
 export { TagPickerHeader } from "./TagPickerHeader";
 export { TagPickerSearchResults } from "./TagPickerSearchResults";
+
+// Componentes del carrusel de noticias
+export { NewsCarousel } from "./NewsCarousel";
+export { CarouselNavigation } from "./CarouselNavigation";
+export { CarouselTrack } from "./CarouselTrack";
+export { CarouselIndicators } from "./CarouselIndicators";
+export { NewsSlide } from "./NewsSlide";

@@ -1,7 +1,7 @@
 // src/components/news/NewsSearch.tsx
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Search, X } from "lucide-react";
 
@@ -13,6 +13,7 @@ export function NewsSearch({ placeholder = "Buscar por título o tag…" }) {
   const initial = sp.get("q") ?? "";
   const [open, setOpen] = useState(Boolean(initial));
   const [value, setValue] = useState(initial);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const t = setTimeout(() => {
@@ -29,6 +30,18 @@ export function NewsSearch({ placeholder = "Buscar por título o tag…" }) {
     return () => clearTimeout(t);
   }, [value, pathname]);
 
+  // Focus automático cuando se abre el buscador
+  useEffect(() => {
+    if (open) {
+      // Delay para esperar que termine la animación
+      const timer = setTimeout(() => {
+        inputRef.current?.focus();
+      }, 300);
+
+      return () => clearTimeout(timer);
+    }
+  }, [open]);
+
   const clear = () => setValue("");
 
   return (
@@ -42,12 +55,21 @@ export function NewsSearch({ placeholder = "Buscar por título o tag…" }) {
           type="button"
           aria-label="Abrir buscador"
           className="absolute left-2 top-1/2 -translate-y-1/2 cursor-pointer"
-          onClick={() => setOpen(true)}
+          onClick={() => {
+            setOpen(true);
+            // Foco inmediato después de setState
+            requestAnimationFrame(() => {
+              requestAnimationFrame(() => {
+                inputRef.current?.focus();
+              });
+            });
+          }}
         >
           <Search className="h-4 w-4" />
         </button>
 
         <input
+          ref={inputRef}
           type="text"
           value={value}
           onChange={(e) => setValue(e.target.value)}
