@@ -15,7 +15,7 @@ export function ReviewFilters({
   onSortChange,
 }: ReviewFiltersProps) {
   return (
-    <div className="shrink-0 mb-2 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+    <div className="mb-2 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
       <div>
         {filterScore != null && (
           <span className="inline-flex items-center gap-2 text-sm rounded-full border px-3 py-1">

@@ -12,7 +12,6 @@ interface ReviewListProps {
   nextCursor: number | null;
   totalReviews: number;
   filterScore: number | null;
-  scrollRef: React.RefObject<HTMLDivElement | null>;
   sentinelRef: React.RefObject<HTMLDivElement | null>;
 }
 
@@ -27,17 +26,10 @@ export function ReviewList({
   nextCursor,
   totalReviews,
   filterScore,
-  scrollRef,
   sentinelRef,
 }: ReviewListProps) {
   return (
-    <div
-      ref={scrollRef}
-      className="flex-1 overflow-y-auto space-y-3 sm:space-y-4 pr-1 min-h-[120px]"
-      style={{ 
-        minHeight: 0
-      }}
-    >
+    <div className="space-y-3 sm:space-y-4">
       {/* Mi reseña */}
       {myReview && (
         <>

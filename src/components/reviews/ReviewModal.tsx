@@ -83,7 +83,6 @@ export function ReviewsModal({
           w-[92vw] sm:w-[90vw] max-w-md sm:max-w-lg md:max-w-2xl
           p-4 sm:p-6 md:p-8 rounded-xl sm:rounded-2xl
           flex flex-col max-h-[95vh] min-h-[300px]
-          overflow-hidden
         "
       >
         <DialogHeader className="shrink-0">
@@ -93,38 +92,38 @@ export function ReviewsModal({
           </DialogTitle>
         </DialogHeader>
 
-        <div className="shrink-0">
+        <div 
+          ref={scrollRef}
+          className="flex-1 overflow-y-auto space-y-4 sm:space-y-6"
+        >
           <ReviewHistogram
             histogram={histogram}
             maxCount={maxCount}
             filterScore={filterScore}
             onBarClick={handleBarClick}
           />
-        </div>
 
-        <div className="shrink-0">
           <ReviewFilters
             filterScore={filterScore}
             sortMode={sortMode}
             onFilterClear={() => setFilterScore(null)}
             onSortChange={setSortMode}
           />
-        </div>
 
-        <ReviewList
-          myReview={myReview}
-          otherReviews={otherReviews}
-          currentUserId={currentUserId}
-          canModerate={canModerate}
-          onVote={handleVote}
-          onDelete={handleDelete}
-          isLoading={isLoading}
-          nextCursor={nextCursor}
-          totalReviews={reviews.length}
-          filterScore={filterScore}
-          scrollRef={scrollRef}
-          sentinelRef={sentinelRef}
-        />
+          <ReviewList
+            myReview={myReview}
+            otherReviews={otherReviews}
+            currentUserId={currentUserId}
+            canModerate={canModerate}
+            onVote={handleVote}
+            onDelete={handleDelete}
+            isLoading={isLoading}
+            nextCursor={nextCursor}
+            totalReviews={reviews.length}
+            filterScore={filterScore}
+            sentinelRef={sentinelRef}
+          />
+        </div>
 
         <DialogClose className="mt-4 inline-flex justify-center w-full sm:w-auto px-4 py-2 cursor-pointer bg-black text-white rounded-md hover:bg-purple-900 shrink-0">
           Cerrar
