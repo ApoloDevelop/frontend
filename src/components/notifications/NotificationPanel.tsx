@@ -19,15 +19,18 @@ export function NotificationPanel({ isOpen, onClose }: NotificationPanelProps) {
     loading,
     error,
     fetchNotifications,
+    fetchUnreadCount,
     markAsRead,
     markAllAsRead,
     deleteNotification,
+    deleteAllNotifications,
   } = useNotifications();
 
   const { panelRef } = useNotificationPanel({
     isOpen,
     onClose,
     fetchNotifications,
+    fetchUnreadCount,
   });
 
   const { navigateToNotification } = useNotificationNavigation();
@@ -43,6 +46,18 @@ export function NotificationPanel({ isOpen, onClose }: NotificationPanelProps) {
     [markAsRead, navigateToNotification]
   );
 
+  const handleDeleteAll = useCallback(async () => {
+    if (notifications.length === 0) return;
+
+    if (
+      window.confirm(
+        "¿Estás seguro de que quieres eliminar todas las notificaciones? Esta acción no se puede deshacer."
+      )
+    ) {
+      await deleteAllNotifications();
+    }
+  }, [deleteAllNotifications, notifications.length]);
+
   if (!isOpen) return null;
 
   return (
@@ -54,6 +69,7 @@ export function NotificationPanel({ isOpen, onClose }: NotificationPanelProps) {
         notifications={notifications}
         onClose={onClose}
         onMarkAllAsRead={markAllAsRead}
+        onDeleteAll={handleDeleteAll}
       />
 
       <NotificationPanelContent

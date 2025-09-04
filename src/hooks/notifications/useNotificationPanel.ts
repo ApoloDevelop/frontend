@@ -4,12 +4,14 @@ interface UseNotificationPanelProps {
   isOpen: boolean;
   onClose: () => void;
   fetchNotifications: (page: number) => void;
+  fetchUnreadCount?: () => void; // Agregar función opcional para actualizar contador
 }
 
 export function useNotificationPanel({
   isOpen,
   onClose,
   fetchNotifications,
+  fetchUnreadCount,
 }: UseNotificationPanelProps) {
   const panelRef = useRef<HTMLDivElement>(null);
 
@@ -17,8 +19,14 @@ export function useNotificationPanel({
   useEffect(() => {
     if (isOpen) {
       fetchNotifications(1);
+      // También actualizar el contador al abrir el panel
+      if (fetchUnreadCount) {
+        setTimeout(() => {
+          fetchUnreadCount();
+        }, 200);
+      }
     }
-  }, [isOpen, fetchNotifications]);
+  }, [isOpen, fetchNotifications, fetchUnreadCount]);
 
   // Handle clicks outside panel
   useEffect(() => {

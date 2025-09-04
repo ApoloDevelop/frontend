@@ -1,12 +1,21 @@
 import { Bell } from "lucide-react";
 import { useNotifications } from "@/hooks/notifications/useNotifications";
+import { useEffect } from "react";
 
 interface NotificationButtonProps {
   onClick: () => void;
 }
 
 export function NotificationButton({ onClick }: NotificationButtonProps) {
-  const { unreadCount } = useNotifications();
+  const { unreadCount, fetchUnreadCount } = useNotifications();
+
+  // Actualizar contador al montar el componente
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      fetchUnreadCount();
+    }
+  }, [fetchUnreadCount]);
 
   return (
     <button

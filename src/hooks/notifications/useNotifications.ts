@@ -10,15 +10,13 @@ export function useNotifications() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isMounted, setIsMounted] = useState(false);
+  const [lastActionTime, setLastActionTime] = useState<number>(0);
 
-  // Prevenir problemas de hidratación
   useEffect(() => {
     setIsMounted(true);
   }, []);
 
-  // Obtener notificaciones
   const fetchNotifications = useCallback(async (page: number = 1) => {
-    // Verificar si hay token antes de hacer la petición
     const token = localStorage.getItem("token");
     if (!token) {
       setNotifications([]);
@@ -42,10 +40,8 @@ export function useNotifications() {
     }
   }, []);
 
-  // Obtener contador de no leídas
   const fetchUnreadCount = useCallback(async () => {
     try {
-      // Verificar si hay token antes de hacer la petición
       const token = localStorage.getItem("token");
       if (!token) {
         setUnreadCount(0);
@@ -62,30 +58,40 @@ export function useNotifications() {
   }, []);
 
   // Marcar como leída
-  const markAsRead = useCallback(async (notificationId: number) => {
-    try {
-      await NotificationService.markAsRead(notificationId);
-      setNotifications((prev) =>
-        prev.map((n) => (n.id === notificationId ? { ...n, is_read: true } : n))
-      );
-      setUnreadCount((prev) => Math.max(0, prev - 1));
-    } catch (err: any) {
-      setError(err.message);
-    }
-  }, []);
+  const markAsRead = useCallback(
+    async (notificationId: number) => {
+      try {
+        await NotificationService.markAsRead(notificationId);
+        setNotifications((prev) =>
+          prev.map((n) =>
+            n.id === notificationId ? { ...n, is_read: true } : n
+          )
+        );
+        setUnreadCount((prev) => Math.max(0, prev - 1));
+        // Verificar desde el servidor para asegurar sincronización
+        setTimeout(() => {
+          fetchUnreadCount();
+        }, 100);
+      } catch (err: any) {
+        setError(err.message);
+      }
+    },
+    [fetchUnreadCount]
+  );
 
-  // Marcar todas como leídas
   const markAllAsRead = useCallback(async () => {
     try {
       await NotificationService.markAllAsRead();
       setNotifications((prev) => prev.map((n) => ({ ...n, is_read: true })));
       setUnreadCount(0);
+      setTimeout(() => {
+        fetchUnreadCount();
+      }, 100);
     } catch (err: any) {
       setError(err.message);
     }
-  }, []);
+  }, [fetchUnreadCount]);
 
-  // Eliminar notificación
   const deleteNotification = useCallback(
     async (notificationId: number) => {
       try {
@@ -103,7 +109,26 @@ export function useNotifications() {
     [notifications]
   );
 
-  // Polling para actualizar contador cada 30 segundos
+  // Eliminar todas las notificaciones
+  const deleteAllNotifications = useCallback(async () => {
+    try {
+      // Marcar el tiempo de la acción
+      setLastActionTime(Date.now());
+
+      // Actualizar inmediatamente el estado local
+      setNotifications([]);
+      setUnreadCount(0);
+
+      // Llamada al servidor
+      await NotificationService.deleteAllNotifications();
+    } catch (err: any) {
+      setError(err.message);
+      // En caso de error, refrescar desde el servidor
+      fetchNotifications(1);
+      fetchUnreadCount();
+    }
+  }, [fetchNotifications, fetchUnreadCount]);
+
   useEffect(() => {
     if (isMounted) {
       // Solo hacer polling si hay token
@@ -116,10 +141,9 @@ export function useNotifications() {
           if (currentToken) {
             fetchUnreadCount();
           }
-        }, 30000);
+        }, 1000);
         return () => clearInterval(interval);
       } else {
-        // Limpiar datos si no hay token
         setUnreadCount(0);
         setNotifications([]);
       }
@@ -128,7 +152,7 @@ export function useNotifications() {
 
   return {
     notifications,
-    unreadCount: isMounted ? unreadCount : 0, // Evitar diferencias de hidratación
+    unreadCount: isMounted ? unreadCount : 0,
     loading,
     error,
     fetchNotifications,
@@ -136,5 +160,6 @@ export function useNotifications() {
     markAsRead,
     markAllAsRead,
     deleteNotification,
+    deleteAllNotifications,
   };
 }

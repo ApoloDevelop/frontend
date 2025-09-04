@@ -131,4 +131,23 @@ export class NotificationService {
       throw new Error("Error al eliminar notificación");
     }
   }
+
+  static async deleteAllNotifications(): Promise<void> {
+    if (!this.isAuthenticated()) {
+      return;
+    }
+
+    const response = await fetch(`${API_URL}/notifications`, {
+      method: "DELETE",
+      headers: this.getAuthHeaders(),
+    });
+
+    if (!response.ok) {
+      if (response.status === 401) {
+        localStorage.removeItem("token");
+        return;
+      }
+      throw new Error("Error al eliminar todas las notificaciones");
+    }
+  }
 }
