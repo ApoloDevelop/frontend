@@ -82,7 +82,7 @@ export function ReviewsModal({
         className="
           w-[92vw] sm:w-[90vw] max-w-md sm:max-w-lg md:max-w-2xl
           p-4 sm:p-6 md:p-8 rounded-xl sm:rounded-2xl
-          flex flex-col max-h-[85vh]
+          flex flex-col h-[85vh]
         "
       >
         <DialogHeader className="shrink-0">
@@ -92,19 +92,23 @@ export function ReviewsModal({
           </DialogTitle>
         </DialogHeader>
 
-        <ReviewHistogram
-          histogram={histogram}
-          maxCount={maxCount}
-          filterScore={filterScore}
-          onBarClick={handleBarClick}
-        />
+        <div className="shrink-0">
+          <ReviewHistogram
+            histogram={histogram}
+            maxCount={maxCount}
+            filterScore={filterScore}
+            onBarClick={handleBarClick}
+          />
+        </div>
 
-        <ReviewFilters
-          filterScore={filterScore}
-          sortMode={sortMode}
-          onFilterClear={() => setFilterScore(null)}
-          onSortChange={setSortMode}
-        />
+        <div className="shrink-0">
+          <ReviewFilters
+            filterScore={filterScore}
+            sortMode={sortMode}
+            onFilterClear={() => setFilterScore(null)}
+            onSortChange={setSortMode}
+          />
+        </div>
 
         <ReviewList
           myReview={myReview}

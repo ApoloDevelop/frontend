@@ -15,7 +15,7 @@ export function ReviewFilters({
   onSortChange,
 }: ReviewFiltersProps) {
   return (
-    <div className="shrink-0 mb-2 flex items-center justify-between gap-2">
+    <div className="shrink-0 mb-2 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
       <div>
         {filterScore != null && (
           <span className="inline-flex items-center gap-2 text-sm rounded-full border px-3 py-1">
@@ -33,14 +33,17 @@ export function ReviewFilters({
       </div>
 
       <div className="flex items-center gap-2 text-sm">
-        <label htmlFor="order" className="text-muted-foreground">
+        <label
+          htmlFor="order"
+          className="text-muted-foreground whitespace-nowrap"
+        >
           Orden:
         </label>
         <select
           id="order"
           value={sortMode}
           onChange={(e) => onSortChange(e.target.value as SortMode)}
-          className="rounded-md border px-1 py-1.5 bg-white hover:bg-gray-50"
+          className="rounded-md border px-1 py-1.5 bg-white hover:bg-gray-50 min-w-0 flex-shrink"
         >
           <option value="recent_desc">Más recientes primero</option>
           <option value="recent_asc">Más antiguas primero</option>
