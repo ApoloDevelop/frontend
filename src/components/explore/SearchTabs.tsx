@@ -1,6 +1,7 @@
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Kind } from "@/hooks/explore/useSearch";
 import SearchTab from "./SearchTab";
+import ArtistSearchTab from "./ArtistSearchTab";
 
 interface SearchTabsProps {
   queries: {
@@ -33,14 +34,26 @@ export default function SearchTabs({
         ))}
       </TabsList>
 
-      {tabsConfig.map(({ value }) => (
-        <SearchTab
-          key={value}
-          type={value}
-          value={queries[value]}
-          onValueChange={(newValue) => onQueryChange(value, newValue)}
-        />
-      ))}
+      {tabsConfig.map(({ value }) => {
+        if (value === "artist") {
+          return (
+            <ArtistSearchTab
+              key={value}
+              value={queries[value]}
+              onValueChange={(newValue) => onQueryChange(value, newValue)}
+            />
+          );
+        }
+
+        return (
+          <SearchTab
+            key={value}
+            type={value}
+            value={queries[value]}
+            onValueChange={(newValue) => onQueryChange(value, newValue)}
+          />
+        );
+      })}
     </Tabs>
   );
 }

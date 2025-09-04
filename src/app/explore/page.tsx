@@ -1,7 +1,7 @@
 "use client";
 
 import { SearchTabs } from "@/components/explore";
-import { useTabSearch, usePageLoading } from "@/hooks/explore";
+import { useTabSearch } from "@/hooks/explore";
 
 export default function ExplorePage() {
   const { queries, updateQuery } = useTabSearch();
