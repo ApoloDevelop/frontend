@@ -45,8 +45,11 @@ export function TopPlaylistsRow({
   if (error) {
     return (
       <div className="container mx-auto px-4">
-        <div className="bg-red-50 text-red-700 border border-red-200 p-4 rounded-lg">
-          {error}
+        <div className="bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-700/30 p-6 rounded-xl shadow-sm">
+          <div className="flex items-center gap-2">
+            <span className="text-lg">⚠️</span>
+            <span className="font-medium">{error}</span>
+          </div>
         </div>
       </div>
     );

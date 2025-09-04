@@ -9,10 +9,9 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 
 type Props = {
   articles: Article[];
-  title?: string;
 };
 
-export function NewsCarousel({ articles, title = "Últimas noticias" }: Props) {
+export function NewsCarousel({ articles }: Props) {
   const trackRef = useRef<HTMLDivElement | null>(null);
   const [index, setIndex] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
@@ -51,10 +50,8 @@ export function NewsCarousel({ articles, title = "Últimas noticias" }: Props) {
   if (!articles?.length) return null;
 
   return (
-    <section className="relative w-full my-12">
-      <div className="mb-4 flex items-center justify-between px-2 sm:px-0">
-        <h2 className="text-2xl sm:text-3xl font-bold">{title}</h2>
-
+    <section className="relative w-full">
+      <div className="mb-6 flex items-center justify-between px-2 sm:px-0">
         {/* Flechas (ocultas si 1 solo item) */}
         {articles.length > 1 && (
           <div className="flex gap-2">
@@ -62,19 +59,19 @@ export function NewsCarousel({ articles, title = "Últimas noticias" }: Props) {
               type="button"
               onClick={prev}
               aria-label="Anterior"
-              className="rounded-full border px-3 py-2 hover:bg-black/5 disabled:opacity-40 cursor-pointer"
+              className="rounded-full border border-purple-200 bg-white hover:bg-purple-50 px-3 py-2 transition-all duration-200 disabled:opacity-40 cursor-pointer shadow-sm hover:shadow-md dark:border-purple-700 dark:bg-slate-800 dark:hover:bg-purple-900/20"
               disabled={index === 0}
             >
-              <ChevronLeft className="h-5 w-5" />
+              <ChevronLeft className="h-5 w-5 text-black dark:text-purple-300" />
             </button>
             <button
               type="button"
               onClick={next}
               aria-label="Siguiente"
-              className="rounded-full border px-3 py-2 hover:bg-black/5 disabled:opacity-40 cursor-pointer"
+              className="rounded-full border border-purple-200 bg-white hover:bg-purple-50 px-3 py-2 transition-all duration-200 disabled:opacity-40 cursor-pointer shadow-sm hover:shadow-md dark:border-purple-700 dark:bg-slate-800 dark:hover:bg-purple-900/20"
               disabled={index === articles.length - 1}
             >
-              <ChevronRight className="h-5 w-5" />
+              <ChevronRight className="h-5 w-5 text-black dark:text-purple-300" />
             </button>
           </div>
         )}
@@ -86,7 +83,7 @@ export function NewsCarousel({ articles, title = "Últimas noticias" }: Props) {
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         className="relative w-full overflow-x-auto scroll-smooth snap-x snap-mandatory
-                   [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+                   [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden rounded-xl"
         aria-roledescription="carousel"
         aria-label="Carrusel de noticias"
       >
@@ -99,25 +96,25 @@ export function NewsCarousel({ articles, title = "Últimas noticias" }: Props) {
             >
               <Link
                 href={`/news/${a.id}`}
-                className="group block relative h-[360px] sm:h-[420px] md:h-[480px]"
+                className="group block relative h-[360px] sm:h-[420px] md:h-[480px] rounded-xl overflow-hidden"
               >
                 <div className="absolute inset-0">
                   <Image
                     src={a.image_url || "/default-cover.png"}
                     alt={a.title}
                     fill
-                    className="object-cover"
+                    className="object-cover transition-transform duration-300 group-hover:scale-105"
                     sizes="100vw"
                     priority={true}
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent transition-opacity group-hover:opacity-90" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-white/20 transition-opacity group-hover:opacity-95" />
                 </div>
 
                 <div className="absolute bottom-0 left-0 right-0 p-6 sm:p-8">
-                  <h3 className="text-white text-2xl sm:text-3xl font-extrabold leading-tight line-clamp-2 group-hover:underline">
+                  <h3 className="text-white text-2xl sm:text-3xl font-extrabold leading-tight line-clamp-2 group-hover:underline transition-all duration-200">
                     {a.title}
                   </h3>
-                  <p className="mt-2 text-white/80 text-sm">
+                  <p className="mt-2 text-white/90 text-sm font-medium">
                     {new Date(a.published_date).toLocaleDateString("es-ES", {
                       day: "2-digit",
                       month: "short",
@@ -134,7 +131,7 @@ export function NewsCarousel({ articles, title = "Últimas noticias" }: Props) {
       {/* Dots */}
       {articles.length > 1 && (
         <div
-          className="mt-4 flex justify-center gap-2"
+          className="mt-6 flex justify-center gap-2"
           aria-label="Indicadores de página"
         >
           {articles.map((_, i) => (
@@ -142,9 +139,11 @@ export function NewsCarousel({ articles, title = "Últimas noticias" }: Props) {
               key={i}
               onClick={() => slideTo(i)}
               aria-label={`Ir al slide ${i + 1}`}
-              className={`h-2 w-2 rounded-full transition
+              className={`h-2 rounded-full transition-all duration-200 cursor-pointer
                 ${
-                  i === index ? "bg-black w-6" : "bg-black/30 hover:bg-black/50"
+                  i === index
+                    ? "bg-black w-6 shadow-sm"
+                    : "bg-black/30 hover:bg-black/40 w-2"
                 }`}
             />
           ))}

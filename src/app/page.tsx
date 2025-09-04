@@ -11,14 +11,13 @@ export default async function Home() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-white via-purple-50/30 to-white dark:from-slate-950 dark:via-purple-950/20 dark:to-slate-900">
-      {/* Hero Section con gradiente */}
-      <div className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-purple-600/5 via-purple-400/10 to-purple-600/5 dark:from-purple-400/10 dark:via-purple-300/15 dark:to-purple-400/10"></div>
+      {/* Hero Section uniforme */}
+      <div className="relative">
         <div className="relative">
           {/* Header de bienvenida */}
           <section className="container mx-auto px-4 pt-12 pb-8">
             <div className="text-center space-y-4">
-              <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-purple-600 via-purple-500 to-purple-700 bg-clip-text text-transparent">
+              <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-black/80 via-black/70 to-black/90 bg-clip-text text-transparent">
                 Descubre tu música
               </h1>
               <p className="text-lg md:text-xl text-slate-600 dark:text-slate-300 max-w-2xl mx-auto">
@@ -44,7 +43,7 @@ export default async function Home() {
               <div className="relative bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm rounded-xl p-6 shadow-xl border border-purple-100/50 dark:border-purple-700/20">
                 <NewsCarousel articles={latest} />
                 <div className="flex justify-center mt-8">
-                  <Button className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+                  <Button className="bg-gradient-to-r from-black/60 to-black/90 hover:from-black/70 hover:to-black/80 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
                     <Link href="/news" className="flex items-center gap-2">
                       Ver todas las noticias
                       <span className="text-lg">→</span>
@@ -62,7 +61,7 @@ export default async function Home() {
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-purple-50/30 to-transparent dark:via-purple-900/20"></div>
         <div className="relative container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-purple-600 to-purple-700 bg-clip-text text-transparent">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-black/60 to-black/90 bg-clip-text text-transparent">
               Lo más sonado
             </h2>
             <p className="text-slate-600 dark:text-slate-300 max-w-xl mx-auto">
@@ -82,7 +81,7 @@ export default async function Home() {
       {/* Sección de exploración */}
       <section className="container mx-auto px-4 py-16">
         <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-purple-600 to-purple-700 bg-clip-text text-transparent">
+          <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-black/60 to-black/90 bg-clip-text text-transparent">
             Explora más contenido
           </h2>
           <p className="text-slate-600 dark:text-slate-300 max-w-xl mx-auto">
@@ -93,50 +92,50 @@ export default async function Home() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div className="bg-white dark:bg-slate-800 border border-purple-100 dark:border-purple-800/30 rounded-xl p-6 text-center hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
             <div className="text-4xl mb-4">🎤</div>
-            <h3 className="text-xl font-semibold mb-2 text-purple-700 dark:text-purple-300">
+            <h3 className="text-xl font-semibold mb-2 text-black dark:text-white">
               Artistas
             </h3>
             <p className="text-slate-600 dark:text-slate-300 mb-4">
-              Explora perfiles de tus artistas favoritos
+              Explora perfiles de tus artistas preferidos
             </p>
-            <Button
-              variant="outline"
-              className="w-full border-purple-200 text-purple-700 hover:bg-purple-50 dark:border-purple-700 dark:text-purple-300 dark:hover:bg-purple-900/20"
+            <Link
+              href="/explore"
+              className="block w-full border border-purple-200 bg-white text-black hover:bg-purple-50 dark:border-purple-700 dark:bg-slate-800 dark:text-white dark:hover:bg-purple-900/20 rounded-lg px-4 py-2 transition-all duration-200 font-medium text-center"
             >
-              <Link href="/explore">Explorar artistas</Link>
-            </Button>
+              Explorar artistas
+            </Link>
           </div>
 
           <div className="bg-white dark:bg-slate-800 border border-purple-100 dark:border-purple-800/30 rounded-xl p-6 text-center hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
             <div className="text-4xl mb-4">💿</div>
-            <h3 className="text-xl font-semibold mb-2 text-purple-700 dark:text-purple-300">
+            <h3 className="text-xl font-semibold mb-2 text-black dark:text-white">
               Álbumes
             </h3>
             <p className="text-slate-600 dark:text-slate-300 mb-4">
-              Descubre nuevos álbumes y clásicos
+              Encuentra nuevos álbumes y viejos clásicos
             </p>
-            <Button
-              variant="outline"
-              className="w-full border-purple-200 text-purple-700 hover:bg-purple-50 dark:border-purple-700 dark:text-purple-300 dark:hover:bg-purple-900/20"
+            <Link
+              href="/explore"
+              className="block w-full border border-purple-200 bg-white text-black hover:bg-purple-50 dark:border-purple-700 dark:bg-slate-800 dark:text-white dark:hover:bg-purple-900/20 rounded-lg px-4 py-2 transition-all duration-200 font-medium text-center"
             >
-              <Link href="/explore">Ver álbumes</Link>
-            </Button>
+              Ver álbumes
+            </Link>
           </div>
 
           <div className="bg-white dark:bg-slate-800 border border-purple-100 dark:border-purple-800/30 rounded-xl p-6 text-center hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
             <div className="text-4xl mb-4">🎵</div>
-            <h3 className="text-xl font-semibold mb-2 text-purple-700 dark:text-purple-300">
+            <h3 className="text-xl font-semibold mb-2 text-black dark:text-white">
               Canciones
             </h3>
             <p className="text-slate-600 dark:text-slate-300 mb-4">
-              Busca y reproduce tus canciones favoritas
+              Busca y descubre tus canciones favoritas
             </p>
-            <Button
-              variant="outline"
-              className="w-full border-purple-200 text-purple-700 hover:bg-purple-50 dark:border-purple-700 dark:text-purple-300 dark:hover:bg-purple-900/20"
+            <Link
+              href="/explore"
+              className="block w-full border border-purple-200 bg-white text-black hover:bg-purple-50 dark:border-purple-700 dark:bg-slate-800 dark:text-white dark:hover:bg-purple-900/20 rounded-lg px-4 py-2 transition-all duration-200 font-medium text-center"
             >
-              <Link href="/explore">Buscar canciones</Link>
-            </Button>
+              Buscar canciones
+            </Link>
           </div>
         </div>
       </section>
