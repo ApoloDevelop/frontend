@@ -125,26 +125,28 @@ export default function SearchGrid({
               } de ${data?.total ?? 0}`
             : "No hay nada que ver por aquí"}
         </span>
-        <div className="space-x-2">
-          <Button
-            variant="outline"
-            size="sm"
-            disabled={!data?.previous}
-            onClick={() =>
-              setOffset(Math.max(0, (data?.offset ?? 0) - (data?.limit ?? 12)))
-            }
-          >
-            Anterior
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            disabled={!data?.next}
-            onClick={() => setOffset((data?.offset ?? 0) + (data?.limit ?? 12))}
-          >
-            Siguiente
-          </Button>
-        </div>
+        {items.length > 0 && (data?.previous || data?.next) && (
+          <div className="space-x-2">
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={!data?.previous}
+              onClick={() =>
+                setOffset(Math.max(0, (data?.offset ?? 0) - (data?.limit ?? 12)))
+              }
+            >
+              Anterior
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={!data?.next}
+              onClick={() => setOffset((data?.offset ?? 0) + (data?.limit ?? 12))}
+            >
+              Siguiente
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );

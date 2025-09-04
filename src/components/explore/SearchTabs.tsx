@@ -17,10 +17,10 @@ interface SearchTabsProps {
 }
 
 const tabsConfig = [
-  { value: "user" as TabKind, label: "Usuarios" },
   { value: "artist" as TabKind, label: "Artistas" },
   { value: "album" as TabKind, label: "Álbumes" },
   { value: "track" as TabKind, label: "Canciones" },
+  { value: "user" as TabKind, label: "Usuarios" },
 ];
 
 export default function SearchTabs({

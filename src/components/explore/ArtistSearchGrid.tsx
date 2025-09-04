@@ -129,23 +129,19 @@ export default function ArtistSearchGrid({
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
             {items.map((artist) => renderArtistCard(artist))}
           </div>
-
-          {items.length === 0 && !loading && (
-            <div className="text-center py-8 text-gray-500">
-              No hay nada que ver por aquí
-            </div>
-          )}
         </>
       )}
 
       {/* Paginación */}
-      {data && data.total > 0 && (
-        <div className="flex items-center justify-between">
-          <span className="text-xs text-muted-foreground">
-            {`${data.offset + 1}–${
-              data.offset + items.length
-            } de ${data.total}`}
-          </span>
+      <div className="flex items-center justify-between">
+        <span className="text-xs text-muted-foreground">
+          {items.length > 0 && data && data.total > 0
+            ? `${data.offset + 1}–${
+                data.offset + items.length
+              } de ${data.total}`
+            : "No hay nada que ver por aquí"}
+        </span>
+        {data && data.total > 0 && (
           <div className="space-x-2">
             <Button
               variant="outline"
@@ -164,8 +160,8 @@ export default function ArtistSearchGrid({
               Siguiente
             </Button>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }

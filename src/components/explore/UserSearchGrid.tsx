@@ -12,27 +12,17 @@ export default function UserSearchGrid({
   users,
   loading,
 }: UserSearchGridProps) {
-  if (loading) {
-    return <p className="text-sm text-muted-foreground">Buscando usuarios…</p>;
-  }
-
-  if (!users.length) {
-    return (
-      <div className="text-center py-8">
-        <p className="text-muted-foreground">No se encontraron usuarios</p>
-      </div>
-    );
-  }
-
   return (
     <div className="space-y-4">
+      {loading && <p className="text-sm text-muted-foreground">Buscando usuarios…</p>}
+
       {/* GRID de usuarios */}
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
         {users.map((user: any) => {
           const pic = user.profile_pic || "/default-cover.png";
           const href = `/users/${user.username}`;
           const displayName = user.fullname || user.username;
-
+          
           return (
             <Link
               key={user.id}
@@ -58,6 +48,15 @@ export default function UserSearchGrid({
             </Link>
           );
         })}
+      </div>
+
+      {/* Información de resultados */}
+      <div className="flex items-center justify-between">
+        <span className="text-xs text-muted-foreground">
+          {users.length
+            ? `${users.length} usuario${users.length !== 1 ? 's' : ''} encontrado${users.length !== 1 ? 's' : ''}`
+            : "No hay nada que ver por aquí"}
+        </span>
       </div>
     </div>
   );
