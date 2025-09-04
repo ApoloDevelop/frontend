@@ -13,11 +13,6 @@ interface UseArtistDataReturn {
   error: string | null;
 }
 
-/**
- * Hook para obtener datos del artista desde Spotify
- * @param slug - Slug del artista desde la URL
- * @returns Datos del artista y posibles errores
- */
 export async function getArtistData(
   slug: string
 ): Promise<UseArtistDataReturn> {

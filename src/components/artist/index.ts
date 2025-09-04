@@ -18,3 +18,12 @@ export { LatestRelease } from "./LatestRelease";
 export { PopularSongs } from "./PopularSongs";
 export { RelatedArtists } from "./RelatedArtists";
 export { default as EventsSidebar } from "./EventsSidebar";
+
+// NearYou components
+export { NearYou } from "./NearYou";
+export { EventCard } from "./EventCard";
+export { EventActions } from "./EventActions";
+export { NoUserSection } from "./NoUserSection";
+export { MissingLocationSection } from "./MissingLocationSection";
+export { NoEventsSection } from "./NoEventsSection";
+export { LoadingSection } from "./LoadingSection";
