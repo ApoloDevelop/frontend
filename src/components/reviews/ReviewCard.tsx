@@ -9,6 +9,7 @@ interface ReviewCardProps {
   canModerate: boolean;
   onVote: (reviewId: number, value: 1 | -1) => void;
   onDelete: (reviewId: number) => void;
+  verified: boolean;
 }
 
 export function ReviewCard({
@@ -17,6 +18,7 @@ export function ReviewCard({
   canModerate,
   onVote,
   onDelete,
+  verified,
 }: ReviewCardProps) {
   return (
     <Card key={review.id}>
@@ -26,6 +28,7 @@ export function ReviewCard({
           currentUserId={currentUserId}
           canModerate={canModerate}
           onDelete={onDelete}
+          verified={verified}
         />
       </CardHeader>
 

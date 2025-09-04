@@ -13,6 +13,7 @@ interface ReviewListProps {
   totalReviews: number;
   filterScore: number | null;
   sentinelRef: React.RefObject<HTMLDivElement | null>;
+  verified: boolean;
 }
 
 export function ReviewList({
@@ -27,6 +28,7 @@ export function ReviewList({
   totalReviews,
   filterScore,
   sentinelRef,
+  verified,
 }: ReviewListProps) {
   return (
     <div className="space-y-3 sm:space-y-4">
@@ -43,6 +45,7 @@ export function ReviewList({
             canModerate={canModerate}
             onVote={onVote}
             onDelete={onDelete}
+            verified={verified}
           />
 
           {otherReviews.length > 0 && (
@@ -62,6 +65,7 @@ export function ReviewList({
           canModerate={canModerate}
           onVote={onVote}
           onDelete={onDelete}
+          verified={verified}
         />
       ))}
 

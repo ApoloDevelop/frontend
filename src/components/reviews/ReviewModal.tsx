@@ -75,6 +75,13 @@ export function ReviewsModal({
     recomputeHistogram(reviews);
   }, [reviews, recomputeHistogram]);
 
+  // Reset filter when modal closes
+  useEffect(() => {
+    if (!open) {
+      setFilterScore(null);
+    }
+  }, [open, setFilterScore]);
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogOverlay />
@@ -122,6 +129,7 @@ export function ReviewsModal({
             totalReviews={reviews.length}
             filterScore={filterScore}
             sentinelRef={sentinelRef}
+            verified={verified}
           />
         </div>
 
