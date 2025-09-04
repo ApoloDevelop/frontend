@@ -32,4 +32,8 @@ export class UserService {
   static async listFollowing(profileUserId: number, skip = 0, take = 20) {
     return UserRepository.listFollowing(profileUserId, skip, take);
   }
+
+  static async searchUsers(query: string, limit = 10) {
+    return UserRepository.searchUsers(query, limit);
+  }
 }

@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Search, X } from "lucide-react";
 import { SpotifyRepository } from "@/repositories/spotify.repository";
+import { UserService } from "@/services/user.service";
 import { AnimatePresence, motion } from "framer-motion";
 import { slugify } from "@/utils/normalization";
 
@@ -15,6 +16,13 @@ export function GlobalSearch() {
   const [artists, setArtists] = useState<any[]>([]);
   const [albums, setAlbums] = useState<any[]>([]);
   const [tracks, setTracks] = useState<any[]>([]);
+  const [users, setUsers] = useState<any[]>([]);
+  const [filters, setFilters] = useState({
+    users: true,
+    artists: true,
+    albums: true,
+    tracks: true,
+  });
   const inputRef = useRef<HTMLInputElement>(null);
   const debounceRef = useRef<number | null>(null);
 
@@ -23,12 +31,28 @@ export function GlobalSearch() {
     setArtists([]);
     setAlbums([]);
     setTracks([]);
+    setUsers([]);
     setLoading(false);
   };
 
   const closeSearch = () => {
     setOpen(false);
     resetState(); // ← limpia query y resultados al cerrar
+  };
+
+  const toggleFilter = (filterKey: keyof typeof filters) => {
+    setFilters((prev) => ({ ...prev, [filterKey]: !prev[filterKey] }));
+  };
+
+  const toggleAllFilters = () => {
+    const allActive = Object.values(filters).every(Boolean);
+    const newState = !allActive;
+    setFilters({
+      users: newState,
+      artists: newState,
+      albums: newState,
+      tracks: newState,
+    });
   };
 
   useEffect(() => {
@@ -52,22 +76,29 @@ export function GlobalSearch() {
         setArtists([]);
         setAlbums([]);
         setTracks([]);
+        setUsers([]);
         setLoading(false);
         return;
       }
       setLoading(true);
       try {
-        const res = await SpotifyRepository.searchAll(q, {
-          limit: 4,
-          market: "ES",
-        });
-        setArtists(res.artists ?? []);
-        setAlbums(res.albums ?? []);
-        setTracks(res.tracks ?? []);
+        const [spotifyRes, usersRes] = await Promise.all([
+          SpotifyRepository.searchAll(q, {
+            limit: 4,
+            market: "ES",
+          }),
+          UserService.searchUsers(q, 4),
+        ]);
+
+        setArtists(spotifyRes.artists ?? []);
+        setAlbums(spotifyRes.albums ?? []);
+        setTracks(spotifyRes.tracks ?? []);
+        setUsers(usersRes ?? []);
       } catch {
         setArtists([]);
         setAlbums([]);
         setTracks([]);
+        setUsers([]);
       } finally {
         setLoading(false);
       }
@@ -97,7 +128,11 @@ export function GlobalSearch() {
     return () => document.removeEventListener("keydown", onKey);
   }, [open]);
 
-  const hasAny = artists.length + albums.length + tracks.length > 0;
+  const hasAny =
+    (users.length > 0 && filters.users) ||
+    (artists.length > 0 && filters.artists) ||
+    (albums.length > 0 && filters.albums) ||
+    (tracks.length > 0 && filters.tracks);
 
   return (
     <div className="relative" data-global-search>
@@ -161,23 +196,83 @@ export function GlobalSearch() {
             transition={{ duration: 0.15 }}
             className="absolute right-0 mt-2 w-[min(92vw,560px)] z-[60] rounded-xl border bg-white shadow-xl"
           >
-            <div className="p-2 divide-y">
+            <div className="p-2 divide-y max-h-[80vh] overflow-y-auto">
               {loading && (
                 <div className="px-2 py-3 text-sm text-gray-500">Buscando…</div>
               )}
 
-              {!loading && !hasAny && q.trim().length >= 2 && (
-                <div className="px-2 py-3 text-sm text-gray-500">
-                  Sin resultados
+              {/* Filtros */}
+              {!loading && q.trim().length >= 2 && (
+                <div className="px-2 py-3 border-b border-gray-100">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="text-xs font-semibold uppercase text-gray-500">
+                      Filtros
+                    </div>
+                    <button
+                      onClick={toggleAllFilters}
+                      className="text-xs text-purple-600 hover:text-purple-800 underline cursor-pointer"
+                    >
+                      {Object.values(filters).every(Boolean)
+                        ? "Deseleccionar todo"
+                        : "Seleccionar todo"}
+                    </button>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {[
+                      {
+                        key: "artists" as const,
+                        label: "Artistas",
+                        count: artists.length,
+                      },
+                      {
+                        key: "albums" as const,
+                        label: "Álbumes",
+                        count: albums.length,
+                      },
+                      {
+                        key: "tracks" as const,
+                        label: "Canciones",
+                        count: tracks.length,
+                      },
+                      {
+                        key: "users" as const,
+                        label: "Usuarios",
+                        count: users.length,
+                      },
+                    ].map(({ key, label, count }) => (
+                      <button
+                        key={key}
+                        onClick={() => toggleFilter(key)}
+                        className={`cursor-pointer px-3 py-1 text-xs rounded-full border transition-colors hover:bg-purple-300 ${
+                          filters[key]
+                            ? "bg-purple-100 border-purple-300 text-purple-700"
+                            : "bg-gray-100 border-gray-300 text-gray-600 hover:bg-gray-200"
+                        }`}
+                      >
+                        {label} {count > 0 && `(${count})`}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               )}
 
-              {artists.length > 0 && (
+              {!loading && !hasAny && q.trim().length >= 2 && (
+                <div className="px-2 py-3 text-sm text-gray-500">
+                  {users.length > 0 ||
+                  artists.length > 0 ||
+                  albums.length > 0 ||
+                  tracks.length > 0
+                    ? "Sin resultados con los filtros seleccionados"
+                    : "Sin resultados"}
+                </div>
+              )}
+
+              {artists.length > 0 && filters.artists && (
                 <section className="py-2">
                   <div className="px-2 pb-1 text-xs font-semibold uppercase text-gray-500">
                     Artistas
                   </div>
-                  <ul className="max-h-64 overflow-auto">
+                  <ul className="max-h-64 overflow-y-auto">
                     {artists.map((a) => (
                       <li key={a.id}>
                         <Link
@@ -200,12 +295,12 @@ export function GlobalSearch() {
                 </section>
               )}
 
-              {albums.length > 0 && (
+              {albums.length > 0 && filters.albums && (
                 <section className="py-2">
                   <div className="px-2 pb-1 text-xs font-semibold uppercase text-gray-500">
                     Álbumes
                   </div>
-                  <ul className="max-h-64 overflow-auto">
+                  <ul className="max-h-64 overflow-y-auto">
                     {albums.map((al) => (
                       <li key={al.id}>
                         <Link
@@ -237,12 +332,12 @@ export function GlobalSearch() {
                 </section>
               )}
 
-              {tracks.length > 0 && (
+              {tracks.length > 0 && filters.tracks && (
                 <section className="py-2">
                   <div className="px-2 pb-1 text-xs font-semibold uppercase text-gray-500">
                     Canciones
                   </div>
-                  <ul className="max-h-64 overflow-auto">
+                  <ul className="max-h-64 overflow-y-auto">
                     {tracks.map((t) => (
                       <li key={t.id}>
                         <Link
@@ -271,6 +366,43 @@ export function GlobalSearch() {
                                 .join(", ")}{" "}
                               • {t.album?.name}
                             </div>
+                          </div>
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </section>
+              )}
+
+              {users.length > 0 && filters.users && (
+                <section className="py-2">
+                  <div className="px-2 pb-1 text-xs font-semibold uppercase text-gray-500">
+                    Usuarios
+                  </div>
+                  <ul className="max-h-64 overflow-y-auto">
+                    {users.map((u) => (
+                      <li key={u.id}>
+                        <Link
+                          href={`/users/${u.username}`}
+                          className="flex items-center gap-3 px-2 py-2 rounded-lg hover:bg-black/5"
+                          onClick={closeSearch}
+                        >
+                          <Image
+                            src={u.profile_pic || "/default-cover.png"}
+                            alt=""
+                            width={32}
+                            height={32}
+                            className="rounded-full object-cover"
+                          />
+                          <div className="min-w-0">
+                            <div className="truncate font-medium">
+                              @{u.username}
+                            </div>
+                            {u.fullname && (
+                              <div className="text-xs text-gray-500 truncate">
+                                {u.fullname}
+                              </div>
+                            )}
                           </div>
                         </Link>
                       </li>

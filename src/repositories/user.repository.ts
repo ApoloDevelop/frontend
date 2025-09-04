@@ -108,4 +108,17 @@ export class UserRepository {
     }
     return await res.json();
   }
+
+  static async searchUsers(query: string, limit = 10): Promise<any[]> {
+    const params = new URLSearchParams({
+      q: query,
+      limit: limit.toString(),
+    });
+
+    const res = await fetch(`${B}/users/search?${params}`);
+    if (!res.ok) {
+      throw new Error("Error al buscar usuarios");
+    }
+    return await res.json();
+  }
 }
