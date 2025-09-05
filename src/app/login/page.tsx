@@ -1,9 +1,10 @@
 "use client";
 
+import { Suspense } from "react";
 import { LoginContent, LoginWelcomePanel } from "@/components/auth";
 import { useLogin, useLoginNavigation } from "@/hooks/auth";
 
-export default function LoginPage() {
+function LoginPageContent() {
   const {
     nextSafe,
     oauthError,
@@ -60,5 +61,19 @@ export default function LoginPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen w-full bg-[#f3f3f3] flex items-center justify-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
+        </div>
+      }
+    >
+      <LoginPageContent />
+    </Suspense>
   );
 }

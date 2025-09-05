@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo } from "react";
+import React, { useMemo, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 
 function CardSkeleton() {
@@ -21,7 +21,7 @@ function CardSkeleton() {
   );
 }
 
-export default function NewsSkeleton() {
+function NewsSkeletonContent() {
   const sp = useSearchParams();
   const off = Number(sp?.get("offset") ?? 0);
   const hasHero = useMemo(() => !Number.isFinite(off) || off <= 0, [off]);
@@ -80,5 +80,19 @@ export default function NewsSkeleton() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function NewsSkeleton() {
+  return (
+    <Suspense
+      fallback={
+        <div className="container mx-auto px-4 overflow-x-clip">
+          <div className="animate-pulse h-96 bg-gray-200 rounded"></div>
+        </div>
+      }
+    >
+      <NewsSkeletonContent />
+    </Suspense>
   );
 }

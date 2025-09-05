@@ -4,9 +4,9 @@ import { SearchTabs } from "@/components/explore";
 import { useTabSearch } from "@/hooks/explore";
 import { TabKind } from "@/hooks/explore/useTabSearch";
 import { useSearchParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 
-export default function ExplorePage() {
+function ExplorePageContent() {
   const { queries, updateQuery } = useTabSearch();
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -41,5 +41,13 @@ export default function ExplorePage() {
         onTabChange={handleTabChange}
       />
     </div>
+  );
+}
+
+export default function ExplorePage() {
+  return (
+    <Suspense fallback={<div>Cargando...</div>}>
+      <ExplorePageContent />
+    </Suspense>
   );
 }

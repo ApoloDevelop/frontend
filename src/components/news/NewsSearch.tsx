@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useMemo, useState, useRef } from "react";
+import { useEffect, useMemo, useState, useRef, Suspense } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Search, X } from "lucide-react";
 
-export function NewsSearch({ placeholder = "Buscar por título o tag…" }) {
+function NewsSearchContent({ placeholder = "Buscar por título o tag…" }) {
   const router = useRouter();
   const pathname = usePathname();
   const sp = useSearchParams();
@@ -111,5 +111,19 @@ export function NewsSearch({ placeholder = "Buscar por título o tag…" }) {
         </button>
       )}
     </div>
+  );
+}
+
+export function NewsSearch({ placeholder = "Buscar por título o tag…" }) {
+  return (
+    <Suspense
+      fallback={
+        <div className="w-full max-w-md">
+          <div className="animate-pulse h-10 bg-gray-200 rounded"></div>
+        </div>
+      }
+    >
+      <NewsSearchContent placeholder={placeholder} />
+    </Suspense>
   );
 }

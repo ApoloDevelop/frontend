@@ -1,9 +1,9 @@
 "use client";
 
 import { usePathname, useSearchParams } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, Suspense } from "react";
 
-export default function ScrollTopOnRouteChange({
+function ScrollTopOnRouteChangeContent({
   behavior = "instant",
 }: {
   behavior?: ScrollBehavior; // "auto" | "smooth" | "instant"
@@ -21,4 +21,16 @@ export default function ScrollTopOnRouteChange({
   }, [pathname, searchParams, behavior]);
 
   return null;
+}
+
+export default function ScrollTopOnRouteChange({
+  behavior = "instant",
+}: {
+  behavior?: ScrollBehavior;
+}) {
+  return (
+    <Suspense fallback={null}>
+      <ScrollTopOnRouteChangeContent behavior={behavior} />
+    </Suspense>
+  );
 }
