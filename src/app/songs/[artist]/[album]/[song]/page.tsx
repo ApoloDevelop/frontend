@@ -6,15 +6,11 @@ import { checkModerationPermissions } from "@/utils/permissions";
 import { ErrorPage } from "@/components/system/ErrorPage";
 
 export default async function SongPage({
-  params: rawParams,
+  params,
 }: {
-  params: { artist: string; album: string; song: string };
+  params: Promise<{ artist: string; album: string; song: string }>;
 }) {
-  const {
-    artist: artistSlug,
-    album: albumSlug,
-    song: songSlug,
-  } = await rawParams;
+  const { artist: artistSlug, album: albumSlug, song: songSlug } = await params;
 
   try {
     const songData = await getSongData({
