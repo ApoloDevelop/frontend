@@ -1,0 +1,173 @@
+"use client";
+
+import { useState } from "react";
+import { CloudinaryService } from "@/services/cloudinary.service";
+import { CropperModal } from "@/components/register/CropperModal";
+import getCroppedImg from "@/utils/images";
+
+interface ProfilePhotoEditorProps {
+  currentImageUrl?: string;
+  onImageUpdated: (newImageUrl: string) => void;
+  className?: string;
+  children: React.ReactNode;
+}
+
+export function ProfilePhotoEditor({
+  currentImageUrl,
+  onImageUpdated,
+  className = "",
+  children,
+}: ProfilePhotoEditorProps) {
+  const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [showCropper, setShowCropper] = useState(false);
+  const [originalImage, setOriginalImage] = useState<string>("");
+  const [crop, setCrop] = useState({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState(1);
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState<any>(null);
+
+  const onCropComplete = (_: any, croppedPixels: any) => {
+    setCroppedAreaPixels(croppedPixels);
+  };
+
+  const handleImageUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // Validar tipo de archivo
+    if (!file.type.startsWith("image/")) {
+      setError("Por favor selecciona un archivo de imagen válido");
+      return;
+    }
+
+    // Validar tamaño (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      setError("La imagen debe ser menor a 5MB");
+      return;
+    }
+
+    setError(null);
+
+    // Crear URL para mostrar en el cropper
+    const imageUrl = URL.createObjectURL(file);
+    setOriginalImage(imageUrl);
+    setShowCropper(true);
+    setCrop({ x: 0, y: 0 });
+    setZoom(1);
+  };
+
+  const handleCropSave = async () => {
+    if (!originalImage || !croppedAreaPixels) return;
+
+    setUploading(true);
+    setError(null);
+
+    try {
+      // Crear imagen recortada
+      const croppedImage = await getCroppedImg(
+        originalImage,
+        croppedAreaPixels
+      );
+
+      // Convertir a File
+      const croppedImageFile = await fetch(croppedImage)
+        .then((res) => res.blob())
+        .then(
+          (blob) =>
+            new File([blob], "profile-photo.jpg", { type: "image/jpeg" })
+        );
+
+      // Subir a Cloudinary
+      const imageUrl = await CloudinaryService.uploadImage(croppedImageFile);
+
+      // Actualizar la imagen en el perfil
+      onImageUpdated(imageUrl);
+
+      setShowCropper(false);
+
+      // Limpiar la URL temporal
+      URL.revokeObjectURL(originalImage);
+    } catch (err: any) {
+      setError(err?.message || "Error al subir la imagen");
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleCloseCropper = () => {
+    setShowCropper(false);
+    if (originalImage) {
+      URL.revokeObjectURL(originalImage);
+    }
+  };
+
+  const handleImageClick = () => {
+    if (uploading || showCropper) return;
+    const input = document.getElementById("profile-photo-input");
+    input?.click();
+  };
+
+  return (
+    <div className={`relative ${className}`}>
+      {/* Wrapper clickeable que contiene la imagen */}
+      <div
+        onClick={handleImageClick}
+        className={`relative group cursor-pointer transition-all duration-200 ${
+          uploading ? "opacity-60" : ""
+        }`}
+        title="Haz click para cambiar tu foto de perfil"
+      >
+        {children}
+
+        {/* Overlay de hover con texto */}
+        {!uploading && !showCropper && (
+          <div className="absolute inset-0 rounded-full bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity duration-200 select-none">
+            <span className="text-white font-semibold text-sm select-none">
+              Editar
+            </span>
+          </div>
+        )}
+
+        {/* Overlay de loading */}
+        {uploading && (
+          <div className="absolute inset-0 flex items-center justify-center bg-black/20 rounded-full">
+            <div className="animate-spin w-8 h-8 border-4 border-white border-t-transparent rounded-full" />
+          </div>
+        )}
+      </div>
+
+      {/* Input oculto para seleccionar archivo */}
+      <input
+        id="profile-photo-input"
+        type="file"
+        accept="image/*"
+        onChange={handleImageUpload}
+        className="hidden"
+      />
+
+      {/* Modal del cropper */}
+      <CropperModal
+        isOpen={showCropper}
+        onClose={handleCloseCropper}
+        originalImage={originalImage}
+        crop={crop}
+        setCrop={setCrop}
+        zoom={zoom}
+        setZoom={setZoom}
+        onCropComplete={onCropComplete}
+        onSave={handleCropSave}
+        aspect={1} // Aspecto cuadrado para foto de perfil
+        label="Ajusta tu foto de perfil"
+      />
+
+      {/* Mostrar error si existe */}
+      {error && (
+        <div className="absolute top-full left-0 right-0 mt-2 p-2 bg-red-100 text-red-700 text-xs rounded border z-10">
+          {error}
+        </div>
+      )}
+    </div>
+  );
+}

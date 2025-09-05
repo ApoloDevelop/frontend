@@ -17,7 +17,6 @@ export const PasswordStrengthIndicator = ({
 }) => {
   const strength = getPasswordStrength(password);
 
-  // Define requisitos
   const requirements = [
     {
       label: "Al menos 8 caracteres",
@@ -41,7 +40,6 @@ export const PasswordStrengthIndicator = ({
     },
   ];
 
-  // Define fortaleza
   let strengthLabel = "Muy débil";
   let strengthColor = "bg-red-500";
   if (strength == 4) {
@@ -64,7 +62,7 @@ export const PasswordStrengthIndicator = ({
       <div className="flex items-center gap-2 mb-2">
         <div className={`h-2 rounded w-16 ${strengthColor}`}></div>
         <span
-          className="text-xs"
+          className="text-xs font-bold"
           style={{ color: strengthColor.replace("bg-", "") }}
         >
           {strengthLabel}

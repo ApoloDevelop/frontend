@@ -1,7 +1,6 @@
-// components/register/GenreSelect.tsx
 import React from "react";
 import Select from "react-select";
-import { getGenreLabel } from "@/utils/registerFunctions";
+import { getGenreLabel } from "@/utils/genre";
 
 interface GenreOption {
   value: string;
@@ -11,11 +10,21 @@ interface GenreOption {
 interface GenreSelectProps {
   value: string | null;
   onChange: (val: string | null) => void;
+  hideFloatingLabel?: boolean;
+  hidePlaceholder?: boolean;
+  className?: string;
+  height?: string | number;
+  borderRadius?: string;
 }
 
 export const GenreSelect: React.FC<GenreSelectProps> = ({
   value,
   onChange,
+  hideFloatingLabel = false,
+  hidePlaceholder = false,
+  className = "",
+  height = "50px",
+  borderRadius = "0.375rem",
 }) => {
   const genreOptions: GenreOption[] = [
     { value: "male", label: "Masculino" },
@@ -26,22 +35,24 @@ export const GenreSelect: React.FC<GenreSelectProps> = ({
   ];
 
   return (
-    <div className="relative w-9/10 mb-6">
-      <p
-        id="genre-label"
-        className="absolute z-10 translate-x-3 p-1 bg-white -mb-7"
-        style={{
-          display: value ? "block" : "none",
-          top: "-15px",
-          fontSize: "0.8rem",
-        }}
-      >
-        Selecciona tu género
-      </p>
+    <div className={`relative ${className}`}>
+      {!hideFloatingLabel && (
+        <p
+          id="genre-label"
+          className="absolute z-10 translate-x-3 p-1 bg-white -mb-7"
+          style={{
+            display: value ? "block" : "none",
+            top: "-15px",
+            fontSize: "0.8rem",
+          }}
+        >
+          Selecciona tu género
+        </p>
+      )}
       <Select
         options={genreOptions}
         isClearable
-        placeholder="Selecciona tu género"
+        placeholder={hidePlaceholder ? "" : "Selecciona tu género"}
         menuPlacement="top"
         value={value ? { value, label: getGenreLabel(value) } : null}
         onChange={(selected) =>
@@ -55,10 +66,13 @@ export const GenreSelect: React.FC<GenreSelectProps> = ({
           control: (base, state) => ({
             ...base,
             borderColor: "var(--border)",
-            boxShadow: state.isFocused ? "0 0 0 1px var(--ring)" : "none",
-            borderRadius: "0.375rem",
+            borderWidth: "1.3px",
+            boxShadow: state.isFocused
+              ? "0 0 0 1px var(--ring), 0 1px 2px 0 rgb(0 0 0 / 0.05)" // sombra + ring al enfocar
+              : "0 1px 2px 0 rgb(0 0 0 / 0.05)", // solo sombra cuando no está enfocado
+            borderRadius: borderRadius ? borderRadius : "0.375rem",
             "&:hover": { borderColor: "var(--border)" },
-            height: "50px",
+            height: height,
           }),
           menuPortal: (base) => ({ ...base, zIndex: 99999 }),
           option: (base, state) => ({
@@ -77,6 +91,10 @@ export const GenreSelect: React.FC<GenreSelectProps> = ({
             overflow: "hidden",
             textOverflow: "ellipsis",
             maxWidth: "calc(100% - 24px)",
+          }),
+          singleValue: (base) => ({
+            ...base,
+            fontSize: "0.875rem",
           }),
         }}
       />

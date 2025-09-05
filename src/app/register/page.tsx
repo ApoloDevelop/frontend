@@ -1,28 +1,34 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { countries } from "@/data/countries";
-import Flag from "react-world-flags";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { LoadingScreen } from "@/components/ui/LoadingScreen";
 import { RegisterService } from "@/services/register.service";
 import {
   DEFAULT_AVATAR_URL,
   acceptedTypes,
 } from "@/constants/registerConstants";
-import { useRegisterForm } from "@/hooks/register/useRegisterForm";
-import { useImageCropper } from "@/hooks/register/useImageCropper";
-import { useAlert } from "@/hooks/register/useAlert";
-import { usePasswordToggle } from "@/hooks/register/usePasswordToggle";
-import { useStepValidation } from "@/hooks/register/useStepValidation";
-import { isCurrentPageValid } from "@/utils/registerFunctions";
-import { StepIndicator } from "@/components/register/StepIndicator";
-import { RegisterFormStep1 } from "@/components/register/steps/RegisterFormStep1";
-import { RegisterFormStep2 } from "@/components/register/steps/RegisterFormStep2";
-import { RegisterFormStep3 } from "@/components/register/steps/RegisterFormStep3";
+import {
+  useRegisterForm,
+  useImageCropper,
+  useAlert,
+  usePasswordToggle,
+  useStepValidation,
+} from "@/hooks/register";
+import { isCurrentPageValid } from "@/utils/registerValidation";
+import {
+  StepIndicator,
+  RegisterFormStep1,
+  RegisterFormStep2,
+  RegisterFormStep3,
+} from "@/components/register";
+import { AlertMessage } from "@/components/ui/AlertMessage";
+import { CloudinaryService } from "@/services/cloudinary.service";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import { isAuthenticated, setSession } from "@/lib/auth";
 
 export default function RegisterPage() {
-  // Constants definition
+  const router = useRouter();
   const {
     step,
     setStep,
@@ -68,28 +74,6 @@ export default function RegisterPage() {
     setIsLoading
   );
 
-  //Options for select
-  const countryOptions = countries
-    .sort((a, b) =>
-      a.translations.spa.common.localeCompare(b.translations.spa.common, "es")
-    ) // Ordena los países por su traducción al español
-    .map((country) => ({
-      value: country.translations.spa.common,
-      label: (
-        <div className="flex items-center">
-          <Flag code={country.cca2} className="w-5 h-5 mr-2" />
-          {country.translations.spa.common}
-        </div>
-      ),
-      dialCode: country.idd.root + (country.idd.suffixes?.[0] || ""),
-    }));
-
-  const dialCodeOptions = countries.map((country) => ({
-    value: country.idd.root + (country.idd.suffixes?.[0] || ""),
-    label: country.translations.spa.common,
-    flagCode: country.cca2,
-  }));
-
   // Handlers
   const handleNext = async () => {
     const isValid = await validateStep(step);
@@ -134,24 +118,41 @@ export default function RegisterPage() {
     }
   };
 
+  useEffect(() => {
+    if (isAuthenticated()) {
+      router.replace("/");
+    }
+  }, [router]);
+
   const handleCreateAccount = async () => {
-    setIsLoading(true); // Activa la pantalla de carga
+    setIsLoading(true);
+    setAlertMsgs([]);
 
     try {
       let profilePicUrl = DEFAULT_AVATAR_URL;
 
-      // Subir la imagen a Cloudinary si existe
       if (profileImage) {
-        profilePicUrl = await RegisterService.uploadProfileImage(profileImage);
+        try {
+          profilePicUrl = await CloudinaryService.uploadImage(profileImage);
+        } catch (uploadError) {
+          console.warn("Error uploading image, using default:", uploadError);
+          // Continuar con imagen por defecto si falla la subida
+        }
       }
-
-      // Crear la cuenta
       const data = await RegisterService.createAccount(formData, profilePicUrl);
 
-      setAlertMsgs(["¡Cuenta creada con éxito!"]);
-      console.log("Usuario creado:", data);
+      if (data.token && data.user) {
+        setSession(data.token, data.user);
+
+        window.location.replace("/");
+
+        return; // Salir de la función para evitar mostrar alertas
+      } else {
+        console.error("Invalid server response:", data);
+        throw new Error("Respuesta inválida del servidor");
+      }
     } catch (error: any) {
-      console.error(error);
+      console.error("Error creating account:", error);
       setAlertMsgs([error.message || "Error al crear la cuenta"]);
     } finally {
       setIsLoading(false);
@@ -172,8 +173,8 @@ export default function RegisterPage() {
           top: 0,
           left: 0,
           width: "100%",
-          paddingTop: "4rem", // Añade un padding superior para evitar la superposición
-          paddingBottom: "4rem", // Añade un padding inferior para evitar la superposición
+          paddingTop: "4rem",
+          paddingBottom: "4rem",
         }}
       >
         <div
@@ -182,30 +183,7 @@ export default function RegisterPage() {
             backdropFilter: "blur(12px)",
           }}
         ></div>
-        {(alertMsgs.length > 0 || showAlert) && (
-          <div
-            className={`fixed top-4 left-1/2 -translate-x-1/2 w-full max-w-md transition-opacity duration-300 ${
-              showAlert ? "opacity-100" : "opacity-0"
-            }`}
-            style={{
-              zIndex: 99999,
-              position: "absolute",
-              top: "3rem",
-            }}
-          >
-            <Alert
-              variant="destructive"
-              className="bg-white to-red-700 text-red-500 relative border border-red-500 shadow-lg"
-            >
-              <AlertTitle>Error</AlertTitle>
-              <AlertDescription>
-                {alertMsgs.map((msg, index) => (
-                  <p key={index}>{msg}</p>
-                ))}
-              </AlertDescription>
-            </Alert>
-          </div>
-        )}
+        <AlertMessage alertMsgs={alertMsgs} showAlert={showAlert} />
         <div
           className="p-6 rounded-xl w-9/10 lg:w-full max-w-3xl min-h-[500px] transform transition flex flex-col gap-y-px duration-300 opacity-95 animate-fade-in"
           style={{
@@ -223,7 +201,6 @@ export default function RegisterPage() {
               className="flex transition-transform min-w-0 duration-500"
               style={{ transform: `translateX(-${(step - 1) * 100}%)` }}
             >
-              {/* Página 1 */}
               <RegisterFormStep1
                 formData={formData}
                 fieldErrors={fieldErrors}
@@ -234,7 +211,6 @@ export default function RegisterPage() {
                 toggleConfirmPassword={toggleConfirmPassword}
               />
 
-              {/* Página 2*/}
               <RegisterFormStep2
                 formData={formData}
                 fieldErrors={fieldErrors}
@@ -243,18 +219,8 @@ export default function RegisterPage() {
                 onGenreChange={(val) =>
                   setFormData({ ...formData, social_genre: val ?? "" })
                 }
-                onPhoneChange={(prefix, number) =>
-                  setFormData({
-                    ...formData,
-                    phonePrefix: prefix,
-                    phone: number,
-                  })
-                }
-                countryOptions={countryOptions}
-                dialCodeOptions={dialCodeOptions}
               />
 
-              {/* Página 3 */}
               <RegisterFormStep3
                 profileImage={profileImage}
                 imagePreview={imagePreview ?? ""}
@@ -287,7 +253,7 @@ export default function RegisterPage() {
             {step > 1 ? (
               <Button onClick={handlePrev}>Anterior</Button>
             ) : (
-              <div /> // Ocupa el espacio para que el botón "Siguiente" no se mueva
+              <div />
             )}
             {step === 3 ? (
               <Button onClick={handleCreateAccount} disabled={isLoading}>

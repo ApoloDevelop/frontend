@@ -56,6 +56,8 @@ export const RegisterFormStep1: React.FC<RegisterFormStep1Props> = ({
           >
             {formData.username.length > 30 ? (
               "El nombre de usuario no puede tener más de 30 caracteres."
+            ) : formData.username.length < 2 ? ( // Mensaje de error para longitud mínima
+              "El nombre de usuario debe tener al menos 2 caracteres."
             ) : !/^[a-zA-Z0-9_]+$/.test(formData.username) ? (
               "El nombre de usuario solo puede contener letras, números y guion bajo (_)."
             ) : (

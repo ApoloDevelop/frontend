@@ -1,5 +1,5 @@
 import { useState } from "react";
-import getCroppedImg from "@/utils/cropImage";
+import getCroppedImg from "@/utils/images";
 
 export function useImageCropper(setProfileImage: any, setImagePreview: any) {
   const [showCropper, setShowCropper] = useState(false);

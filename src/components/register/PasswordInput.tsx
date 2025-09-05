@@ -1,4 +1,3 @@
-// components/register/PasswordInput.tsx
 import React from "react";
 import { PasswordStrengthIndicator } from "@/components/ui/PasswordStrengthIndicator";
 import { EyeToggleIcon } from "../ui/EyeToggleIcon";
@@ -49,7 +48,7 @@ export const PasswordInput: React.FC<PasswordInputProps> = ({
           whiteSpace: "nowrap",
           overflow: "hidden",
           textOverflow: "ellipsis",
-          maxWidth: "calc(100% - 24px)", // Adjust for padding and icon
+          maxWidth: "calc(100% - 24px)",
         }}
       >
         {label}

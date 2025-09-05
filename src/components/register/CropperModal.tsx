@@ -14,6 +14,8 @@ interface CropperModalProps {
   setZoom: (value: number) => void;
   onCropComplete: (croppedArea: any, croppedAreaPixels: any) => void;
   onSave: () => void;
+  aspect?: number;
+  label?: string;
 }
 
 export const CropperModal: React.FC<CropperModalProps> = ({
@@ -26,6 +28,8 @@ export const CropperModal: React.FC<CropperModalProps> = ({
   setZoom,
   onCropComplete,
   onSave,
+  aspect = 1,
+  label = "Ajusta el encuadre",
 }) => {
   return (
     <Modal
@@ -36,28 +40,31 @@ export const CropperModal: React.FC<CropperModalProps> = ({
       style={{
         content: {
           width: "auto",
-          minWidth: 250,
-          maxWidth: 400,
+          minWidth: 280,
+          maxWidth: 680,
           height: "auto",
           margin: "auto",
           borderRadius: 12,
           padding: 16,
           display: "flex",
           flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
+          gap: 12,
         },
       }}
     >
-      <div style={{ position: "relative", width: "100%", height: 300 }}>
+      <h3 className="text-sm font-semibold">{label}</h3>
+      <div style={{ position: "relative", width: "100%", height: 360 }}>
         <Cropper
           image={originalImage}
           crop={crop}
           zoom={zoom}
-          aspect={1}
+          aspect={aspect}
           onCropChange={setCrop}
           onZoomChange={setZoom}
           onCropComplete={onCropComplete}
+          restrictPosition={false}
+          cropShape="rect"
+          showGrid
         />
       </div>
 

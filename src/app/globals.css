@@ -1,6 +1,8 @@
 @import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap");
 @import "tw-animate-css";
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
+@import "react-quill-new/dist/quill.snow.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -47,7 +49,7 @@
 
 :root {
   --radius: 0.625rem;
-  --background: oklch(1 0 0);
+  --background: oklch(96.416% 0.00011 271.152);
   --container-background: oklch(1 0 0);
   --foreground: oklch(0.129 0.042 264.695);
   --card: oklch(1 0 0);
@@ -165,6 +167,259 @@
   color: #000;
 }
 
+.textarea-limit {
+  max-height: 150px;
+  resize: vertical;
+  overflow-y: auto;
+}
+
+[data-slot="tooltip-content"] {
+  z-index: 10001 !important;
+}
+
+.bio-clamp {
+  /* Trunca a 3 líneas */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  overflow: hidden;
+
+  /* Forzar wrap incluso en tokens largos */
+  white-space: pre-wrap; /* respeta saltos de línea */
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
+.wrap-title {
+  overflow-wrap: break-word;
+  white-space: pre-wrap; /* respeta saltos de línea */
+  word-break: break-word;
+  hyphens: auto;
+  text-wrap: balance;
+  max-width: 65ch;
+}
+
+.clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3; /* nº de líneas */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  word-break: break-word;
+  hyphens: auto;
+  max-width: 65ch; /* similar a max-w-prose */
+}
+@media (min-width: 768px) {
+  .clamp-3 {
+    -webkit-line-clamp: 4;
+  } /* 4 líneas en md+ */
+}
+
+/* Altura cómoda del editor */
+.quill-root .ql-container {
+  min-height: 360px;
+}
+.quill-root .ql-editor {
+  min-height: 320px;
+}
+
+/* Nada de recortes, por favor */
+.quill-root,
+.quill-root .ql-container,
+.quill-root .ql-editor {
+  overflow: visible;
+}
+
+/* Toolbar y dropdowns siempre por encima */
+.quill-root .ql-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  background: #fff;
+}
+.quill-root .ql-picker,
+.quill-root .ql-picker-options {
+  z-index: 50;
+}
+
+/* Tooltip del link: que no se corte y sea usable */
+.quill-root .ql-tooltip {
+  z-index: 60; /* por encima de la toolbar y del editor */
+}
+.quill-root .ql-tooltip.ql-editing {
+  left: 50% !important; /* céntralo dentro del bounds */
+  transform: translateX(-50%) !important;
+}
+.quill-root .ql-tooltip input[type="text"] {
+  width: min(320px, 70vw); /* campo del link con ancho decente */
+}
+
+.quill-root .ql-editor {
+  max-height: 520px;
+  overflow-y: auto;
+}
+
+/* Oculta spans de UI que Quill mete para bullets en algunos casos */
+.ql-view .ql-ui {
+  display: none;
+}
+
+/* Code y pre agradables */
+.ql-view pre,
+.ql-view code {
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* === Quill content shim (visualización) === */
+.ql-view .ql-size-small {
+  font-size: 0.875em;
+}
+.ql-view .ql-size-large {
+  font-size: 1.5em;
+  line-height: 1.3;
+  font-weight: 700;
+  margin: 0.75rem 0 0.5rem;
+}
+.ql-view .ql-size-huge {
+  font-size: 2em;
+  line-height: 1.25;
+  font-weight: 800;
+  margin: 1rem 0 0.75rem;
+}
+
+/* Alineaciones de Quill */
+.ql-view .ql-align-center {
+  text-align: center;
+}
+.ql-view .ql-align-right {
+  text-align: right;
+}
+.ql-view .ql-align-justify {
+  text-align: justify;
+}
+
+/* Sangrías (aprox.) */
+.ql-view .ql-indent-1 {
+  padding-left: 1.5rem;
+}
+.ql-view .ql-indent-2 {
+  padding-left: 3rem;
+}
+.ql-view .ql-indent-3 {
+  padding-left: 4.5rem;
+}
+.ql-view .ql-indent-4 {
+  padding-left: 6rem;
+}
+
+/* Listas, imágenes e iframes ya los tenías: mantenlos */
+.ql-view img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+.ql-view ol,
+.ql-view ul {
+  padding-left: 1.25rem;
+  margin: 0 0 1rem;
+}
+.ql-view iframe {
+  width: 100%;
+  aspect-ratio: 16/9;
+  height: auto;
+  border: 0;
+}
+
+/* === Listas anidadas de Quill en la VISTA (.ql-view) === */
+
+/* Ordenadas con contadores (1., a., i.) */
+.ql-view ol {
+  counter-reset: list-0;
+  margin: 0 0 1rem;
+  padding-left: 1.5rem;
+}
+.ql-view ol > li {
+  list-style: none;
+  position: relative;
+  padding-left: 1.25em;
+  counter-increment: list-0;
+}
+.ql-view ol > li::before {
+  content: counter(list-0, decimal) ". ";
+  position: absolute;
+  left: 0;
+}
+
+/* nivel 1 → a., reinicia al cambiar de nivel */
+.ql-view ol > li.ql-indent-1 {
+  counter-increment: list-0 0 list-1 1;
+  margin-left: 1.5rem;
+}
+.ql-view ol > li.ql-indent-1::before {
+  content: counter(list-1, lower-alpha) ". ";
+}
+.ql-view ol > li:not(.ql-indent-1) {
+  counter-reset: list-1;
+}
+
+/* nivel 2 → i. */
+.ql-view ol > li.ql-indent-2 {
+  counter-increment: list-0 0 list-2 1;
+  margin-left: 3rem;
+}
+.ql-view ol > li.ql-indent-2::before {
+  content: counter(list-2, lower-roman) ". ";
+}
+.ql-view ol > li:not(.ql-indent-2) {
+  counter-reset: list-2;
+}
+
+/* nivel 3 → otra vez letras (ajusta si quieres) */
+.ql-view ol > li.ql-indent-3 {
+  counter-increment: list-0 0 list-3 1;
+  margin-left: 4.5rem;
+}
+.ql-view ol > li.ql-indent-3::before {
+  content: counter(list-3, lower-alpha) ". ";
+}
+.ql-view ol > li:not(.ql-indent-3) {
+  counter-reset: list-3;
+}
+
+/* Viñetas (•, ◦, ▪) */
+.ql-view ul {
+  margin: 0 0 1rem;
+  padding-left: 1.5rem;
+}
+.ql-view ul > li {
+  list-style: none;
+  position: relative;
+  padding-left: 1.25em;
+}
+.ql-view ul > li::before {
+  content: "•";
+  position: absolute;
+  left: 0;
+}
+.ql-view ul > li.ql-indent-1 {
+  margin-left: 1.5rem;
+}
+.ql-view ul > li.ql-indent-1::before {
+  content: "◦";
+}
+.ql-view ul > li.ql-indent-2 {
+  margin-left: 3rem;
+}
+.ql-view ul > li.ql-indent-2::before {
+  content: "▪";
+}
+
+/* (Opcional) espacio entre items */
+.ql-view li {
+  margin: 0.2rem 0;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
@@ -172,6 +427,6 @@
   body {
     background-color: var(--background);
     color: var(--foreground);
-    font-family: "Montserrat", sans-serif; /* Aplica la fuente Montserrat */
+    font-family: "Montserrat", sans-serif;
   }
 }

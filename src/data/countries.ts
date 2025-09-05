@@ -2225,7 +2225,7 @@ export const countries = [
     translations: {
       spa: {
         official: "Granada",
-        common: "Grenada",
+        common: "Granada",
       },
     },
   },

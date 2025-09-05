@@ -1,8 +1,5 @@
 import { useState, useRef } from "react";
-import {
-  DEFAULT_AVATAR_URL,
-  acceptedTypes,
-} from "@/constants/registerConstants";
+import { DEFAULT_AVATAR_URL } from "@/constants/registerConstants";
 
 export function useRegisterForm() {
   const [step, setStep] = useState(1);
@@ -16,8 +13,6 @@ export function useRegisterForm() {
     country: "",
     city: "",
     social_genre: "",
-    phone: "",
-    phonePrefix: "",
   });
   const [profileImage, setProfileImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(

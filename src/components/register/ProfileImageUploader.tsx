@@ -1,10 +1,7 @@
 import React from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import {
-  acceptedTypes,
-  DEFAULT_AVATAR_URL,
-} from "@/constants/registerConstants";
+import { acceptedTypes } from "@/constants/registerConstants";
 
 interface ProfileImageUploaderProps {
   profileImage: File | null;

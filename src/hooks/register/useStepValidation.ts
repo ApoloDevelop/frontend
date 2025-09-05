@@ -1,4 +1,3 @@
-import { isValidPhoneNumber } from "libphonenumber-js";
 import { RegisterService } from "@/services/register.service";
 
 function isStrongPassword(password: string): boolean {
@@ -14,7 +13,7 @@ function isStrongPassword(password: string): boolean {
 export function useStepValidation(
   formData: any,
   setFieldErrors: any,
-  setAlertMsgs: any, // Cambiado para manejar múltiples mensajes
+  setAlertMsgs: any,
   setIsLoading: any
 ) {
   const validateStep = async (step: number) => {
@@ -22,7 +21,6 @@ export function useStepValidation(
     const alertMessages: string[] = []; // Array para recolectar todos los mensajes de error
 
     if (step === 1) {
-      // Validar campos requeridos del primer paso
       if (!formData.fullname.trim()) {
         alertMessages.push("El nombre completo es obligatorio.");
         errors.fullname = true;
@@ -79,8 +77,7 @@ export function useStepValidation(
           const { emailExists, usernameExists } =
             await RegisterService.validateAndCheckIfExists(
               formData.email,
-              formData.username,
-              ""
+              formData.username
             );
 
           if (emailExists) {
@@ -109,37 +106,11 @@ export function useStepValidation(
         );
         errors.birthdate = true;
       }
-
-      if (
-        formData.phonePrefix &&
-        (!formData.phone || formData.phone.trim() === "")
-      ) {
-        alertMessages.push(
-          "Por favor, introduce un número de teléfono válido."
-        );
-        errors.phone = true;
-      } else if (formData.phonePrefix && formData.phone) {
-        const phoneNumber = `${formData.phonePrefix}${formData.phone}`;
-        if (!isValidPhoneNumber(phoneNumber)) {
-          alertMessages.push(
-            "Por favor, introduce un número de teléfono válido."
-          );
-          errors.phone = true;
-        } else {
-          const { phoneExists } =
-            await RegisterService.validateAndCheckIfExists("", "", phoneNumber);
-          if (phoneExists) {
-            alertMessages.push("El número de teléfono ya está registrado.");
-            errors.phone = true;
-          }
-        }
-      }
       setIsLoading(false);
     }
 
-    // Establecer los errores en los campos y los mensajes de alerta
     setFieldErrors(errors);
-    setAlertMsgs(alertMessages); // Pasar todos los mensajes de error al hook
+    setAlertMsgs(alertMessages);
     return Object.keys(errors).length === 0;
   };
 

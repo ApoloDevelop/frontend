@@ -1,4 +1,3 @@
-// components/register/EyeToggleIcon.tsx
 import React from "react";
 
 interface EyeToggleIconProps {
