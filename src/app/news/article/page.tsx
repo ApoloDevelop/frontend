@@ -1,4 +1,3 @@
-// app/news/article/page.tsx
 import { useArticlePage } from "@/hooks/news/useArticlePage";
 import { ArticleEditorHeader, ArticleEditorContainer } from "@/components/news";
 

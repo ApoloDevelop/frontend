@@ -17,6 +17,7 @@ import { useMyLists } from "@/hooks/lists/useMyLists";
 import { useFilterAndSort } from "@/hooks/lists/useFilterAndSort";
 import { ItemType2 } from "@/types/items";
 import { TabType } from "@/types/lists";
+import { getTabLabel } from "@/utils/lists";
 
 interface MyListsDialogProps {
   open: boolean;
@@ -29,7 +30,6 @@ export function MyListsDialog({
   onOpenChange,
   userId,
 }: MyListsDialogProps) {
-  // Custom hooks
   const {
     activeTab,
     setActiveTab,
@@ -53,7 +53,6 @@ export function MyListsDialog({
     toggleSortOrder,
   } = useFilterAndSort({ lists, favorites, activeTab });
 
-  // Estados para modales
   const [selectedListId, setSelectedListId] = useState<number | null>(null);
   const [detailDialogOpen, setDetailDialogOpen] = useState(false);
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
@@ -70,25 +69,9 @@ export function MyListsDialog({
     }
   }, [open, activeTab]);
 
-  // Funciones auxiliares
   const handleListClick = (listId: number) => {
     setSelectedListId(listId);
     setDetailDialogOpen(true);
-  };
-
-  const getTabLabel = (type: string) => {
-    switch (type) {
-      case "artist":
-        return "Artistas";
-      case "album":
-        return "Álbumes";
-      case "track":
-        return "Canciones";
-      case "favorites":
-        return "Favoritos";
-      default:
-        return type;
-    }
   };
 
   return (

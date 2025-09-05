@@ -1,4 +1,3 @@
-// app/news/new/loading.tsx
 import NewArticleSkeleton from "@/components/skeletons/NewArticleSkeleton";
 
 export default function Loading() {

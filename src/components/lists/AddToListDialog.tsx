@@ -28,7 +28,6 @@ export function AddToListDialog({
   height,
   className,
 }: AddToListDialogProps) {
-  // Dialog states hook
   const {
     open,
     createDialogOpen,
@@ -45,7 +44,6 @@ export function AddToListDialog({
     setLoading,
   } = useDialogStates();
 
-  // List data hook
   const { lists, setLists, itemLists, setItemLists, niceType, resolveItem } =
     useListDialog({
       userId,
@@ -56,7 +54,6 @@ export function AddToListDialog({
       open,
     });
 
-  // List actions hook
   const {
     handleAddItemToList,
     handleRemoveItemFromList,

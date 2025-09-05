@@ -1,4 +1,3 @@
-// Server Component
 import { wait } from "@/utils/wait";
 import { SongstatsService } from "@/services/songstats.service";
 import { NextEvent } from "@/components/artist/NextEvent";
@@ -13,9 +12,9 @@ export default async function EventsSidebar({
 }: {
   artistId: string;
   slug: string;
-  user: any; // ajusta si tienes el tipo del mockUser
+  user: any;
 }) {
-  // Espera para respetar el rate-limit (la otra llamada fue getArtistInfo)
+  // Espera para respetar el rate-limit (que es de 1 petición por segundo)
   await wait(1500);
 
   // const events = await SongstatsService.getArtistEventInfo(artistId);

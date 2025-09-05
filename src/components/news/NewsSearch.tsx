@@ -1,4 +1,3 @@
-// src/components/news/NewsSearch.tsx
 "use client";
 
 import { useEffect, useMemo, useState, useRef } from "react";

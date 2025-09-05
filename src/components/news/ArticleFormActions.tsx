@@ -1,4 +1,3 @@
-// src/components/news/ArticleFormActions.tsx
 "use client";
 
 import { Button } from "../ui/button";

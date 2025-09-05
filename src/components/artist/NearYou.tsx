@@ -1,6 +1,5 @@
 "use client";
 
-// components/artist/NearYou.tsx
 import { useNearestEvent } from "@/hooks/artist";
 import { SongstatsEvent, UserLocation } from "@/types/events";
 import { NoUserSection } from "./NoUserSection";

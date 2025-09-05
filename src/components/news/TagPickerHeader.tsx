@@ -1,4 +1,3 @@
-// src/components/news/TagPickerHeader.tsx
 "use client";
 
 import { RefObject } from "react";

@@ -1,4 +1,3 @@
-// src/components/news/ArticleContentEditor.tsx
 "use client";
 
 import dynamic from "next/dynamic";

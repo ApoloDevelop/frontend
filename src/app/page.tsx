@@ -1,4 +1,3 @@
-// app/page.tsx
 import { useLatestArticles } from "@/hooks/home";
 import {
   HeroSection,

@@ -30,7 +30,6 @@ export function ListDetailDialog({
 }: ListDetailDialogProps) {
   const [tagPickerOpen, setTagPickerOpen] = useState(false);
 
-  // Custom hooks
   const {
     list,
     loading,
@@ -66,7 +65,7 @@ export function ListDetailDialog({
   const handleTagPickerAdd = async (tag: TagDraft) => {
     const updatedList = await handleAddItem(tag);
     setTagPickerOpen(false);
-    
+
     // Cargar covers para la lista actualizada
     if (updatedList?.listItems.length) {
       await loadCovers(updatedList.listItems, updatedList.itemType);

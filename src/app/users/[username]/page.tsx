@@ -75,7 +75,6 @@ export default function UserProfilePage({
     return <UserPageSkeleton />;
   }
 
-  // Si no hay usuario y no está cargando, entonces no existe
   if (!user && !localUser) {
     return (
       <ErrorPage

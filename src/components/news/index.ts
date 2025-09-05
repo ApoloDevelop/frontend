@@ -15,21 +15,15 @@ export { RelatedArticles } from "./RelatedArticles";
 export { ArticleTags } from "./ArticleTags";
 export { ArticleSidebar } from "./ArticleSidebar";
 export { ArticleMainContent } from "./ArticleMainContent";
-
-// Nuevos componentes del editor de artículos
 export { ArticleTitleInput } from "./ArticleTitleInput";
 export { ArticleContentEditor } from "./ArticleContentEditor";
 export { ArticleTagsSection } from "./ArticleTagsSection";
 export { ArticleFormActions } from "./ArticleFormActions";
 export { ErrorDisplay } from "./ErrorDisplay";
-
-// Nuevos componentes del TagPicker
 export { TagPicker } from "./TagPicker";
 export { TagPickerModal } from "./TagPickerModal";
 export { TagPickerHeader } from "./TagPickerHeader";
 export { TagPickerSearchResults } from "./TagPickerSearchResults";
-
-// Componentes del carrusel de noticias
 export { NewsCarousel } from "./NewsCarousel";
 export { CarouselNavigation } from "./CarouselNavigation";
 export { CarouselTrack } from "./CarouselTrack";

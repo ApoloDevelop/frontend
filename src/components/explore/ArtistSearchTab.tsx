@@ -25,7 +25,6 @@ export default function ArtistSearchTab({
     setSortBy,
   } = useArtistSearch(value);
 
-  // Mostrar skeleton mientras carga y hay query
   if (loading && value.trim() && !data?.items?.length) {
     return (
       <TabsContent value="artist" className="mt-4 space-y-4">

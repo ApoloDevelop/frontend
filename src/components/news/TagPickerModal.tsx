@@ -1,4 +1,3 @@
-// src/components/news/TagPickerModal.tsx
 "use client";
 
 import { ReactNode } from "react";

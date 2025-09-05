@@ -1,4 +1,3 @@
-// src/components/news/ArticleTitleInput.tsx
 "use client";
 
 interface ArticleTitleInputProps {

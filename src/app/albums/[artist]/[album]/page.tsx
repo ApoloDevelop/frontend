@@ -17,7 +17,6 @@ export default async function AlbumPage({
   const albumName = deslugify(albumSlug);
 
   try {
-    // Cargar datos en server-side
     const album = await SpotifyService.fetchAlbumByName(albumName, artistName);
 
     if (

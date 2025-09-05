@@ -10,7 +10,6 @@ interface SearchResultsProps {
 export default function SearchResults({ query, type }: SearchResultsProps) {
   const { data, loading, setOffset } = useSearch(query, type);
 
-  // Mostrar skeleton mientras carga y hay query
   if (loading && query.trim() && !data?.items?.length) {
     return <SearchResultsSkeleton count={12} />;
   }

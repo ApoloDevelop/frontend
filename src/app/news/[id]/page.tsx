@@ -1,4 +1,3 @@
-// app/news/[id]/page.tsx
 import { useArticleDetailPage } from "@/hooks/news";
 import {
   ArticleHero,

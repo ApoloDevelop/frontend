@@ -1,4 +1,3 @@
-// src/components/news/CarouselTrack.tsx
 import { RefObject } from "react";
 import type { Article } from "@/types/article";
 import { NewsSlide } from "./NewsSlide";

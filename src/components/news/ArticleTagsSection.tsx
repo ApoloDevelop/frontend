@@ -1,4 +1,3 @@
-// src/components/news/ArticleTagsSection.tsx
 "use client";
 
 import type { TagDraft } from "@/types/article";

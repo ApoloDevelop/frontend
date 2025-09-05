@@ -1,4 +1,3 @@
-// src/components/news/NewsCarousel.tsx
 "use client";
 
 import type { Article } from "@/types/article";

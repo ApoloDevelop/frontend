@@ -1,4 +1,3 @@
-// src/components/news/HeroImageUploader.tsx
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
@@ -7,13 +6,13 @@ import { Button } from "@/components/ui/button";
 import { CropperModal } from "@/components/register/CropperModal";
 import { CloudinaryService } from "@/services/cloudinary.service";
 import { cropToDataUrl, dataUrlToFile } from "@/utils/cropToDataUrl";
-import { acceptedTypes } from "@/constants/registerConstants"; // ya lo tienes
+import { acceptedTypes } from "@/constants/registerConstants";
 
 type Props = {
-  value: string; // url actual (si existe)
-  onChange: (url: string) => void; // devuelve la URL subida
+  value: string;
+  onChange: (url: string) => void;
   label?: string;
-  targetWidth?: number; // p.ej 1600
+  targetWidth?: number;
 };
 
 export const HeroImageUploader: React.FC<Props> = ({
@@ -32,12 +31,10 @@ export const HeroImageUploader: React.FC<Props> = ({
   const [localPreview, setLocalPreview] = useState<string>(value ?? "");
   const [error, setError] = useState<string | null>(null);
 
-  // Mantén sincronizado el preview local si cambia `value` desde fuera
   useEffect(() => {
     setLocalPreview(value ?? "");
   }, [value]);
 
-  // Limpia object URLs cuando cambien / se desmonte
   useEffect(() => {
     return () => {
       if (originalPreview) URL.revokeObjectURL(originalPreview);
@@ -70,18 +67,18 @@ export const HeroImageUploader: React.FC<Props> = ({
       if (!originalPreview || !croppedAreaPixels) return;
       setLoading(true);
 
-      // 1) Recorta + reescala a targetWidth (manteniendo 16:9)
+      //Recorta + reescala a targetWidth (manteniendo 16:9)
       const dataUrl = await cropToDataUrl(
         originalPreview,
         croppedAreaPixels,
         targetWidth
       );
 
-      // 2) Convierte a File y sube
+      //Convierte a File y sube
       const file = await dataUrlToFile(dataUrl, "hero.jpg");
       const url = await CloudinaryService.uploadImage(file);
 
-      // 3) Actualiza preview y devuelve url al padre
+      //Actualiza preview y devuelve url al padre
       setLocalPreview(url);
       onChange(url);
       setShowCropper(false);
@@ -96,7 +93,6 @@ export const HeroImageUploader: React.FC<Props> = ({
     <div className="space-y-2">
       <label className="block text-sm font-medium">{label}</label>
 
-      {/* Selector */}
       <div className="flex items-center gap-3">
         <label
           htmlFor="hero-image-input"
@@ -129,7 +125,6 @@ export const HeroImageUploader: React.FC<Props> = ({
         )}
       </div>
 
-      {/* Preview 16:9 */}
       {localPreview && (
         <div
           className="
@@ -161,7 +156,7 @@ export const HeroImageUploader: React.FC<Props> = ({
         setZoom={setZoom}
         onCropComplete={onCropComplete}
         onSave={handleSaveCrop}
-        aspect={16 / 9} // <— aquí forzamos el hero
+        aspect={16 / 9}
         label="Recorta tu imagen en 16:9"
       />
 

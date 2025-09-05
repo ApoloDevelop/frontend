@@ -1,4 +1,3 @@
-// src/components/news/DeleteArticleButton.tsx
 "use client";
 
 import { useState } from "react";
@@ -26,7 +25,7 @@ export function DeleteArticleButton({
 
     setLoading(true);
     try {
-      await ArticlesService.remove(id); // DELETE /articles/:id (con token)
+      await ArticlesService.remove(id);
       router.replace(redirectTo);
       router.refresh();
     } catch (e: any) {

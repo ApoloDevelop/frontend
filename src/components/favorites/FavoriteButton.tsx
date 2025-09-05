@@ -18,7 +18,6 @@ export function FavoriteButton({
   customLabels,
   iconSize = 18,
 }: FavoriteButtonProps) {
-  // Custom hooks
   const { isFavorite, setIsFavorite, loading, setLoading } = useFavoriteStatus({
     type,
     name,

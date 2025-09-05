@@ -81,7 +81,6 @@ export default async function SongPage({
   } catch (error) {
     console.error("Error loading song data:", error);
 
-    // Determinar el mensaje de error específico
     const errorMessage =
       error instanceof Error
         ? error.message

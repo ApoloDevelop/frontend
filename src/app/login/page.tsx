@@ -29,7 +29,6 @@ export default function LoginPage() {
     await handleLogin(credentials.credential, credentials.password);
   }
 
-  // Set OAuth error when detected
   if (oauthError && !error) {
     setError(
       "No se pudo completar el inicio de sesión con el proveedor. Inténtalo de nuevo."

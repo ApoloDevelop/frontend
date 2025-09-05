@@ -1,4 +1,3 @@
-// app/news/page.tsx
 import { useNewsPage, useNewsPermissions } from "@/hooks/news";
 import {
   EmptyNewsState,

@@ -1,4 +1,3 @@
-// src/components/news/ErrorDisplay.tsx
 "use client";
 
 interface ErrorDisplayProps {

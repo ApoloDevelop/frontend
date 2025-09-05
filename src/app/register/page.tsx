@@ -29,7 +29,6 @@ import { isAuthenticated, setSession } from "@/lib/auth";
 
 export default function RegisterPage() {
   const router = useRouter();
-  // Constants definition
   const {
     step,
     setStep,
@@ -127,7 +126,7 @@ export default function RegisterPage() {
 
   const handleCreateAccount = async () => {
     setIsLoading(true);
-    setAlertMsgs([]); // Limpiar mensajes previos
+    setAlertMsgs([]);
 
     try {
       let profilePicUrl = DEFAULT_AVATAR_URL;
@@ -145,7 +144,6 @@ export default function RegisterPage() {
       if (data.token && data.user) {
         setSession(data.token, data.user);
 
-        // Usar window.location.replace para una redirección más forzosa
         window.location.replace("/");
 
         return; // Salir de la función para evitar mostrar alertas

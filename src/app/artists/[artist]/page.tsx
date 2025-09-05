@@ -20,7 +20,6 @@ export default async function ArtistPage({
   const artistName = useArtistParams(slug);
 
   try {
-    // Get all artist data using custom hook
     const {
       artistData,
       reviewCounts,
@@ -35,7 +34,6 @@ export default async function ArtistPage({
       relatedArtists,
     } = await getArtistData(artistName);
 
-    // Get user data using custom hook
     const { authUser } = await getCurrentUserData();
     console.log("Auth User:", authUser);
 
@@ -79,7 +77,6 @@ export default async function ArtistPage({
   } catch (error) {
     console.error("Error loading artist data:", error);
 
-    // Determinar el mensaje de error específico
     const errorMessage =
       error instanceof Error
         ? error.message

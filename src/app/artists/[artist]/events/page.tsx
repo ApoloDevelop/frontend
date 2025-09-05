@@ -33,19 +33,16 @@ export default async function ArtistEventsPage({
 
   return (
     <div className="container mx-auto">
-      {/* Hero con imagen de fondo */}
       <ArtistEventsHero
         artistName={artist.name}
         imageUrl={artist.images?.[0]?.url}
       />
 
-      {/* Header con avatar y título */}
       <ArtistEventsHeader
         artistName={artist.name}
         imageUrl={artist.images?.[0]?.url}
       />
 
-      {/* Contenido principal con pestañas de eventos */}
       <ArtistEventsContent upcoming={upcoming} past={past} />
     </div>
   );

@@ -1,4 +1,3 @@
-// src/components/news/CarouselNavigation.tsx
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface CarouselNavigationProps {

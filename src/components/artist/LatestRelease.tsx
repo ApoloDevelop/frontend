@@ -11,7 +11,7 @@ interface LatestReleaseProps {
     release_date: string;
     album_group: string; // Puede ser "single" o "album"
     images: Array<{ url: string }>;
-    artists: Array<{ name: string }>; // Información del artista
+    artists: Array<{ name: string }>;
   } | null;
 }
 

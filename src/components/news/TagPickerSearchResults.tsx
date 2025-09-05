@@ -1,4 +1,3 @@
-// src/components/news/TagPickerSearchResults.tsx
 "use client";
 
 import Image from "next/image";
@@ -104,7 +103,6 @@ export function TagPickerSearchResults({
   );
 }
 
-// Componentes auxiliares para cada tipo de resultado
 function ArtistItem({
   artist,
   onAdd,

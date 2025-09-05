@@ -1,4 +1,3 @@
-// src/components/news/ArticleEditorForm.tsx
 "use client";
 
 import { useEffect } from "react";

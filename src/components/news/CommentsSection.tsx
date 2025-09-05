@@ -95,7 +95,6 @@ export default function CommentsSection({ articleId, currentUser }: Props) {
     } catch (e: any) {
       alert(e?.message ?? "Error publicando el comentario.");
     } finally {
-      // Resetear estados de carga
       setIsPosting(false);
       setIsReplying(false);
     }
@@ -106,7 +105,7 @@ export default function CommentsSection({ articleId, currentUser }: Props) {
     if (!confirm("¿Eliminar comentario?")) return;
     try {
       await CommentsService.remove(id, currentUserId);
-      // Borra del estado (si es padre, también quitaremos su bloque)
+      // Borra del estado (si es padre, las respuestas van fuera también)
       setList((prev) =>
         prev
           .map((p) => ({

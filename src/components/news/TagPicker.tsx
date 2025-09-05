@@ -1,4 +1,3 @@
-// src/components/news/TagPicker.tsx
 "use client";
 
 import { TagPickerHeader } from "./TagPickerHeader";
