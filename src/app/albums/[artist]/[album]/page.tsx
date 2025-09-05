@@ -6,11 +6,11 @@ import { AlbumLayout } from "@/components/album/AlbumLayout";
 import { ErrorPage } from "@/components/system/ErrorPage";
 
 export default async function AlbumPage({
-  params: rawParams,
+  params,
 }: {
-  params: { artist: string; album: string };
+  params: Promise<{ artist: string; album: string }>;
 }) {
-  const { artist: artistSlug, album: albumSlug } = await rawParams;
+  const { artist: artistSlug, album: albumSlug } = await params;
   const user = await getCurrentUser();
 
   const artistName = deslugify(artistSlug);
