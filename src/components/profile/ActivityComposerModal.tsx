@@ -60,7 +60,7 @@ export function ActivityComposerModal({
     }
   };
 
-  // Reset form when modal is closed
+  // Resetear estado al cerrar
   const handleOpenChange = (isOpen: boolean) => {
     if (!isOpen) {
       setPicked(null);

@@ -9,13 +9,17 @@ interface NotificationButtonProps {
 export function NotificationButton({ onClick }: NotificationButtonProps) {
   const { unreadCount, fetchUnreadCount } = useNotifications();
 
-  // Actualizar contador al montar el componente
+  // Actualizar contador al montar el componente (solo si es necesario)
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
-      fetchUnreadCount();
+      // Solo fetchear si el contador es 0 y hay token
+      // El contexto global ya se encarga del polling regular
+      if (unreadCount === 0) {
+        fetchUnreadCount();
+      }
     }
-  }, [fetchUnreadCount]);
+  }, []);
 
   return (
     <button

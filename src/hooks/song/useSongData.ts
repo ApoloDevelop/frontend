@@ -52,7 +52,7 @@ export async function getSongData({
       );
     }
 
-    // Fetch album data to get label and copyrights information
+    // Fetch album data para obtener label y distributor
     let albumLabel: string | null = null;
     let albumDistributor: string | null = null;
 

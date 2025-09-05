@@ -1,15 +1,10 @@
-import { ArtistEvent } from "@/services/songstats.service";
+import { ArtistEvent } from "@/types/songstats";
 
 interface ProcessedEvents {
   upcoming: ArtistEvent[];
   past: ArtistEvent[];
 }
 
-/**
- * Hook para procesar y ordenar eventos del artista
- * @param eventsInfo - Información de eventos cruda
- * @returns Eventos procesados y ordenados
- */
 export function useProcessEvents(eventsInfo: any): ProcessedEvents {
   // Filtrar eventos válidos (que tengan fecha)
   const safeUpcoming: ArtistEvent[] = (eventsInfo?.upcoming ?? []).filter(

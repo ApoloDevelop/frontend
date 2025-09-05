@@ -1,4 +1,3 @@
-// src/hooks/news/useCarousel.ts
 "use client";
 
 import { useEffect, useRef, useState } from "react";

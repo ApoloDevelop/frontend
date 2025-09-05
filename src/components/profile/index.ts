@@ -1,4 +1,3 @@
-// New refactored profile components
 export { ProfileCoverSection } from "./ProfileCoverSection";
 export { ProfileActionButtons } from "./ProfileActionButtons";
 export { ProfilePhotoSection } from "./ProfilePhotoSection";
@@ -6,16 +5,12 @@ export { ProfileUserInfoSection } from "./ProfileUserInfoSection";
 export { ProfileEditSection } from "./ProfileEditSection";
 export { ProfilePhotoError } from "./ProfilePhotoError";
 export { ProfileModals } from "./ProfileModals";
-
-// Activity feed components
 export { ActivityFeed } from "./ActivityFeed";
 export { ActivityCard } from "./ActivityCard";
 export { ExpandableContent } from "./ExpandableContent";
 export { ItemDisplay } from "./ItemDisplay";
 export { DeleteButton } from "./DeleteButton";
 export { LoadMoreButton } from "./LoadMoreButton";
-
-// Existing profile components
 export { CoverPhoto } from "./CoverPhoto";
 export { CoverPhotoEditor } from "./CoverPhotoEditor";
 export { ProfilePhoto } from "./ProfilePhoto";

@@ -1,4 +1,3 @@
-// components/skeletons/SongSkeleton.tsx
 "use client";
 import React from "react";
 

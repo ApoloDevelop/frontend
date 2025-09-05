@@ -1,4 +1,3 @@
-// src/hooks/news/useArticleForm.ts
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
@@ -22,7 +21,7 @@ export function useArticleForm(
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Si cambia initial (navegación entre artículos), refrescamos estados
+  // Si cambia initial (navegación entre artículos), refrescar estados
   useEffect(() => {
     if (initial) {
       setTitle(initial.title ?? "");

@@ -1,6 +1,3 @@
-import { link } from "fs";
-import { title } from "process";
-
 export const mockTrackData = {
   bpm: 120, // Valor mock
   key: "C Major", // Valor mock

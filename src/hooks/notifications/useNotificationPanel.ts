@@ -3,8 +3,8 @@ import { useEffect, useRef } from "react";
 interface UseNotificationPanelProps {
   isOpen: boolean;
   onClose: () => void;
-  fetchNotifications: (page: number) => void;
-  fetchUnreadCount?: () => void; // Agregar función opcional para actualizar contador
+  fetchNotifications: (page: number) => Promise<void>; // Cambiar a Promise<void>
+  fetchUnreadCount?: () => Promise<void>; // Cambiar a Promise<void>
 }
 
 export function useNotificationPanel({
@@ -15,20 +15,14 @@ export function useNotificationPanel({
 }: UseNotificationPanelProps) {
   const panelRef = useRef<HTMLDivElement>(null);
 
-  // Fetch notifications when panel opens
+  // Fetch notificaciones al abrir el panel
   useEffect(() => {
     if (isOpen) {
       fetchNotifications(1);
-      // También actualizar el contador al abrir el panel
-      if (fetchUnreadCount) {
-        setTimeout(() => {
-          fetchUnreadCount();
-        }, 200);
-      }
     }
-  }, [isOpen, fetchNotifications, fetchUnreadCount]);
+  }, [isOpen, fetchNotifications]);
 
-  // Handle clicks outside panel
+  // Handle clicks fuera del panel para cerrarlo
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (

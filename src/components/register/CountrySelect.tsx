@@ -66,7 +66,6 @@ export const CountrySelect: React.FC<CountrySelectProps> = ({
         onChange={(opt) => onChange(opt)}
         placeholder={hidePlaceholder ? "" : "Selecciona tu país (opcional)"}
         menuPlacement="bottom"
-        // menuPortalTarget={typeof window !== "undefined" ? document.body : null}
         maxMenuHeight={200}
         styles={{
           control: (base, state) => ({

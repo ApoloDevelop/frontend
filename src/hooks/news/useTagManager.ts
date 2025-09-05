@@ -1,4 +1,3 @@
-// src/hooks/news/useTagManager.ts
 "use client";
 
 import { useState } from "react";

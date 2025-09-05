@@ -2,12 +2,9 @@ import { SpotifyService } from "@/services/spotify.service";
 import { ReviewService } from "@/services/review.service";
 import { ItemService } from "@/services/item.service";
 import { SongstatsService } from "@/services/songstats.service";
-import {
-  fetchMusicBrainzMatch,
-  fetchArtistDetails,
-  ArtistDetails,
-} from "@/utils/musicbrainz";
+import { fetchMusicBrainzMatch, fetchArtistDetails } from "@/utils/musicbrainz";
 import { mockArtistData } from "@/mocks/mockSongstats";
+import { ArtistDetails } from "@/types/musicbrainz";
 
 interface ArtistDataHookReturn {
   artistData: any;
@@ -29,13 +26,13 @@ interface ArtistDataHookReturn {
 export async function getArtistData(
   artistName: string
 ): Promise<ArtistDataHookReturn> {
-  // Fetch basic artist data
+  // Fetch datos del artista desde Spotify
   const artistData = await SpotifyService.fetchArtistByName(artistName);
   if (!artistData) {
     throw new Error("Artista no encontrado");
   }
 
-  // Fetch review counts and item
+  // Fetch reviewCounts e item en paralelo
   const [reviewCounts, item] = await Promise.all([
     ReviewService.getArtistReviewCounts(artistData.name),
     ItemService.findItemByTypeAndName("artist", artistData.name),
@@ -48,14 +45,14 @@ export async function getArtistData(
   const relatedArtists = info?.related_artists || [];
   const links = info?.links || [];
 
-  // Fetch Spotify data
+  // Fetch datos de Spotify en paralelo
   const [albums, topTracks, releases] = await Promise.all([
     SpotifyService.fetchArtistAlbums(artistData.id),
     SpotifyService.fetchArtistTopTracks(artistData.id),
     SpotifyService.fetchArtistReleases(artistData.id),
   ]);
 
-  // Fetch averages
+  // Fetch averages de reviews
   let averages: { verified: number | null; unverified: number | null } = {
     verified: null,
     unverified: null,
@@ -77,7 +74,7 @@ export async function getArtistData(
     console.warn("Error fetching averages:", e);
   }
 
-  // Fetch MusicBrainz data
+  // Fetch datos de MusicBrainz
   let mbid: string | null = null;
   let details: ArtistDetails | null = null;
 
@@ -90,7 +87,7 @@ export async function getArtistData(
     console.warn("Error fetching MusicBrainz data:", err);
   }
 
-  // Calculate last release
+  // Calcular el último lanzamiento
   const lastRelease = releases
     .slice()
     .sort(

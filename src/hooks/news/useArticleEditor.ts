@@ -16,7 +16,7 @@ export function useArticleEditor() {
     try {
       const article = await ArticlesService.getById(editIdNumber);
 
-      // Solo writers (role 3) no pueden editar artículos de otros
+      // Solo redactores (role 3) no pueden editar artículos de otros
       if (userRoleId === 3 && article.author_id !== userId) {
         redirect("/news");
       }

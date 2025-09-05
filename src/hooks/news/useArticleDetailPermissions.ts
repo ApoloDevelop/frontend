@@ -7,8 +7,8 @@ export async function useArticleDetailPermissions() {
     const canEdit =
       !!user &&
       (user.role_id === 1 || // Admin
-        user.role_id === 2 || // Editor
-        (user.role_id === 3 && user.id === authorId)); // Writer (solo sus artículos)
+        user.role_id === 2 || // Moderador
+        (user.role_id === 3 && user.id === authorId)); // Redactor (solo sus artículos)
 
     return {
       user,

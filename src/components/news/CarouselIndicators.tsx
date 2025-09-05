@@ -1,4 +1,3 @@
-// src/components/news/CarouselIndicators.tsx
 interface CarouselIndicatorsProps {
   itemsLength: number;
   currentIndex: number;

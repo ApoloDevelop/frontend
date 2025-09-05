@@ -1,4 +1,3 @@
-// src/components/reviews/Rating.tsx  (SERVER)
 import { RatingClient } from "./RatingClient";
 import { getRatingAuth } from "@/hooks/reviews/useRatingAuth";
 import { getInitialReview } from "@/hooks/reviews/useInitialReview";
@@ -22,7 +21,6 @@ export default async function Rating(props: BaseProps & ExtraProps) {
   const { user, isVerifiedUser, isAuthenticated, token } =
     await getRatingAuth();
 
-  // Get initial review if user is authenticated and itemId exists
   const initialReview = await getInitialReview(props.itemId ?? null, token);
 
   return (

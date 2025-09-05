@@ -21,7 +21,6 @@ export function ActivityFeed({
   currentUser?: { id: number; role_id: number; username: string } | null;
   onDeleted?: (id: number) => void;
 }) {
-  // Usar los custom hooks
   const { items, loading, hasMore, loadMore, removeItem } = useActivityFeed(
     userId,
     refreshToken

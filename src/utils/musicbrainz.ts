@@ -1,19 +1,6 @@
+import { ArtistDetails, MbArtist } from "@/types/musicbrainz";
+
 const B = process.env.NEXT_PUBLIC_BACKEND_URL;
-
-export interface MbArtist {
-  id: string;
-  name: string;
-}
-
-export interface ArtistDetails {
-  fullName: string;
-  birthDate: string | null;
-  birthPlace: string | null;
-  birthCountry: string | null;
-  birthCountryCode: string | null;
-  type: string | null;
-  bio: string;
-}
 
 export async function fetchMusicBrainzMatch(
   spotifyId: string,

@@ -1,4 +1,3 @@
-// src/hooks/news/useQuillEditor.ts
 "use client";
 
 import { useState } from "react";

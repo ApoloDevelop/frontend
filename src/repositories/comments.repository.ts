@@ -1,7 +1,7 @@
 import type { Comment, CommentListResponse } from "@/types/comment";
 import { getToken } from "@/lib/auth";
 
-const B = process.env.NEXT_PUBLIC_BACKEND_URL; // Nest base URL
+const B = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 export class CommentsService {
   static async listByArticle(

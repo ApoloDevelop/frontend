@@ -23,7 +23,7 @@ export function FollowButton({
       const summary = await UserService.getFollowSummary(profileUserId);
       setIsFollowing(summary.isFollowing);
     } catch (e: any) {
-      // Silencioso o toast si quieres
+      // Silencioso
     }
   }
 
@@ -37,7 +37,7 @@ export function FollowButton({
         // Usuario no autenticado
         setUser(null);
       } finally {
-        setUserLoaded(true); // Marcamos que ya terminamos de cargar el usuario
+        setUserLoaded(true);
       }
     }
     loadUser();

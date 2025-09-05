@@ -1,53 +1,6 @@
+import { ArtistEventInfo, ArtistInfo, Meta } from "@/types/songstats";
+
 const B = process.env.NEXT_PUBLIC_BACKEND_URL;
-
-export type Meta = {
-  bpm: number | null;
-  key: string | null;
-  genres: string[];
-  collaborators: { name: string; roles: string[] }[];
-  label: string | null;
-  distributor: string | null;
-};
-
-export type RelatedArtist = {
-  id: string | null;
-  name: string | null;
-  avatar: string | null;
-};
-
-export type ArtistLink = {
-  source: string;
-  external_id: string;
-  url: string;
-};
-
-export type ArtistInfo = {
-  bio: string | null;
-  genres: string[];
-  related_artists: RelatedArtist[];
-  links: ArtistLink[];
-};
-
-export type ArtistEvent = {
-  title: string | null;
-  date: string | null; // YYYY-MM-DD
-  link: string | null;
-  city: string | null;
-  region: string | null;
-  countryCode: string | null;
-  lat: number | null;
-  lng: number | null;
-};
-
-export type ArtistEventInfo = {
-  counts: {
-    citiesUpcoming: number;
-    countriesUpcoming: number;
-    eventsUpcoming: number;
-  };
-  upcoming: ArtistEvent[];
-  past: ArtistEvent[];
-};
 
 export class SongstatsRepository {
   static async getTrackInfo(spotifyId: string): Promise<Meta | null> {

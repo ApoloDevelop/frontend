@@ -1,4 +1,3 @@
-// src/hooks/home/useAuthUser.ts
 "use client";
 
 import { useEffect, useState } from "react";
@@ -7,7 +6,6 @@ import { LoginRepository } from "@/repositories/login.repository";
 import type { AuthUser } from "@/types/auth";
 
 export function useAuthUser(initialUser: AuthUser | null) {
-  // 👇 Primer render del cliente usa EXACTAMENTE lo que pintó el servidor
   const [user, setUser] = useState<AuthUser | null>(initialUser);
 
   useEffect(() => {
@@ -17,7 +15,7 @@ export function useAuthUser(initialUser: AuthUser | null) {
       return;
     }
 
-    // Refresco tras montar (no afecta al HTML ya hidratado)
+    // Refrescar tras montar (no afecta al HTML ya hidratado)
     const cached = getStoredUser() as AuthUser | null;
     if (cached) setUser(cached);
 

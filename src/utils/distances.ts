@@ -1,4 +1,3 @@
-// helpers/distances.ts
 export type LatLng = { lat: number; lng: number };
 
 export function haversineKm(

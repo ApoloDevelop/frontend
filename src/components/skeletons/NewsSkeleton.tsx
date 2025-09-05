@@ -1,4 +1,3 @@
-// components/skeletons/NewsPageSkeleton.tsx
 "use client";
 
 import React, { useMemo } from "react";

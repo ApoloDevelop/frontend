@@ -19,7 +19,7 @@ export default function Toaster({
       richColors={richColors}
       className="toaster group"
       toastOptions={{
-        duration: 3000, // ajusta si quieres más/menos tiempo
+        duration: 3000,
       }}
       style={
         {

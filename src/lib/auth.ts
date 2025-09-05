@@ -1,5 +1,3 @@
-// src/lib/auth.ts
-
 import { ApiUser, AuthUser, SessionUser } from "@/types/auth";
 
 export const TOKEN_KEY = "token"; // localStorage

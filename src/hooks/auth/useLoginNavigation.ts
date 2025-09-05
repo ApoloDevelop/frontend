@@ -41,7 +41,7 @@ export const useLoginNavigation = (): UseLoginNavigationReturn => {
   const OAUTH_GOOGLE = process.env.NEXT_PUBLIC_OAUTH_GOOGLE_URL;
   const OAUTH_SPOTIFY = process.env.NEXT_PUBLIC_OAUTH_SPOTIFY_URL;
 
-  // Redirect if already authenticated
+  // Redirect si ya está autenticado
   useEffect(() => {
     if (isAuthenticated()) {
       router.replace(nextSafe);
@@ -51,7 +51,7 @@ export const useLoginNavigation = (): UseLoginNavigationReturn => {
   // Handle OAuth error
   useEffect(() => {
     if (oauthError) {
-      // Clear error from URL while keeping next parameter
+      // Redirigir a login sin next para evitar bucles
       router.replace(
         nextRaw ? `/login?next=${encodeURIComponent(nextRaw)}` : "/login"
       );

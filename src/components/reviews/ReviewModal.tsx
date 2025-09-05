@@ -69,12 +69,12 @@ export function ReviewsModal({
     canModerate,
   });
 
-  // Recompute histogram when reviews change
+  // Recalcular histograma cuando cambian las reseñas o el filtro
   useEffect(() => {
     recomputeHistogram(reviews);
   }, [reviews, recomputeHistogram]);
 
-  // Reset filter when modal closes
+  // Resetear filtro cuando se cierra el modal
   useEffect(() => {
     if (!open) {
       setFilterScore(null);

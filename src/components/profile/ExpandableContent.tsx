@@ -9,7 +9,7 @@ interface ExpandableContentProps {
 export function ExpandableContent({ content }: ExpandableContentProps) {
   const [isExpanded, setIsExpanded] = useState(false);
 
-  // Verificamos si el texto es lo suficientemente largo para necesitar truncamiento
+  // Verificar si el texto es lo suficientemente largo para truncarlo
   const words = content.split(" ");
   const shouldTruncate = words.length > 15 || content.length > 150;
 

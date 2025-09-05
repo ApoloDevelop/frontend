@@ -4,23 +4,19 @@ import { ActivityComposerModal } from "./ActivityComposerModal";
 import { MyListsDialog } from "@/components/lists/MyListsDialog";
 
 interface ProfileModalsProps {
-  // Edit Profile Modal
   editModalOpen: boolean;
   onEditModalClose: () => void;
   currentUser: any;
   onUserUpdated: (user: any) => void;
 
-  // Role Adjust Modal
   roleModalOpen: boolean;
   onRoleModalChange: (open: boolean) => void;
   onRoleUpdated: (newRoleId: number) => void;
 
-  // Activity Composer Modal
   activityModalOpen: boolean;
   onActivityModalChange: (open: boolean) => void;
   onActivityPosted: () => void;
 
-  // My Lists Modal
   myListsModalOpen: boolean;
   onMyListsModalChange: (open: boolean) => void;
 }

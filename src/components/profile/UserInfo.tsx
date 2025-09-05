@@ -70,7 +70,7 @@ export const UserInfo = ({
         );
       case 5:
       default:
-        return null; // No badge for reader role
+        return null;
     }
   };
 
@@ -78,7 +78,7 @@ export const UserInfo = ({
     <div className={className}>
       {fullname ? (
         <>
-          {/* Si hay fullname, mostramos nombre completo con botón en la primera línea */}
+          {/* Si hay fullname, mostrar nombre completo con botón en la primera línea */}
           <div id="social-media" className="flex items-center gap-2">
             <div className="flex items-center">
               <h1 className="text-2xl font-bold">{fullname}</h1>
@@ -188,7 +188,7 @@ export const UserInfo = ({
         </>
       ) : (
         <>
-          {/* Si no hay fullname, mostramos username con botón de seguir */}
+          {/* Si no hay fullname, mostrar username con botón de seguir */}
           <div className="flex items-center gap-2">
             <div className="flex items-center">
               <p id="username" className="text-gray-600 text-2xl font-bold">

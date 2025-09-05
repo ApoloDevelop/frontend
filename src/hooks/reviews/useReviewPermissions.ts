@@ -1,4 +1,3 @@
-// src/hooks/reviews/useReviewPermissions.ts
 import { getCurrentUser } from "@/lib/auth";
 
 export async function useReviewPermissions() {

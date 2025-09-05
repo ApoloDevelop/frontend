@@ -1,4 +1,3 @@
-// components/skeletons/ArticlePageSkeleton.tsx
 import React from "react";
 
 export default function ArticlePageSkeleton() {

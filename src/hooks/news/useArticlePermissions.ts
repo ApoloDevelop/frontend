@@ -15,7 +15,7 @@ export async function useArticlePermissions(): Promise<ArticleEditorPermissions>
       id: user.id,
       role_id: user.role_id,
     },
-    canEdit: true, // Si llegamos aquí, el usuario tiene permisos
+    canEdit: true, // Si se llega aquí, el usuario tiene permisos
     isWriter: user.role_id === 3,
     isEditor: user.role_id === 2,
     isAdmin: user.role_id === 1,

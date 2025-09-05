@@ -24,7 +24,7 @@ export function FollowCounters({
       const summary = await UserService.getFollowSummary(profileUserId);
       setCounts({ followers: summary.followers, following: summary.following });
     } catch (e: any) {
-      // Silencioso o toast si quieres
+      // Silencioso
     }
   }
 
@@ -36,7 +36,7 @@ export function FollowCounters({
   useEffect(() => {
     loadCounts();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [profileUserId, refreshTrigger]); // Agregamos refreshTrigger como dependencia
+  }, [profileUserId, refreshTrigger]); // Agregar refreshTrigger como dependencia
 
   return (
     <>

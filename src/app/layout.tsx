@@ -2,6 +2,7 @@ import "./globals.css";
 import Header from "@/components/header/Header";
 import ScrollTopOnRouteChange from "@/components/system/ScrollTopOnRouteChange";
 import Toaster from "@/components/ui/Toaster";
+import { NotificationProvider } from "@/contexts/NotificationContext";
 
 export const metadata = {
   title: "Apolo",
@@ -16,10 +17,12 @@ export default function RootLayout({
   return (
     <html lang="es" suppressHydrationWarning>
       <body>
-        <Header />
-        <ScrollTopOnRouteChange behavior="instant" />
-        <main>{children}</main>
-        <Toaster />
+        <NotificationProvider>
+          <Header />
+          <ScrollTopOnRouteChange behavior="instant" />
+          <main>{children}</main>
+          <Toaster />
+        </NotificationProvider>
       </body>
     </html>
   );

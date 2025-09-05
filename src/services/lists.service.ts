@@ -47,7 +47,7 @@ export class ListService {
         tag.name,
         {
           artistName: tag.artistName,
-          // albumName se podría añadir si ItemService lo soporta
+          // albumName se podría añadir
         }
       );
 

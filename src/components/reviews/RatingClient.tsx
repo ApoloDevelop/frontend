@@ -46,7 +46,7 @@ export function RatingClient(props: RatingClientProps) {
 
   const { handleSubmit } = useRatingSubmit(submitProps);
 
-  // Para eliminar reseñas, solo necesitamos una función simple
+  // Para eliminar reseñas, función simple
   const handleDelete = async () => {
     if (!props.initialReview?.id) return;
 

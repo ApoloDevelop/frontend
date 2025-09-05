@@ -25,9 +25,6 @@ interface UseArtistSearchReturn {
   setSortBy: (sort: SortOption) => void;
 }
 
-/**
- * Hook especializado para búsqueda de artistas con filtros y ordenamiento
- */
 export function useArtistSearch(
   query: string,
   debounceDelay = 400

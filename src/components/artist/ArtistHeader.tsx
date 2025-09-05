@@ -3,7 +3,7 @@ import Rating from "@/components/reviews/Rating";
 import { FavoriteButton } from "@/components/favorites/FavoriteButton";
 import { AddToListDialog } from "@/components/lists/AddToListDialog";
 import { PlatformLinks } from "@/components/artist/PlatformLinks";
-import { ArtistDetails } from "@/utils/musicbrainz";
+import { ArtistDetails } from "@/types/musicbrainz";
 
 interface ArtistHeaderProps {
   artistData: {

@@ -26,7 +26,6 @@ export function CoverPhotoEditor({
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<any>(null);
 
-  // Aspecto fijo 3:1 como solicitaste
   const aspectRatio = 3.0;
 
   const onCropComplete = (_: any, croppedPixels: any) => {

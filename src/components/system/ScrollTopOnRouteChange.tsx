@@ -1,4 +1,3 @@
-// components/system/ScrollTopOnRouteChange.tsx
 "use client";
 
 import { usePathname, useSearchParams } from "next/navigation";
@@ -15,7 +14,7 @@ export default function ScrollTopOnRouteChange({
   useEffect(() => {
     if (typeof window === "undefined") return;
 
-    // Si navegas con hash (#seccion), no fuerces al top
+    // Si navega con hash (#seccion), no fuerza al top
     if (window.location.hash) return;
 
     window.scrollTo({ top: 0, left: 0, behavior });

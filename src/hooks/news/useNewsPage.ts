@@ -1,4 +1,3 @@
-// src/hooks/news.ts
 import { ArticlesService } from "@/services/articles.service";
 import { NewsPageData } from "@/types/news";
 

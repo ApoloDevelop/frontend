@@ -2,7 +2,7 @@ import { ArtistBio } from "@/components/artist/ArtistBio";
 import { LatestAlbums } from "@/components/artist/LatestAlbums";
 import { RelatedArtists } from "@/components/artist/RelatedArtists";
 import { ArtistRatings } from "@/components/artist/ArtistRatings";
-import { ArtistDetails } from "@/utils/musicbrainz";
+import { ArtistDetails } from "@/types/musicbrainz";
 
 interface ArtistMainContentProps {
   averages: { verified: number | null; unverified: number | null };

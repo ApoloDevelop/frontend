@@ -1,4 +1,3 @@
-// ScoreCircle.tsx
 "use client";
 import React, { useId } from "react";
 

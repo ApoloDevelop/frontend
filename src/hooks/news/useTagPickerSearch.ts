@@ -1,4 +1,3 @@
-// src/hooks/news/useTagPickerSearch.ts
 "use client";
 
 import { useEffect, useRef, useState } from "react";
@@ -13,7 +12,7 @@ export function useTagPickerSearch(open: boolean) {
   const inputRef = useRef<HTMLInputElement>(null);
   const debounceRef = useRef<number | null>(null);
 
-  // Reset state when modal opens
+  // Resetear estado al abrir
   useEffect(() => {
     if (open) {
       setQ("");
@@ -25,7 +24,7 @@ export function useTagPickerSearch(open: boolean) {
     }
   }, [open]);
 
-  // Search with debounce
+  // Buscar con debounce
   useEffect(() => {
     if (!open) return;
 

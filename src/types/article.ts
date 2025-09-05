@@ -1,4 +1,3 @@
-// src/types/article.ts
 export type Article = {
   id: number;
   title: string;
@@ -7,12 +6,11 @@ export type Article = {
   published_date: string;
   image_url: string | null;
   tags?: Array<{
-    id: number; // ← id del tag (tabla tag)
+    id: number; // id del tag (tabla tag)
     name: string;
     type: TagType;
     artistName?: string;
     albumName?: string;
-    // opcionalmente podrías añadir artistName si lo expones más adelante
   }>;
   views: number | null;
 };

@@ -75,17 +75,4 @@ export class ArticlesRepository {
     if (!res.ok) throw new Error("Error al cargar relacionados");
     return (await res.json()) as Article[];
   }
-
-  // // (opcional) listar por tag
-  // static async listByTag(tagId: number, params?: ListParams) {
-  //   const q = new URLSearchParams();
-  //   if (typeof params?.offset === "number")
-  //     q.set("offset", String(params.offset));
-  //   if (typeof params?.limit === "number") q.set("limit", String(params.limit));
-  //   q.set("tag", String(tagId));
-  //   const url = `${B}/articles?${q.toString()}`;
-  //   const res = await fetch(url, { cache: "no-store" });
-  //   if (!res.ok) throw new Error("Error al listar artículos por tag");
-  //   return (await res.json()) as ListResponse<Article>;
-  // }
 }

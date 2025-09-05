@@ -99,7 +99,7 @@ export function sortCollabs(collaborators: any[]) {
     {}
   );
 
-  // eliminar duplicados por rol (opcional)
+  // eliminar duplicados por rol
   for (const role of Object.keys(grouped)) {
     grouped[role] = Array.from(new Set(grouped[role])).sort((a, b) =>
       collator.compare(a, b)
