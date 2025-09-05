@@ -3,8 +3,8 @@
 import dayjs from "dayjs";
 import "dayjs/locale/es";
 import Flag from "react-world-flags";
-import type { ArtistEvent } from "@/services/songstats.service";
 import clsx from "clsx";
+import { ArtistEvent } from "@/types/songstats";
 
 export default function EventCard({
   event,

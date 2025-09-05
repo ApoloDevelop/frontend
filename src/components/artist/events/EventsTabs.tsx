@@ -2,9 +2,9 @@
 
 import { useMemo, useState } from "react";
 import EventCard from "./EventCard";
-import type { ArtistEvent } from "@/services/songstats.service";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { ArtistEvent } from "@/types/songstats";
 
 function normalize(s?: string | null) {
   return (s ?? "")

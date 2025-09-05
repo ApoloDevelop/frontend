@@ -7,9 +7,6 @@ interface UseUserSearchReturn {
   loading: boolean;
 }
 
-/**
- * Hook para buscar usuarios
- */
 export function useUserSearch(query: string): UseUserSearchReturn {
   const [data, setData] = useState<any[] | null>(null);
   const [loading, setLoading] = useState(false);

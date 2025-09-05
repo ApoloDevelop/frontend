@@ -54,7 +54,7 @@ export function HeaderClient({
                 onLogout={handleLogout}
               />
 
-              {/* Botón hamburguesa (mobile) */}
+              {/* Botón hamburguesa (movil) */}
               <MobileMenuButton
                 isOpen={mobileMenuOpen}
                 onToggle={() => setMobileMenuOpen(true)}

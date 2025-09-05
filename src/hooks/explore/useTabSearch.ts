@@ -16,10 +16,6 @@ interface UseTabSearchReturn {
   getQueryForType: (type: TabKind) => string;
 }
 
-/**
- * Hook para manejar las queries de búsqueda por pestañas
- * @returns Estado de las queries y funciones para actualizarlas
- */
 export function useTabSearch(): UseTabSearchReturn {
   const [queries, setQueries] = useState<SearchQueries>({
     artist: "",

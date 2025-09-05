@@ -35,7 +35,7 @@ export default function ActivityFeedSkeleton() {
               </div>
             </div>
 
-            {/* Content text (appears in some posts) */}
+            {/* Content text (no es obligatorio) */}
             {index % 2 === 0 && (
               <div className="mb-3 p-3 bg-gray-50 rounded-lg space-y-2">
                 <div className="h-3 w-full bg-gray-200 rounded animate-pulse"></div>
@@ -44,7 +44,7 @@ export default function ActivityFeedSkeleton() {
               </div>
             )}
 
-            {/* Delete button (appears sometimes) */}
+            {/* Delete button (no es fijo) */}
             {index % 4 === 0 && (
               <div className="mt-3">
                 <div className="h-8 w-full bg-gray-200 rounded animate-pulse"></div>

@@ -21,13 +21,6 @@ interface UseSearchReturn {
   setOffset: (offset: number) => void;
 }
 
-/**
- * Hook para manejar búsquedas con Spotify API
- * @param query - Término de búsqueda
- * @param type - Tipo de búsqueda (artist, album, track)
- * @param debounceDelay - Retraso para debounce (default: 400ms)
- * @returns Estado de la búsqueda y funciones de control
- */
 export function useSearch(
   query: string,
   type: Kind,
