@@ -1,5 +1,5 @@
+import { ArtistEvent } from "@/types/songstats";
 import EventsTabs from "./events/EventsTabs";
-import { ArtistEvent } from "@/services/songstats.service";
 
 interface ArtistEventsContentProps {
   upcoming: ArtistEvent[];

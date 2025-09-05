@@ -5,27 +5,7 @@ import { SongCredits } from "./SongCredits";
 import { SongSourceInfo } from "./SongSourceInfo";
 import { SongAlbumInfo } from "./SongAlbumInfo";
 import { wrapWord } from "@/utils/normalization";
-
-interface Artist {
-  id?: string;
-  name: string;
-}
-
-interface Album {
-  name: string;
-  artists: Array<{ name: string }>;
-}
-
-interface Track {
-  name: string;
-  artists: Artist[];
-  album?: Album;
-}
-
-interface Collaborator {
-  role: string;
-  names: string[];
-}
+import { Collaborator, Track } from "@/types/songs";
 
 interface SongMainContentProps {
   track: Track;

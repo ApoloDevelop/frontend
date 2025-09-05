@@ -38,8 +38,8 @@ export async function getArtistData(
     ItemService.findItemByTypeAndName("artist", artistData.name),
   ]);
 
-  // const info = await SongstatsService.getArtistInfo(artistData.id);
-  const info = mockArtistData;
+  const info = await SongstatsService.getArtistInfo(artistData.id);
+  // const info = mockArtistData;
   const bio = info?.bio || null;
   const genres = info?.genres || [];
   const relatedArtists = info?.related_artists || [];

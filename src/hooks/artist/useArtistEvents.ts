@@ -3,9 +3,9 @@ import { mockEvent } from "@/mocks/mockSongstats";
 
 export async function getArtistEvents(artistId: string) {
   try {
-    // const eventsInfo = await SongstatsService.getArtistEventInfo(artistId);
+    const eventsInfo = await SongstatsService.getArtistEventInfo(artistId);
 
-    const eventsInfo = mockEvent;
+    // const eventsInfo = mockEvent;
 
     return eventsInfo;
   } catch (error) {

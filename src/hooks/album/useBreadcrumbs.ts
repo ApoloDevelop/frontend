@@ -1,5 +1,4 @@
 import { useMemo } from "react";
-import { slugify } from "@/utils/normalization";
 
 interface UseBreadcrumbsProps {
   artistName: string;

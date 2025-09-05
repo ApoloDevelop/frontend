@@ -17,8 +17,8 @@ export default async function EventsSidebar({
   // Espera para respetar el rate-limit (que es de 1 petición por segundo)
   await wait(1500);
 
-  // const events = await SongstatsService.getArtistEventInfo(artistId);
-  const events = mockEvent;
+  const events = await SongstatsService.getArtistEventInfo(artistId);
+  // const events = mockEvent;
 
   let nextEvent: EventData | null = null;
   if (events?.upcoming?.length) {

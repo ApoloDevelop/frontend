@@ -17,7 +17,6 @@ export class ArticlesService {
   }
 
   static create(payload: CreateArticleInput): Promise<Article> {
-    console.log("Creating article with payload:", payload);
     return ArticlesRepository.create(payload);
   }
 

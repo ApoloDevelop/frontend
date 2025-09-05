@@ -7,7 +7,6 @@ export class GeoService {
     city: string,
     country: string
   ): Promise<LatLng | null> {
-    console.log("Geocoding request:", { city, country });
     return await GeoRepository.getCoordinates(city, country);
   }
 }

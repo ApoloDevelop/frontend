@@ -2,25 +2,7 @@ import { Hero } from "@/components/images/Hero";
 import { CustomBreadcrumb } from "@/components/ui/CustomBreadcrumb";
 import { SongSidebar } from "./SongSidebar";
 import { SongMainContent } from "./SongMainContent";
-
-interface Artist {
-  id?: string;
-  name: string;
-}
-
-interface Album {
-  name: string;
-  artists: Array<{ name: string }>;
-}
-
-interface Track {
-  name: string;
-  artists: Artist[];
-  album?: Album;
-  external_urls?: {
-    spotify?: string;
-  };
-}
+import { Track } from "@/types/songs";
 
 interface Collaborator {
   role: string;

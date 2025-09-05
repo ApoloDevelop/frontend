@@ -45,7 +45,6 @@ export const ProfileUserInfoSection = ({
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
-                  console.log("Ajustar rol clicked - isAdmin:", isAdmin);
                   onRoleAdjustClick();
                 }}
                 className="text-xs relative z-30 pointer-events-auto cursor-pointer"

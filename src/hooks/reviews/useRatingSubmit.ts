@@ -38,7 +38,6 @@ export function useRatingSubmit(
     } else if (needsAlbumAndArtist && props.albumName && props.artistName) {
       payload.albumName = props.albumName;
       payload.artistName = props.artistName;
-      console.log("Rating payload:", payload);
     } else if (type === "venue" && props.location) {
       payload.location = props.location;
     }

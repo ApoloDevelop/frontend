@@ -100,7 +100,7 @@ export async function getCurrentUser(): Promise<AuthUser | null> {
   if (isServer) {
     const { cookies } = await import("next/headers");
     const c = cookies();
-    const token = (await c).get(TOKEN_COOKIE)?.value ?? null; // 🚫 quita el fallback a TOKEN_KEY
+    const token = (await c).get(TOKEN_COOKIE)?.value ?? null; //quita el fallback a TOKEN_KEY
     if (!token) return null;
     try {
       const res = await fetch(`${B}/auth/profile`, {

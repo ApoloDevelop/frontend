@@ -76,18 +76,18 @@ export async function getSongData({
       console.warn("Error fetching album data for label/distributor:", error);
     }
 
-    // const songstatsInfo = await SongstatsService.getTrackInfo(track.id);
+    const songstatsInfo = await SongstatsService.getTrackInfo(track.id);
     const info = {
-      ...mockTrackData,
-      //   ...songstatsInfo,
-      label: albumLabel || mockTrackData?.label,
-      distributor: albumDistributor || mockTrackData?.distributor,
+      // ...mockTrackData,
+      ...songstatsInfo,
+      label: albumLabel || songstatsInfo?.label,
+      distributor: albumDistributor || songstatsInfo?.distributor,
     };
-    // const lyrics = await GeniusService.getLyricsByTrack(songName, artistName);
-    const lyrics = {
-      lyrics:
-        "Esta es una letra de ejemplo para la canción. \nEsta es la segunda línea de la letra. \nEsta es la tercera línea de la letra. \nEsta es una letra de ejemplo para la canción. \nEsta es la segunda línea de la letra. \nEsta es la tercera línea de la letra. \nEsta es una letra de ejemplo para la canción. \nEsta es la segunda línea de la letra. \nEsta es la tercera línea de la letra.",
-    };
+    const lyrics = await GeniusService.getLyricsByTrack(songName, artistName);
+    // const lyrics = {
+    //   lyrics:
+    //     "Esta es una letra de ejemplo para la canción. \nEsta es la segunda línea de la letra. \nEsta es la tercera línea de la letra. \nEsta es una letra de ejemplo para la canción. \nEsta es la segunda línea de la letra. \nEsta es la tercera línea de la letra. \nEsta es una letra de ejemplo para la canción. \nEsta es la segunda línea de la letra. \nEsta es la tercera línea de la letra.",
+    // };
 
     const primaryArtist = track.artists?.[0]?.name || artistName;
     const stats = (await ReviewService.getTrackReviewStats(
