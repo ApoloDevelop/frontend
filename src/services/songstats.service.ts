@@ -15,10 +15,17 @@ export type RelatedArtist = {
   id: string | null;
 };
 
+export type ArtistLink = {
+  source: string;
+  external_id: string;
+  url: string;
+};
+
 export type ArtistInfo = {
   bio: string | null;
   genres: string[];
   related_artists: RelatedArtist[];
+  links: ArtistLink[];
 };
 
 export type ArtistEvent = {

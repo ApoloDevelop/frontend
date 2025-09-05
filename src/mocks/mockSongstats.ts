@@ -33,6 +33,23 @@ export const mockArtistData = {
       avatar: "/default-cover.png",
     },
   ],
+  links: [
+    {
+      source: "spotify",
+      external_id: "1AD6JUzgEvTAI8TLGwlrba",
+      url: "https://open.spotify.com/artist/1AD6JUzgEvTAI8TLGwlrba",
+    },
+    {
+      source: "youtube",
+      external_id: "UCPlI9_18iZc0epqxGUyvWVQ",
+      url: "https://youtube.com/channel/UCPlI9_18iZc0epqxGUyvWVQ/",
+    },
+    {
+      source: "instagram",
+      external_id: "5799150867",
+      url: "https://www.instagram.com/dontblinkmusic",
+    },
+  ],
 };
 
 export const mockUser = {

@@ -23,6 +23,7 @@ interface ArtistDataHookReturn {
   genres: string[];
   relatedArtists: any[];
   mbid: string | null;
+  links: { source: string; url: string }[];
 }
 
 export async function getArtistData(
@@ -40,12 +41,12 @@ export async function getArtistData(
     ItemService.findItemByTypeAndName("artist", artistData.name),
   ]);
 
-  // Fetch artist info (using mock for now)
   // const info = await SongstatsService.getArtistInfo(artistData.id);
   const info = mockArtistData;
   const bio = info?.bio || null;
   const genres = info?.genres || [];
   const relatedArtists = info?.related_artists || [];
+  const links = info?.links || [];
 
   // Fetch Spotify data
   const [albums, topTracks, releases] = await Promise.all([
@@ -111,5 +112,6 @@ export async function getArtistData(
     genres,
     relatedArtists,
     mbid,
+    links,
   };
 }

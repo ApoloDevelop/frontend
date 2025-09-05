@@ -2,6 +2,7 @@ import Image from "next/image";
 import Rating from "@/components/reviews/Rating";
 import { FavoriteButton } from "@/components/favorites/FavoriteButton";
 import { AddToListDialog } from "@/components/lists/AddToListDialog";
+import { PlatformLinks } from "@/components/artist/PlatformLinks";
 import { ArtistDetails } from "@/utils/musicbrainz";
 
 interface ArtistHeaderProps {
@@ -12,6 +13,7 @@ interface ArtistHeaderProps {
   details: ArtistDetails | null;
   item: { itemId: number } | null;
   authUser: { id: number } | null;
+  links: Array<{ source: string; url: string }>;
 }
 
 export function ArtistHeader({
@@ -19,6 +21,7 @@ export function ArtistHeader({
   details,
   item,
   authUser,
+  links,
 }: ArtistHeaderProps) {
   return (
     <div
@@ -36,7 +39,9 @@ export function ArtistHeader({
       </div>
       <div className="ml-0 sm:ml-6 mt-2 sm:mt-0 flex-1">
         <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
-          <h1 className="text-5xl font-bold text-black">{artistData.name}</h1>
+          <div className="flex items-center gap-3">
+            <h1 className="text-5xl font-bold text-black">{artistData.name}</h1>
+          </div>
           <div className="hidden sm:inline-block">
             <Rating
               name={artistData.name}
@@ -53,6 +58,7 @@ export function ArtistHeader({
               ? "Grupo"
               : ""}
           </p>
+          <PlatformLinks links={links} />
           <div className="sm:hidden">
             <Rating
               name={artistData.name}

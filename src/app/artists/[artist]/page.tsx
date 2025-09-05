@@ -32,6 +32,7 @@ export default async function ArtistPage({
       bio,
       genres,
       relatedArtists,
+      links,
     } = await getArtistData(artistName);
 
     const { authUser } = await getCurrentUserData();
@@ -46,6 +47,7 @@ export default async function ArtistPage({
           details={details}
           item={item}
           authUser={authUser}
+          links={links}
         />
 
         {/* Contenido principal */}
