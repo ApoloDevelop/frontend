@@ -5,7 +5,8 @@ import Flag from "react-world-flags";
 
 interface CountryOption {
   value: string;
-  label: React.ReactNode;
+  label: string; // nombre en español
+  flag: string; // código de país para la bandera
 }
 
 interface CountrySelectProps {
@@ -18,18 +19,14 @@ interface CountrySelectProps {
   borderRadius?: string;
 }
 
-const countryOptions = countries
+const countryOptions: CountryOption[] = countries
   .sort((a, b) =>
     a.translations.spa.common.localeCompare(b.translations.spa.common, "es")
   )
   .map((country) => ({
     value: country.cca2,
-    label: (
-      <div className="flex items-center">
-        <Flag code={country.cca2} className="w-5 h-5 mr-2" />
-        {country.translations.spa.common}
-      </div>
-    ),
+    label: country.translations.spa.common,
+    flag: country.cca2,
   }));
 
 export const CountrySelect: React.FC<CountrySelectProps> = ({
@@ -42,6 +39,14 @@ export const CountrySelect: React.FC<CountrySelectProps> = ({
   borderRadius = "0.375rem",
 }) => {
   const selected = countryOptions.find((opt) => opt.value === value) || null;
+
+  // Custom render for option (lista)
+  const formatOptionLabel = (option: CountryOption) => (
+    <div className="flex items-center">
+      <Flag code={option.flag} className="w-5 h-5 mr-2" />
+      <span>{option.label}</span>
+    </div>
+  );
 
   return (
     <div className={`relative ${className}`}>
@@ -67,14 +72,15 @@ export const CountrySelect: React.FC<CountrySelectProps> = ({
         placeholder={hidePlaceholder ? "" : "Selecciona tu país (opcional)"}
         menuPlacement="bottom"
         maxMenuHeight={200}
+        formatOptionLabel={formatOptionLabel}
         styles={{
           control: (base, state) => ({
             ...base,
             borderColor: "var(--border)",
             borderWidth: "1.3px",
             boxShadow: state.isFocused
-              ? "0 0 0 1px var(--ring), 0 1px 2px 0 rgb(0 0 0 / 0.05)" // sombra + ring al enfocar
-              : "0 1px 2px 0 rgb(0 0 0 / 0.05)", // solo sombra cuando no está enfocado
+              ? "0 0 0 1px var(--ring), 0 1px 2px 0 rgb(0 0 0 / 0.05)"
+              : "0 1px 2px 0 rgb(0 0 0 / 0.05)",
             borderRadius: borderRadius ? borderRadius : "0.375rem",
             "&:hover": { borderColor: "var(--border)" },
             height: height,
@@ -101,6 +107,9 @@ export const CountrySelect: React.FC<CountrySelectProps> = ({
           singleValue: (base) => ({
             ...base,
             fontSize: "0.875rem",
+            display: "flex",
+            alignItems: "center",
+            gap: "0.5rem",
           }),
         }}
       />

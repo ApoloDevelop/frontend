@@ -36,7 +36,6 @@ export default async function ArtistPage({
     } = await getArtistData(artistName);
 
     const { authUser } = await getCurrentUserData();
-    console.log("User:", authUser);
 
     return (
       <div className="container mx-auto">
@@ -72,6 +71,7 @@ export default async function ArtistPage({
             artistId={artistData.id}
             slug={slug}
             user={authUser}
+            artistName={slug}
           />
         </div>
       </div>

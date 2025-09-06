@@ -38,8 +38,14 @@ export async function getArtistData(
     ItemService.findItemByTypeAndName("artist", artistData.name),
   ]);
 
-  const info = await SongstatsService.getArtistInfo(artistData.id);
-  // const info = mockArtistData;
+  // let info;
+  // try {
+  //   info = await SongstatsService.getArtistInfo(artistData.id);
+  // } catch (error) {
+  //   console.warn("Error fetching artist songstats data:", error);
+  //   info = mockArtistData;
+  // }
+  const info = mockArtistData;
   const bio = info?.bio || null;
   const genres = info?.genres || [];
   const relatedArtists = info?.related_artists || [];

@@ -77,7 +77,7 @@ export default function ArtistSearchGrid({
               )
             )}
           </div>
-          {artist.popularity && (
+          {typeof artist.popularity === "number" && (
             <div className="text-xs mt-1">
               <span className="text-yellow-600">★</span>
               <span className="text-gray-500 ml-1">

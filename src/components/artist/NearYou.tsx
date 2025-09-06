@@ -12,9 +12,11 @@ import { EventActions } from "./EventActions";
 export function NearYou({
   user,
   events,
+  artistName,
 }: {
   user: UserLocation | null | undefined;
   events: SongstatsEvent[] | null | undefined;
+  artistName: string;
 }) {
   const {
     nearestEvent,
@@ -66,7 +68,10 @@ export function NearYou({
         distanceKm={nearestEvent.distanceKm}
         userCity={user.city!}
       />
-      <EventActions eventLink={nearestEvent.event.link} />
+      <EventActions
+        eventLink={nearestEvent.event.link}
+        artistName={artistName}
+      />
     </section>
   );
 }

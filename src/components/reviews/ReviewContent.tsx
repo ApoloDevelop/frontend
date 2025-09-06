@@ -18,7 +18,11 @@ export function ReviewContent({
 }: ReviewContentProps) {
   return (
     <CardContent className="pt-0 sm:pt-2 text-sm sm:text-base">
-      {text && <div className="mb-3">{text}</div>}
+      {text && (
+        <div className="mb-3 break-words overflow-wrap-anywhere hyphens-auto">
+          {text}
+        </div>
+      )}
       <VoteButtons
         reviewId={reviewId}
         myVote={myVote}

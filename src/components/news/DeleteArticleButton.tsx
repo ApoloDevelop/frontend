@@ -39,9 +39,8 @@ export function DeleteArticleButton({
     <Button
       onClick={onDelete}
       variant="destructive"
-      size="sm"
       disabled={loading}
-      className="inline-flex items-center gap-1 w-full sm:w-auto"
+      className="inline-flex items-center gap-1 w-full sm:w-auto h-9"
     >
       <Trash2 className="h-3 w-3" />
       {loading ? "Borrando…" : "Eliminar"}

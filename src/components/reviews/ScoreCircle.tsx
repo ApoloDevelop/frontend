@@ -64,7 +64,7 @@ export function ScoreCircle({
         {/* valor */}
         <text
           x="50%"
-          y="54%"
+          y="62%"
           textAnchor="middle"
           fontSize={Math.round(size * 0.34)}
           fontWeight="700"

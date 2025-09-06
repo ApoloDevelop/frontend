@@ -2,9 +2,11 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { Trash2, User, Disc3 } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import { ListItem } from "@/types/lists";
 import { ItemType2 } from "@/types/items";
 import { getTypeIcon } from "@/utils/listItemUtils";
+import { slugify } from "@/utils/normalization";
 
 interface ListItemCardProps {
   item: ListItem;
@@ -19,12 +21,36 @@ export function ListItemCard({
   coverUrl,
   onRemove,
 }: ListItemCardProps) {
-  const handleRemove = () => {
+  const handleRemove = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
     onRemove(item.itemId, item.item?.name || "elemento");
   };
 
+  const getItemLink = () => {
+    const itemName = item.item?.name || "";
+    const artistName = item.item?.artistName || "";
+    const albumName = item.item?.albumName || "";
+
+    switch (itemType) {
+      case "artist":
+        return `/artists/${slugify(itemName)}`;
+      case "album":
+        return `/albums/${slugify(artistName)}/${slugify(itemName)}`;
+      case "track":
+        return `/songs/${slugify(artistName)}/${slugify(albumName)}/${slugify(
+          itemName
+        )}`;
+      default:
+        return "#";
+    }
+  };
+
   return (
-    <div className="flex items-center gap-4 p-4 border rounded-lg hover:bg-gray-50/80 transition-all duration-200 hover:shadow-sm">
+    <Link
+      href={getItemLink()}
+      className="flex items-center gap-4 p-4 border rounded-lg hover:bg-gray-50/80 transition-all duration-200 hover:shadow-sm cursor-pointer group"
+    >
       {/* Cover del item */}
       <div className="relative w-20 h-20 shrink-0">
         <Image
@@ -70,6 +96,6 @@ export function ListItemCard({
       >
         <Trash2 className="w-4 h-4" />
       </Button>
-    </div>
+    </Link>
   );
 }

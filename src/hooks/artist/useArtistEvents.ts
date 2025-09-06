@@ -3,9 +3,15 @@ import { mockEvent } from "@/mocks/mockSongstats";
 
 export async function getArtistEvents(artistId: string) {
   try {
-    const eventsInfo = await SongstatsService.getArtistEventInfo(artistId);
+    // let eventsInfo;
+    // try {
+    //   eventsInfo = await SongstatsService.getArtistEventInfo(artistId);
+    // } catch (error) {
+    //   console.warn("Error fetching artist event data:", error);
+    //   eventsInfo = mockEvent;
+    // }
 
-    // const eventsInfo = mockEvent;
+    const eventsInfo = mockEvent;
 
     return eventsInfo;
   } catch (error) {

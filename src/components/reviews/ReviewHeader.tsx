@@ -46,7 +46,9 @@ export function ReviewHeader({
 
       <div className="min-w-0 flex-1">
         <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
-          <span className="truncate">{review.title || "Sin título"}</span>
+          <span className="truncate min-w-0 break-words">
+            {review.title || "Sin título"}
+          </span>
           <span className="shrink-0 font-mono bg-gray-100 px-2 py-0.5 rounded">
             {review.score}
           </span>
@@ -59,15 +61,15 @@ export function ReviewHeader({
         />
 
         <div className="mt-1 text-sm sm:text-[0.95rem] text-gray-700 italic">
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1 min-w-0">
             <Link
               href={`/users/${review.user.username}`}
-              className="hover:text-purple-600 hover:underline transition-colors cursor-pointer"
+              className="hover:text-purple-600 hover:underline transition-colors cursor-pointer truncate"
             >
               {review.user.username}
             </Link>
             {verified && (
-              <div title="Verificado" className="inline-flex">
+              <div title="Verificado" className="inline-flex shrink-0">
                 <Badge
                   variant="verified"
                   className="flex items-center gap-1 px-1 py-0"

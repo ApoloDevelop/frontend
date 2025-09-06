@@ -9,16 +9,24 @@ export default async function EventsSidebar({
   artistId,
   slug,
   user,
+  artistName,
 }: {
   artistId: string;
   slug: string;
   user: any;
+  artistName: string;
 }) {
   // Espera para respetar el rate-limit (que es de 1 petición por segundo)
   await wait(1500);
 
-  const events = await SongstatsService.getArtistEventInfo(artistId);
-  // const events = mockEvent;
+  // let events;
+  // try {
+  //   events = await SongstatsService.getArtistEventInfo(artistId);
+  // } catch (error) {
+  //   console.warn("Error fetching artist event data:", error);
+  //   events = mockEvent;
+  // }
+  const events = mockEvent;
 
   let nextEvent: EventData | null = null;
   if (events?.upcoming?.length) {
@@ -40,7 +48,11 @@ export default async function EventsSidebar({
   return (
     <>
       <NextEvent event={nextEvent} slug={slug} />
-      <NearYou user={user} events={events?.upcoming ?? []} />
+      <NearYou
+        user={user}
+        events={events?.upcoming ?? []}
+        artistName={artistName}
+      />
     </>
   );
 }

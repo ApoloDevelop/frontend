@@ -21,7 +21,7 @@ export function AlertMessage({
       style={{
         zIndex: 99999,
         position: "absolute",
-        top: topSize ?? "3rem",
+        top: topSize ?? "5rem",
       }}
     >
       <Alert

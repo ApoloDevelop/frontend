@@ -21,7 +21,7 @@ export function ReviewCard({
   verified,
 }: ReviewCardProps) {
   return (
-    <Card key={review.id}>
+    <Card key={review.id} className="overflow-hidden">
       <CardHeader className="flex justify-between items-start sm:items-center gap-3 sm:gap-4">
         <ReviewHeader
           review={review}

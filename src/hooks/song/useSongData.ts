@@ -76,14 +76,27 @@ export async function getSongData({
       console.warn("Error fetching album data for label/distributor:", error);
     }
 
-    const songstatsInfo = await SongstatsService.getTrackInfo(track.id);
+    // let songstatsInfo;
+    // try {
+    //   songstatsInfo = await SongstatsService.getTrackInfo(track.id);
+    // } catch (error) {
+    //   console.warn("Error fetching songstats data:", error);
+    //   songstatsInfo = mockTrackData;
+    // }
+
     const info = {
-      // ...mockTrackData,
-      ...songstatsInfo,
-      label: albumLabel || songstatsInfo?.label,
-      distributor: albumDistributor || songstatsInfo?.distributor,
+      ...mockTrackData,
+      // ...songstatsInfo,
+      label: albumLabel || mockTrackData?.label,
+      distributor: albumDistributor || mockTrackData?.distributor,
     };
-    const lyrics = await GeniusService.getLyricsByTrack(songName, artistName);
+    const lyricsData = await GeniusService.getLyricsByTrack(
+      songName,
+      artistName
+    );
+    const lyrics = lyricsData?.lyrics
+      ? lyricsData
+      : { lyrics: "No hay letras disponibles" };
     // const lyrics = {
     //   lyrics:
     //     "Esta es una letra de ejemplo para la canción. \nEsta es la segunda línea de la letra. \nEsta es la tercera línea de la letra. \nEsta es una letra de ejemplo para la canción. \nEsta es la segunda línea de la letra. \nEsta es la tercera línea de la letra. \nEsta es una letra de ejemplo para la canción. \nEsta es la segunda línea de la letra. \nEsta es la tercera línea de la letra.",

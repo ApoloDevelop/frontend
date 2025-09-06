@@ -48,8 +48,12 @@ export function ArticleHeader({
       {/* Botonera: izquierda en móvil, derecha en desktop */}
       <div className="flex flex-col sm:flex-row gap-2 order-1 sm:order-2 sm:ml-auto">
         {canEdit && (
-          <div className="flex gap-2 order-2 sm:order-none">
-            <Button asChild variant="secondary" className="flex-1 sm:w-auto">
+          <div className="flex flex-col sm:flex-row gap-2 order-2 sm:order-none">
+            <Button
+              asChild
+              variant="secondary"
+              className="w-full sm:w-auto h-9"
+            >
               <Link href={`/news/article?edit=${articleId}`}>
                 Editar artículo
               </Link>

@@ -35,11 +35,6 @@ function ResetPasswordForm() {
       return;
     }
 
-    if (password.length < 6) {
-      setError("La contraseña debe tener al menos 6 caracteres");
-      return;
-    }
-
     if (!token) {
       setError("Token de recuperación no válido");
       return;

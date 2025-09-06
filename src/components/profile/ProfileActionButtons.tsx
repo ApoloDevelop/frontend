@@ -36,7 +36,7 @@ export const ProfileActionButtons = ({
             variant="outline"
             className="w-fit whitespace-nowrap"
           >
-            <ListIcon className="w-4 h-4 mr-2" />
+            <ListIcon className="w-4 h-4 mr-1" />
             Mis listas
           </Button>
           <Button
@@ -44,7 +44,7 @@ export const ProfileActionButtons = ({
             size="sm"
             className="w-fit whitespace-nowrap"
           >
-            <PlusIcon className="w-4 h-4 mr-2" />
+            <PlusIcon className="w-4 h-4 mr-1" />
             Añadir post
           </Button>
         </div>

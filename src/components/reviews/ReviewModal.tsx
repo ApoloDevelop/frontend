@@ -99,7 +99,7 @@ export function ReviewsModal({
 
         <div
           ref={scrollRef}
-          className="flex-1 overflow-y-auto space-y-4 sm:space-y-6"
+          className="flex-1 overflow-y-auto overflow-x-hidden space-y-4 sm:space-y-6"
         >
           <ReviewHistogram
             histogram={histogram}
