@@ -8,7 +8,7 @@ import {
   getArtistData,
   getArtistEvents,
   useProcessEvents,
-} from "@/hooks/artist";
+} from "@/hooks/events";
 
 export default async function ArtistEventsPage({
   params: rawParams,

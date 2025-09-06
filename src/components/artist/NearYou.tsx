@@ -1,6 +1,6 @@
 "use client";
 
-import { useNearestEvent } from "@/hooks/artist";
+import { useNearestEvent } from "@/hooks/events";
 import { SongstatsEvent, UserLocation } from "@/types/events";
 import { NoUserSection } from "./NoUserSection";
 import { MissingLocationSection } from "./MissingLocationSection";

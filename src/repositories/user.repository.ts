@@ -23,9 +23,7 @@ export class UserRepository {
   static async updateUser(id: number, data: any): Promise<any> {
     const res = await fetch(`${B}/users/${id}`, {
       method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: authHeaders(),
       body: JSON.stringify(data),
     });
     if (!res.ok) {

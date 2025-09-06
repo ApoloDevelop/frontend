@@ -167,7 +167,7 @@ export function EditProfileModal({
     // Si se cambia el username, redirige
     if (username !== user.username && canEditUsername) {
       onClose();
-      router.replace(`/${username}`);
+      router.replace(`/users/${username}`);
       return;
     }
 
@@ -199,10 +199,10 @@ export function EditProfileModal({
                   {section === "profile"
                     ? "Datos del usuario"
                     : section === "personal"
-                      ? "Datos personales"
-                      : section === "social"
-                        ? "Redes sociales"
-                        : "Zona de peligro"}
+                    ? "Datos personales"
+                    : section === "social"
+                    ? "Redes sociales"
+                    : "Zona de peligro"}
                 </DialogTitle>
               </DialogHeader>
 
