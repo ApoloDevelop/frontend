@@ -74,6 +74,7 @@ export function SongSidebar({
             type="track"
             name={songName}
             artistName={primaryArtist}
+            albumName={albumName}
             userId={user.id}
           />
           <AddToListDialog

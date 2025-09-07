@@ -8,6 +8,7 @@ export class FavoriteRepository {
     name: string;
     userId?: number;
     artistName?: string;
+    albumName?: string;
     location?: string;
   }): Promise<boolean> {
     const url = new URL(`${B}/favorites`);
@@ -33,6 +34,7 @@ export class FavoriteRepository {
     name: string;
     userId?: number;
     artistName?: string;
+    albumName?: string;
     location?: string;
   }): Promise<void> {
     const { userId: _ignore, ...rest } = payload;

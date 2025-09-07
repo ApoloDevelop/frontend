@@ -13,6 +13,7 @@ export function FavoriteButton({
   name,
   userId,
   artistName,
+  albumName,
   location,
   className,
   customLabels,
@@ -23,6 +24,7 @@ export function FavoriteButton({
     name,
     userId,
     artistName,
+    albumName,
     location,
   });
 
@@ -31,6 +33,7 @@ export function FavoriteButton({
     name,
     userId,
     artistName,
+    albumName,
     location,
     isFavorite,
     setIsFavorite,

@@ -5,6 +5,7 @@ type FavPayload = {
   name: string;
   userId?: number;
   artistName?: string;
+  albumName?: string;
   location?: string;
 };
 

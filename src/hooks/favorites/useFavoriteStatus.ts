@@ -8,6 +8,7 @@ interface UseFavoriteStatusProps {
   name: string;
   userId: number;
   artistName?: string;
+  albumName?: string;
   location?: string;
 }
 
@@ -16,6 +17,7 @@ export function useFavoriteStatus({
   name,
   userId,
   artistName,
+  albumName,
   location,
 }: UseFavoriteStatusProps) {
   const [isFavorite, setIsFavorite] = useState<boolean>(false);
@@ -29,6 +31,7 @@ export function useFavoriteStatus({
         name,
         userId,
         artistName,
+        albumName,
         location,
       });
       if (mounted) setIsFavorite(fav);

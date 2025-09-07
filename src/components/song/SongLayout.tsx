@@ -31,7 +31,6 @@ interface SongLayoutProps {
   distributor: string | null;
   artistSlug: string;
   albumSlug: string;
-  albumName: string;
   primaryArtist: string;
   stats: {
     verified: number | null;
@@ -62,7 +61,6 @@ export function SongLayout({
   distributor,
   artistSlug,
   albumSlug,
-  albumName,
   primaryArtist,
   stats,
   itemId,
@@ -70,6 +68,7 @@ export function SongLayout({
   canModerate,
 }: SongLayoutProps) {
   const artistNameSure = track.artists[0]?.name || "";
+  const albumNameSure = track.album?.name || "";
 
   return (
     <>
@@ -88,7 +87,7 @@ export function SongLayout({
               explicit={explicit}
               itemId={itemId}
               artistName={artistNameSure}
-              albumName={albumName}
+              albumName={albumNameSure}
               primaryArtist={primaryArtist}
               spotifyUrl={track.external_urls?.spotify}
               user={user}

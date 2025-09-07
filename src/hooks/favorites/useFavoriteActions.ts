@@ -9,6 +9,7 @@ interface UseFavoriteActionsProps {
   name: string;
   userId: number;
   artistName?: string;
+  albumName?: string;
   location?: string;
   isFavorite: boolean;
   setIsFavorite: (favorite: boolean) => void;
@@ -20,6 +21,7 @@ export function useFavoriteActions({
   name,
   userId,
   artistName,
+  albumName,
   location,
   isFavorite,
   setIsFavorite,
@@ -32,6 +34,7 @@ export function useFavoriteActions({
         name,
         userId,
         artistName,
+        albumName,
         location,
       });
       setIsFavorite(true);
@@ -75,6 +78,7 @@ export function useFavoriteActions({
         name,
         userId,
         artistName,
+        albumName,
         location,
       });
       setIsFavorite(false);

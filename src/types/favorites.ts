@@ -5,6 +5,7 @@ export type FavoriteButtonProps = {
   name: string;
   userId: number;
   artistName?: string;
+  albumName?: string;
   location?: string;
   className?: string;
   customLabels?: {

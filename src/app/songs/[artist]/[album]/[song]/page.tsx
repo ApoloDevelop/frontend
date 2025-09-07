@@ -41,8 +41,8 @@ export default async function SongPage({
     const cover =
       songData.track.album?.images?.[0]?.url || "/default-cover.png";
     const durationMs = songData.track.duration_ms ?? 0;
-    const explicit = !!songData.track.explicit;
-    const albumRelease = songData.track.album?.release_date ?? null;
+    const explicit = !!songData.info?.explicit;
+    const albumRelease = songData.info?.albumRelease ?? null;
     const bpm = songData.info?.bpm ?? null;
     const key = songData.info?.key ?? null;
     const genres = songData.info?.genres ?? [];
@@ -66,7 +66,6 @@ export default async function SongPage({
         distributor={distributor}
         artistSlug={artistSlug}
         albumSlug={albumSlug}
-        albumName={songData.names.albumName}
         primaryArtist={songData.primaryArtist}
         stats={songData.stats}
         itemId={songData.itemId}

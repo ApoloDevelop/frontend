@@ -2,7 +2,9 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { Trash2, User, Disc3 } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import { FavoriteItem } from "@/types/lists";
+import { slugify } from "@/utils/normalization";
 
 interface FavoriteItemComponentProps {
   favorite: FavoriteItem;
@@ -20,8 +22,36 @@ export function FavoriteItemComponent({
   const coverKey = favorite.item?.id || favorite.itemId;
   const coverUrl = itemCovers[coverKey] || "/default-cover.png";
 
+  // Genera el link según el tipo de item
+  const getItemLink = () => {
+    const itemName = favorite.item?.name || "";
+    const artistName = favorite.item?.artistName || "";
+    const albumName = favorite.item?.albumName || "";
+    switch (favorite.type) {
+      case "artist":
+        return `/artists/${slugify(itemName)}`;
+      case "album":
+        return `/albums/${slugify(artistName)}/${slugify(itemName)}`;
+      case "track":
+        return `/songs/${slugify(artistName)}/${slugify(albumName)}/${slugify(
+          itemName
+        )}`;
+      default:
+        return "#";
+    }
+  };
+
+  const handleRemove = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    onRemoveFavorite(favorite);
+  };
+
   return (
-    <div className="flex items-center gap-4 p-4 border rounded-lg hover:bg-gray-50/80 transition-all duration-200 hover:shadow-sm">
+    <Link
+      href={getItemLink()}
+      className="flex items-center gap-4 p-4 border rounded-lg hover:bg-gray-50/80 transition-all duration-200 hover:shadow-sm cursor-pointer group"
+    >
       {/* Cover del item */}
       <div className="relative w-20 h-20 shrink-0">
         <Image
@@ -62,11 +92,11 @@ export function FavoriteItemComponent({
       <Button
         variant="ghost"
         size="sm"
-        onClick={() => onRemoveFavorite(favorite)}
+        onClick={handleRemove}
         className="text-red-600 hover:text-red-700 hover:bg-red-50 shrink-0 opacity-70 hover:opacity-100 transition-opacity"
       >
         <Trash2 className="w-4 h-4" />
       </Button>
-    </div>
+    </Link>
   );
 }
