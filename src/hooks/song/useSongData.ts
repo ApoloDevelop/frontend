@@ -76,21 +76,21 @@ export async function getSongData({
       console.warn("Error fetching album data for label/distributor:", error);
     }
 
-    // let songstatsInfo;
-    // try {
-    //   songstatsInfo = await SongstatsService.getTrackInfo(track.id);
-    // } catch (error) {
-    //   console.warn("Error fetching songstats data:", error);
-    //   songstatsInfo = mockTrackData;
-    // }
+    let songstatsInfo;
+    try {
+      songstatsInfo = await SongstatsService.getTrackInfo(track.id);
+    } catch (error) {
+      console.warn("Error fetching songstats data:", error);
+      songstatsInfo = mockTrackData;
+    }
 
     const info = {
-      ...mockTrackData,
-      // ...songstatsInfo,
+      // ...mockTrackData,
+      ...songstatsInfo,
       albumRelease: track.album?.release_date || null,
       explicit: track.explicit || false,
-      label: albumLabel || mockTrackData?.label,
-      distributor: albumDistributor || mockTrackData?.distributor,
+      label: albumLabel || songstatsInfo?.label,
+      distributor: albumDistributor || songstatsInfo?.distributor,
     };
     const lyricsData = await GeniusService.getLyricsByTrack(
       songName,
