@@ -1,5 +1,5 @@
 import { SongstatsRepository } from "@/repositories/songstats.repository";
-import { ArtistEventInfo, ArtistInfo, Meta } from "@/types/songstats";
+import { ArtistInfo, Meta } from "@/types/songstats";
 
 export class SongstatsService {
   static async getTrackInfo(spotifyId: string): Promise<Meta | null> {
@@ -10,11 +10,5 @@ export class SongstatsService {
     spotifyArtistId: string
   ): Promise<ArtistInfo | null> {
     return await SongstatsRepository.getArtistInfo(spotifyArtistId);
-  }
-
-  static async getArtistEventInfo(
-    spotifyArtistId: string
-  ): Promise<ArtistEventInfo | null> {
-    return await SongstatsRepository.getArtistEventInfo(spotifyArtistId);
   }
 }

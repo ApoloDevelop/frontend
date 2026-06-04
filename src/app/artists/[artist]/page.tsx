@@ -65,14 +65,7 @@ export default async function ArtistPage({
             relatedArtists={relatedArtists}
           />
 
-          <ArtistSidebar
-            lastRelease={lastRelease}
-            topTracks={topTracks}
-            artistId={artistData.id}
-            slug={slug}
-            user={authUser}
-            artistName={slug}
-          />
+          <ArtistSidebar lastRelease={lastRelease} topTracks={topTracks} />
         </div>
       </div>
     );
