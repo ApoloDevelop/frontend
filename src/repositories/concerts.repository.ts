@@ -17,4 +17,20 @@ export class ConcertsRepository {
     if (!res.ok) return null;
     return (await res.json()) as ArtistEventInfo;
   }
+
+  // Lightweight: only upcoming events (sidebar). Much faster than the full call.
+  static async getArtistUpcomingInfo(
+    artistName: string
+  ): Promise<ArtistEventInfo | null> {
+    const url = new URL(`${B}/concerts/artist/upcoming`);
+    url.searchParams.set("artistName", artistName);
+
+    const res = await fetch(url.toString(), {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+      cache: "no-store",
+    });
+    if (!res.ok) return null;
+    return (await res.json()) as ArtistEventInfo;
+  }
 }

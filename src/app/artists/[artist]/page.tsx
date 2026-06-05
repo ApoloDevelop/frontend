@@ -20,22 +20,23 @@ export default async function ArtistPage({
   const artistName = useArtistParams(slug);
 
   try {
-    const {
-      artistData,
-      reviewCounts,
-      item,
-      averages,
-      details,
-      albums,
-      topTracks,
-      lastRelease,
-      bio,
-      genres,
-      relatedArtists,
-      links,
-    } = await getArtistData(artistName);
-
-    const { authUser } = await getCurrentUserData();
+    const [
+      {
+        artistData,
+        reviewCounts,
+        item,
+        averages,
+        details,
+        albums,
+        topTracks,
+        lastRelease,
+        bio,
+        genres,
+        relatedArtists,
+        links,
+      },
+      { authUser },
+    ] = await Promise.all([getArtistData(artistName), getCurrentUserData()]);
 
     return (
       <div className="container mx-auto">

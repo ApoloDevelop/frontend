@@ -14,7 +14,7 @@ export default async function EventsSidebar({
 }) {
   let events;
   try {
-    events = await ConcertsService.getArtistEventInfo(artistName);
+    events = await ConcertsService.getArtistUpcomingInfo(artistName);
   } catch (error) {
     console.warn("Error fetching artist event data:", error);
     events = null;

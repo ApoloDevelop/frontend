@@ -7,4 +7,10 @@ export class ConcertsService {
   ): Promise<ArtistEventInfo | null> {
     return ConcertsRepository.getArtistEventInfo(artistName);
   }
+
+  static async getArtistUpcomingInfo(
+    artistName: string
+  ): Promise<ArtistEventInfo | null> {
+    return ConcertsRepository.getArtistUpcomingInfo(artistName);
+  }
 }
