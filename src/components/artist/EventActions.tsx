@@ -6,7 +6,6 @@ type EventActionsProps = {
 export function EventActions({ eventLink, artistName }: EventActionsProps) {
   return (
     <div className="flex justify-between items-center mt-4">
-      {/* Ver más eventos */}
       <a
         href={`/artists/${artistName}/events`}
         className="text-purple-600 hover:underline text-sm"
@@ -14,7 +13,6 @@ export function EventActions({ eventLink, artistName }: EventActionsProps) {
         Ver más eventos
       </a>
 
-      {/* Comprar entradas */}
       {eventLink && (
         <a
           href={eventLink}

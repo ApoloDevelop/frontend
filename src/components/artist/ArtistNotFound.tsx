@@ -8,7 +8,7 @@ export default function ArtistNotFound({
   return (
     <div className="container mx-auto py-20 text-center">
       <div className="max-w-md mx-auto">
-        <h2 className="text-2xl font-bold text-gray-800 mb-4">Oops! 🎵</h2>
+        <h2 className="text-2xl font-bold text-gray-800 mb-4">Oops!</h2>
         <p className="text-gray-600 mb-6">{message}</p>
         <a
           href="/explore"

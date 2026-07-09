@@ -17,18 +17,13 @@ export default async function ArtistEventsPage({
 }) {
   const { artist: slug } = await rawParams;
 
-  // Obtener datos del artista
   const { artist, error } = await getArtistData(slug);
 
-  // Manejar error o artista no encontrado
   if (error || !artist) {
     return <ArtistNotFound message={error || undefined} />;
   }
 
-  // Obtener eventos del artista
-  const eventsInfo = await getArtistEvents(artist.id);
-
-  // Procesar y ordenar eventos
+  const eventsInfo = await getArtistEvents(artist.name);
   const { upcoming, past } = useProcessEvents(eventsInfo);
 
   return (

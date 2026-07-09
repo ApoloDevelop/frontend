@@ -34,7 +34,6 @@ export function useNearestEvent(
       setState((prev) => ({ ...prev, isLoading: true, error: null }));
 
       try {
-        // Validar ubicación del usuario
         if (!user?.city || !user?.country) {
           setState({
             nearestEvent: null,
@@ -58,7 +57,6 @@ export function useNearestEvent(
           return;
         }
 
-        // Geocodificar la ciudad del usuario
         const userCoords = await GeoService.getCoordinates(
           user.city,
           user.country
@@ -74,7 +72,6 @@ export function useNearestEvent(
           return;
         }
 
-        // Filtrar eventos por país del usuario
         const sameCountry = eventList.filter(
           (e) =>
             e.countryCode &&
@@ -92,12 +89,7 @@ export function useNearestEvent(
           return;
         }
 
-        // Geocodificar eventos que no tienen coordenadas
-        const candidates: Array<
-          {
-            event: SongstatsEvent;
-          } & LatLng
-        > = [];
+        const candidates: Array<{ event: SongstatsEvent } & LatLng> = [];
 
         for (const event of sameCountry) {
           let coords: LatLng | null = null;
@@ -136,7 +128,6 @@ export function useNearestEvent(
           return;
         }
 
-        // Encontrar el evento más cercano
         const nearest = pickNearest(userCoords, candidates);
         if (!nearest) {
           setState({
@@ -159,7 +150,7 @@ export function useNearestEvent(
           hasValidLocation: true,
           hasEventsInCountry: true,
         });
-      } catch (error) {
+      } catch {
         setState({
           nearestEvent: null,
           isLoading: false,

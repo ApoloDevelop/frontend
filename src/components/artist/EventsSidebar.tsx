@@ -1,32 +1,24 @@
-import { wait } from "@/utils/wait";
-import { SongstatsService } from "@/services/songstats.service";
+import { ConcertsService } from "@/services/concerts.service";
 import { NextEvent } from "@/components/artist/NextEvent";
 import { NearYou } from "@/components/artist/NearYou";
-import { mockEvent } from "@/mocks/mockSongstats";
 import { EventData } from "@/types/events";
 
 export default async function EventsSidebar({
-  artistId,
+  artistName,
   slug,
   user,
-  artistName,
 }: {
-  artistId: string;
+  artistName: string;
   slug: string;
   user: any;
-  artistName: string;
 }) {
-  // Espera para respetar el rate-limit (que es de 1 petición por segundo)
-  await wait(1500);
-
   let events;
   try {
-    events = await SongstatsService.getArtistEventInfo(artistId);
+    events = await ConcertsService.getArtistUpcomingInfo(artistName);
   } catch (error) {
     console.warn("Error fetching artist event data:", error);
-    events = mockEvent;
+    events = null;
   }
-  // const events = mockEvent;
 
   let nextEvent: EventData | null = null;
   if (events?.upcoming?.length) {
@@ -51,7 +43,7 @@ export default async function EventsSidebar({
       <NearYou
         user={user}
         events={events?.upcoming ?? []}
-        artistName={artistName}
+        artistName={slug}
       />
     </>
   );

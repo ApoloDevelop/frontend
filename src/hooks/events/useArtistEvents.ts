@@ -1,21 +1,18 @@
-import { SongstatsService } from "@/services/songstats.service";
-import { mockEvent } from "@/mocks/mockSongstats";
+import { ConcertsService } from "@/services/concerts.service";
+import { ArtistEventInfo } from "@/types/songstats";
 
-export async function getArtistEvents(artistId: string) {
+const EMPTY: ArtistEventInfo = {
+  counts: { citiesUpcoming: 0, countriesUpcoming: 0, eventsUpcoming: 0 },
+  upcoming: [],
+  past: [],
+};
+
+export async function getArtistEvents(artistName: string): Promise<ArtistEventInfo> {
   try {
-    let eventsInfo;
-    try {
-      eventsInfo = await SongstatsService.getArtistEventInfo(artistId);
-    } catch (error) {
-      console.warn("Error fetching artist event data:", error);
-      eventsInfo = mockEvent;
-    }
-
-    // const eventsInfo = mockEvent;
-
-    return eventsInfo;
+    const info = await ConcertsService.getArtistEventInfo(artistName);
+    return info ?? EMPTY;
   } catch (error) {
     console.error("Error fetching artist events:", error);
-    return mockEvent;
+    return EMPTY;
   }
 }

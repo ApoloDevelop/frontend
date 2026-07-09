@@ -11,7 +11,6 @@ export default function ArtistEventsHeader({
 }: ArtistEventsHeaderProps) {
   return (
     <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 items-start sm:items-center mb-6 sm:mb-8">
-      {/* Avatar superpuesto */}
       <div className="relative -mt-14 sm:-mt-20 md:-mt-28 z-10">
         <Image
           src={imageUrl || "/default-cover.png"}
@@ -22,7 +21,6 @@ export default function ArtistEventsHeader({
         />
       </div>
 
-      {/* Título y descripción */}
       <div className="ml-0 sm:ml-6 mt-2 sm:mt-0 flex-1">
         <h1 className="text-5xl font-bold text-black">
           Eventos de {artistName}

@@ -26,34 +26,28 @@ export function NearYou({
     hasEventsInCountry,
   } = useNearestEvent(user, events);
 
-  // Usuario no logueado
   if (!user) {
     return <NoUserSection />;
   }
 
   const profileEditHref = `/users/${user.username}`;
 
-  // Ubicación incompleta
   if (!hasValidLocation) {
     return <MissingLocationSection profileEditHref={profileEditHref} />;
   }
 
-  // Cargando
   if (isLoading) {
     return <LoadingSection />;
   }
 
-  // Error de geocodificación
   if (error) {
     return <NoEventsSection message={error} />;
   }
 
-  // No hay eventos en el país
   if (!hasEventsInCountry) {
     return <NoEventsSection message="No hay eventos próximos en tu país." />;
   }
 
-  // No se encontró evento más cercano
   if (!nearestEvent) {
     return (
       <NoEventsSection message="No hay eventos próximos para este artista." />

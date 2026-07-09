@@ -6,7 +6,7 @@ interface ArtistHeroProps {
   className?: string;
 }
 
-export default function ArtistHero({
+export default function ArtistEventsHero({
   artistName,
   imageUrl,
   className = "h-48 sm:h-64 md:h-72 lg:h-80",

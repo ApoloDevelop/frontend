@@ -31,7 +31,7 @@ export async function getArtistData(
       artist: artistData,
       error: null,
     };
-  } catch (error) {
+  } catch {
     return {
       artist: null,
       error: "Error al cargar los datos del artista",

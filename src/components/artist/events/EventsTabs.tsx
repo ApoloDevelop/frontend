@@ -11,7 +11,7 @@ const EVENTS_PER_PAGE = 10;
 function normalize(s?: string | null) {
   return (s ?? "")
     .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[̀-ͯ]/g, "")
     .toLowerCase()
     .trim();
 }
@@ -40,28 +40,23 @@ export default function EventsTabs({
     return past.filter((e) => normalize(e.city).includes(q));
   }, [search, past]);
 
-  // Paginación para eventos próximos
-  const upcomingPaginated = useMemo(() => {
-    return upcomingFiltered.slice(0, upcomingPage * EVENTS_PER_PAGE);
-  }, [upcomingFiltered, upcomingPage]);
+  const upcomingPaginated = useMemo(
+    () => upcomingFiltered.slice(0, upcomingPage * EVENTS_PER_PAGE),
+    [upcomingFiltered, upcomingPage]
+  );
 
-  // Paginación para eventos pasados
-  const pastPaginated = useMemo(() => {
-    return pastFiltered.slice(0, pastPage * EVENTS_PER_PAGE);
-  }, [pastFiltered, pastPage]);
+  const pastPaginated = useMemo(
+    () => pastFiltered.slice(0, pastPage * EVENTS_PER_PAGE),
+    [pastFiltered, pastPage]
+  );
 
   const current = tab === "upcoming" ? upcomingPaginated : pastPaginated;
   const currentFiltered = tab === "upcoming" ? upcomingFiltered : pastFiltered;
-  const currentPage = tab === "upcoming" ? upcomingPage : pastPage;
   const hasMoreEvents = currentFiltered.length > current.length;
 
   const emptyCopy = useMemo(() => {
-    if (search) {
-      return `No hay eventos en ciudades que coincidan con “${search}”.`;
-    }
-    return tab === "upcoming"
-      ? "No hay eventos próximos."
-      : "No hay eventos pasados.";
+    if (search) return `No hay eventos en ciudades que coincidan con "${search}".`;
+    return tab === "upcoming" ? "No hay eventos próximos." : "No hay eventos pasados.";
   }, [tab, search]);
 
   const countLabel = useMemo(() => {
@@ -73,28 +68,22 @@ export default function EventsTabs({
 
   const handleTabChange = (newTab: "upcoming" | "past") => {
     setTab(newTab);
-    // Reset search when changing tabs
     setSearch("");
   };
 
-  const loadMoreEvents = () => {
-    if (tab === "upcoming") {
-      setUpcomingPage((prev) => prev + 1);
-    } else {
-      setPastPage((prev) => prev + 1);
-    }
-  };
-
-  // Reset pagination when search changes
   const handleSearchChange = (value: string) => {
     setSearch(value);
     setUpcomingPage(1);
     setPastPage(1);
   };
 
+  const loadMore = () => {
+    if (tab === "upcoming") setUpcomingPage((p) => p + 1);
+    else setPastPage((p) => p + 1);
+  };
+
   return (
     <div>
-      {/* Buscador por ciudad */}
       <div className="mb-4">
         <label htmlFor="city-search" className="sr-only">
           Buscar por ciudad
@@ -122,7 +111,6 @@ export default function EventsTabs({
         </div>
       </div>
 
-      {/* Tabs header */}
       <div className="flex items-center gap-2 mb-4">
         <Button
           type="button"
@@ -146,11 +134,9 @@ export default function EventsTabs({
         >
           Pasados
         </Button>
-
         <span className="ml-auto text-sm text-gray-600">{countLabel}</span>
       </div>
 
-      {/* Listado en una sola columna */}
       {current.length === 0 ? (
         <p className="text-gray-500">{emptyCopy}</p>
       ) : (
@@ -169,12 +155,11 @@ export default function EventsTabs({
             })}
           </ul>
 
-          {/* Botón "Cargar más" */}
           {hasMoreEvents && (
             <div className="mt-6 text-center">
               <Button
                 type="button"
-                onClick={loadMoreEvents}
+                onClick={loadMore}
                 className="px-6 py-2 bg-white/70 text-gray-800 border border-gray-300 rounded-lg hover:bg-white hover:shadow-md transition-all duration-200"
               >
                 Cargar más eventos ({currentFiltered.length - current.length}{" "}

@@ -63,7 +63,6 @@ export default function EventCard({
         </div>
 
         <div className="flex flex-col gap-2 shrink-0 items-end">
-          {/* Botón de entradas: solo en futuros */}
           {!isPast && event?.link ? (
             <a
               href={event.link}
@@ -75,7 +74,6 @@ export default function EventCard({
             </a>
           ) : null}
 
-          {/* Ver en mapa: lo mantenemos, pero con tono más discreto si es pasado */}
           {hasCoords ? (
             <a
               className={clsx(

@@ -1,6 +1,6 @@
 export type SongstatsEvent = {
   title: string | null;
-  date: string | null; // YYYY-MM-DD
+  date: string | null;
   link: string | null;
   city: string | null;
   region: string | null;
